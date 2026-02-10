@@ -22,26 +22,6 @@ const RightColumn: React.FC = () => {
           <p className="text-sm font-semibold hover:text-primary cursor-pointer">Green Hydrogen: The future of mine site power generation?</p>
         </div>
       </div>
-
-      <div className="mt-10 p-5 bg-primary/5 rounded-xl border border-primary/20">
-        <h5 className="text-xs font-extrabold mb-4 flex items-center gap-2">
-          <span className="material-icons text-primary text-sm">trending_up</span> MARKET PULSE
-        </h5>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-medium">FTSE 350 Mining</span>
-            <span className="text-xs font-bold text-green-500">+1.24%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-medium">ASX 200 Resources</span>
-            <span className="text-xs font-bold text-red-500">-0.45%</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-medium">TSX Composite</span>
-            <span className="text-xs font-bold text-green-500">+0.82%</span>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
