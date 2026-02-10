@@ -48,7 +48,7 @@ const Header: React.FC = () => {
             <a className="hover:text-primary transition-colors" href="#">LATEST NEWS</a>
             <a className="hover:text-primary transition-colors" href="#">MARKETS</a>
             <a className="hover:text-primary transition-colors" href="#">COMMODITIES</a>
-            <a className="hover:text-primary transition-colors" href="#">MAGAZINE</a>
+            <a className="hover:text-primary transition-colors" href="#/magazines">MAGAZINE</a>
             <a className="hover:text-primary transition-colors" href="#">ESG &amp; SUSTAINABILITY</a>
             <a className="hover:text-primary transition-colors" href="#">EVENTS</a>
           </nav>
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
             <a className="text-sm font-bold hover:text-primary" href="#">LATEST NEWS</a>
             <a className="text-sm font-bold hover:text-primary" href="#">MARKETS</a>
             <a className="text-sm font-bold hover:text-primary" href="#">COMMODITIES</a>
-            <a className="text-sm font-bold hover:text-primary" href="#">MAGAZINE</a>
+            <a className="text-sm font-bold hover:text-primary" href="#/magazines">MAGAZINE</a>
             <a className="text-sm font-bold hover:text-primary" href="#">ESG &amp; SUSTAINABILITY</a>
             <a className="text-sm font-bold hover:text-primary" href="#">EVENTS</a>
           </nav>
