@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100; }
+  .serif-title { font-family: 'Playfair Display', serif; }
+}
+
+.breaking-ticker { animation: ticker 30s linear infinite; }
+.breaking-ticker-wrapper { overflow: hidden; }
+.breaking-ticker-content { display: inline-block; white-space: nowrap; animation: ticker 24s linear infinite; }
+.breaking-ticker-content > span { display: inline-block; }
+@keyframes ticker { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
