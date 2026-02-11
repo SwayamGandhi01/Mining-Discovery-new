@@ -13,17 +13,122 @@ import Newsletter from './components/Newsletter'
 import Footer from './components/Footer'
 import BreakingNews from './components/BreakingNews'
 import Magazines from './pages/Magazines'
+import ArticleDetail from './pages/ArticleDetail'
+import CEOProfiles from './pages/CEOProfiles'
+
+// Placeholder components for magazine dropdown pages
+const DigitalEdition = () => (
+  <div className="max-w-7xl mx-auto px-4 py-12">
+    <h1 className="serif-title text-4xl mb-6">Digital Edition</h1>
+    <p className="text-slate-600">Digital Edition content coming soon...</p>
+  </div>
+)
+
+const NewsletterPage = () => (
+  <div className="max-w-7xl mx-auto px-4 py-12">
+    <h1 className="serif-title text-4xl mb-6">Newsletter</h1>
+    <p className="text-slate-600">Newsletter content coming soon...</p>
+  </div>
+)
+
+const CompanyProfile = () => (
+  <div className="max-w-7xl mx-auto px-4 py-12">
+    <h1 className="serif-title text-4xl mb-6">Company Profile</h1>
+    <p className="text-slate-600">Company Profile content coming soon...</p>
+  </div>
+)
 
 export default function App(): JSX.Element {
   const [route, setRoute] = useState<string>(window.location.hash || '')
+  const [documentId, setDocumentId] = useState<string | null>(null)
 
   useEffect(() => {
-    const onHash = () => setRoute(window.location.hash || '')
+    const onHash = () => {
+      const hash = window.location.hash || ''
+      setRoute(hash)
+
+      // Parse documentId from hash like #/article/sx6gn6ckwbiljfpq226eqzbz
+      const articleMatch = hash.match(/#\/article\/(.+)$/)
+      if (articleMatch) {
+        setDocumentId(articleMatch[1])
+      } else {
+        setDocumentId(null)
+      }
+    }
+    onHash()
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
+  const openArticle = (docId: string) => {
+    window.location.hash = `#/article/${docId}`
+  }
+
+  const closeArticle = () => {
+    window.location.hash = '#'
+  }
+
+  // Article detail page
+  if (documentId) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <ArticleDetail documentId={documentId} onBack={closeArticle} />
+        <Footer />
+      </div>
+    )
+  }
+
   const isMagPage = route === '#/magazines' || window.location.pathname === '/magazines'
+  const isDigitalEdition = route === '#/digital-edition'
+  const isCEOProfile = route === '#/ceo-profile'
+  const isNewsletterPage = route === '#/newsletter-page'
+  const isCompanyProfile = route === '#/company-profile'
+
+  if (isDigitalEdition) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <DigitalEdition />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isCEOProfile) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <CEOProfiles />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isNewsletterPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <NewsletterPage />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isCompanyProfile) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <CompanyProfile />
+        <Footer />
+      </div>
+    )
+  }
 
   if (isMagPage) {
     return (
@@ -42,9 +147,9 @@ export default function App(): JSX.Element {
       <BreakingNews />
       <main className="max-w-7xl mx-auto px-4 py-8">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-          <LeftColumn />
-          <HeroSection />
-          <RightColumn />
+          <LeftColumn onArticleClick={openArticle} />
+          <HeroSection onArticleClick={openArticle} />
+          <RightColumn onArticleClick={openArticle} />
         </section>
         <NewsGrid />
         <RegionalIntelligence />
