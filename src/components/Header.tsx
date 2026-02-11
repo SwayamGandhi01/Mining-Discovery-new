@@ -6,7 +6,6 @@ const Header: React.FC = () => {
 
   const magazineMenuItems = [
     { label: 'Magazine', href: '#/magazines' },
-    { label: 'Digital Edition', href: '#/digital-edition' },
     { label: 'CEO Profile', href: '#/ceo-profile' },
     { label: 'Newsletter', href: '#/newsletter-page' },
     { label: 'Company Profile', href: '#/company-profile' },
@@ -19,31 +18,16 @@ const Header: React.FC = () => {
           <div />
         </div>
 
-        <div className="py-6 px-4 flex flex-col items-center">
-          <div className="w-full flex items-center justify-between md:hidden mb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <img src="/logo.png" alt="Mining Discovery" className="h-10 w-auto" />
-                <div className="text-sm uppercase tracking-widest text-slate-500 hidden sm:flex items-center gap-2">
-                  <span className="text-primary font-bold">Edition:</span>
-                  <a className="hover:text-primary border-b-2 border-primary" href="#">UK</a>
-                  <a className="text-slate-800 hover:text-primary" href="#">AUSTRALIA</a>
-                  <a className="text-slate-800 hover:text-primary" href="#">CANADA</a>
-                  <a className="text-slate-800 hover:text-primary" href="#">AFRICA</a>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
-                <span className="material-icons">{mobileOpen ? 'close' : 'menu'}</span>
-              </button>
-            </div>
+        <div className="py-4 px-4 flex items-center justify-between md:flex-row">
+          {/* Logo - Left side */}
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <a href="#" className="hover:opacity-80 transition-opacity">
+              <img src="/logo.png" alt="Mining Discovery" className="h-16 w-auto" />
+            </a>
           </div>
 
-          <img src="/logo.png" alt="Mining Discovery" className="hidden md:block h-20 w-auto mb-2" />
-          <p className="hidden md:block text-[10px] uppercase tracking-[0.3em] text-slate-500 mb-6">The Global Authority in Resource Extraction &amp; Market Intelligence</p>
-
-          <div className="hidden md:flex items-center justify-center text-sm uppercase tracking-widest text-slate-500 space-x-4 mb-6">
+          {/* Edition - Center */}
+          <div className="hidden md:flex items-center text-sm uppercase tracking-widest text-slate-500 space-x-3 flex-grow justify-center">
             <span className="text-primary font-bold">Edition:</span>
             <a className="hover:text-primary border-b-2 border-primary" href="#">UK</a>
             <a className="text-slate-400 hover:text-primary" href="#">AUSTRALIA</a>
@@ -51,7 +35,15 @@ const Header: React.FC = () => {
             <a className="text-slate-400 hover:text-primary" href="#">AFRICA</a>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-bold border-y border-slate-200 dark:border-slate-800 w-full justify-center py-3">
+          {/* Mobile menu button - Right side */}
+          <button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="md:hidden p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex-shrink-0">
+            <span className="material-icons">{mobileOpen ? 'close' : 'menu'}</span>
+          </button>
+        </div>
+
+        {/* Navigation - Full width below */}
+        <div className="hidden md:flex border-t border-slate-200 dark:border-slate-800">
+          <nav className="flex items-center space-x-8 text-sm font-bold w-full justify-center py-3 px-4">
             <a className="hover:text-primary transition-colors" href="#">LATEST NEWS</a>
             <a className="hover:text-primary transition-colors" href="#">MARKETS</a>
             <a className="hover:text-primary transition-colors" href="#">COMMODITIES</a>
@@ -93,8 +85,15 @@ const Header: React.FC = () => {
 
       {mobileOpen && (
         <div id="mobile-menu" className="md:hidden bg-white dark:bg-background-dark/80 border-t border-slate-200 dark:border-slate-800 px-4 py-4">
-          {/* mobile actions removed: search / subscribe / login */}
-          <nav className="flex flex-col space-y-3">
+          {/* mobile edition selector */}
+          <div className="text-sm uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-4">
+            <span className="text-primary font-bold">Edition:</span>
+            <a className="hover:text-primary border-b-2 border-primary" href="#">UK</a>
+            <a className="text-slate-800 hover:text-primary" href="#">AUSTRALIA</a>
+            <a className="text-slate-800 hover:text-primary" href="#">CANADA</a>
+            <a className="text-slate-800 hover:text-primary" href="#">AFRICA</a>
+          </div>
+          <nav className="flex flex-col space-y-3 border-t border-slate-200 dark:border-slate-800 pt-4">
             <a className="text-sm font-bold hover:text-primary" href="#">LATEST NEWS</a>
             <a className="text-sm font-bold hover:text-primary" href="#">MARKETS</a>
             <a className="text-sm font-bold hover:text-primary" href="#">COMMODITIES</a>

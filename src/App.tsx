@@ -15,6 +15,7 @@ import BreakingNews from './components/BreakingNews'
 import Magazines from './pages/Magazines'
 import ArticleDetail from './pages/ArticleDetail'
 import CEOProfiles from './pages/CEOProfiles'
+import CompanyProfiles from './pages/CompanyProfiles'
 
 // Placeholder components for magazine dropdown pages
 const DigitalEdition = () => (
@@ -25,18 +26,12 @@ const DigitalEdition = () => (
 )
 
 const NewsletterPage = () => (
-  <div className="max-w-7xl mx-auto px-4 py-12">
-    <h1 className="serif-title text-4xl mb-6">Newsletter</h1>
-    <p className="text-slate-600">Newsletter content coming soon...</p>
+  <div>
+    <Newsletter />
   </div>
 )
 
-const CompanyProfile = () => (
-  <div className="max-w-7xl mx-auto px-4 py-12">
-    <h1 className="serif-title text-4xl mb-6">Company Profile</h1>
-    <p className="text-slate-600">Company Profile content coming soon...</p>
-  </div>
-)
+
 
 export default function App(): JSX.Element {
   const [route, setRoute] = useState<string>(window.location.hash || '')
@@ -81,21 +76,10 @@ export default function App(): JSX.Element {
   }
 
   const isMagPage = route === '#/magazines' || window.location.pathname === '/magazines'
-  const isDigitalEdition = route === '#/digital-edition'
   const isCEOProfile = route === '#/ceo-profile'
   const isNewsletterPage = route === '#/newsletter-page'
   const isCompanyProfile = route === '#/company-profile'
 
-  if (isDigitalEdition) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <DigitalEdition />
-        <Footer />
-      </div>
-    )
-  }
 
   if (isCEOProfile) {
     return (
@@ -124,7 +108,7 @@ export default function App(): JSX.Element {
       <div>
         <Header />
         <BreakingNews />
-        <CompanyProfile />
+        <CompanyProfiles />
         <Footer />
       </div>
     )

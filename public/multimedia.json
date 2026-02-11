@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "documentId": "multimedia-001",
+      "title": "Wallbridge Mining CEO on Fenology PPA on Martinier Exploration & Gold Market Outlook",
+      "description": "The Mining Investment Event 2025",
+      "youtubeLink": "https://www.youtube.com/watch?v=YOUR_VIDEO_ID_1",
+      "video_thumbnail": [
+        {
+          "id": 1,
+          "url": "https://img.youtube.com/vi/YOUR_VIDEO_ID_1/maxresdefault.jpg",
+          "name": "wallbridge-thumbnail.jpg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "documentId": "multimedia-002",
+      "title": "Max Resource: District-Scale Silver Discovery in Colombia",
+      "description": "The Mining Investment Event 2025",
+      "youtubeLink": "https://www.youtube.com/watch?v=YOUR_VIDEO_ID_2",
+      "video_thumbnail": [
+        {
+          "id": 2,
+          "url": "https://img.youtube.com/vi/YOUR_VIDEO_ID_2/maxresdefault.jpg",
+          "name": "max-resource-thumbnail.jpg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "documentId": "multimedia-003",
+      "title": "Rio Tinto: The Future of Copper in Global Partnerships",
+      "description": "The Mining Investment Event 2025",
+      "youtubeLink": "https://www.youtube.com/watch?v=YOUR_VIDEO_ID_3",
+      "video_thumbnail": [
+        {
+          "id": 3,
+          "url": "https://img.youtube.com/vi/YOUR_VIDEO_ID_3/maxresdefault.jpg",
+          "name": "rio-tinto-thumbnail.jpg"
+        }
+      ]
+    }
+  ]
+}

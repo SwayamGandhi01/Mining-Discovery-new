@@ -26,16 +26,15 @@ const Newsletter: React.FC = () => {
         if (!mounted) return
 
         const cats: Category[] = (catsJson?.data || []).map((c: any) => ({ id: c.id, name: c.name, publishedAt: c.publishedAt }))
-        // sort by publishedAt desc and take latest 3
+        // sort by publishedAt desc to show newest first
         const sortedCats = cats.sort((a, b) => new Date(b.publishedAt || '').getTime() - new Date(a.publishedAt || '').getTime())
-        const top3 = sortedCats.slice(0, 3)
-        setCategories(top3)
+        setCategories(sortedCats)
 
         const newslettersList: NewsletterItem[] = listJson?.data || []
         setNewsletters(newslettersList)
 
-        // default select first top3 category
-        const defaultCatId = top3?.[0]?.id ?? null
+        // default select first category
+        const defaultCatId = sortedCats?.[0]?.id ?? null
         setSelectedCat(defaultCatId)
         if (defaultCatId) fetchNewslettersByCategory(defaultCatId)
         setError(null)
@@ -106,12 +105,12 @@ const Newsletter: React.FC = () => {
         {!loading && !error && (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-3">
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-6">
                 {categories.map((c) => (
                   <button
                     key={c.id}
                     onClick={() => { setSelectedCat(c.id); setSelectedNewsletters([]); fetchNewslettersByCategory(c.id) }}
-                    className={`px-4 py-2 rounded-full font-bold ${selectedCat === c.id ? 'bg-slate-900 text-white' : 'bg-white dark:bg-slate-800 border'}`}>
+                    className={`px-3 sm:px-4 py-2 rounded-full font-bold text-sm sm:text-base whitespace-nowrap ${selectedCat === c.id ? 'bg-slate-900 text-white' : 'bg-white dark:bg-slate-800 border'}`}>
                     {c.name}
                   </button>
                 ))}

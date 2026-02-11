@@ -1,9 +1,9 @@
 import React from 'react'
 
 const highlights = [
-  { title: 'The Last Frontier: Inside Congo’s Cobalt Mines', tag: 'VIDEO' },
+  { title: 'The Last Frontier: Inside Congo\'s Cobalt Mines', tag: 'VIDEO' },
   { title: 'Market Intelligence: Quarterly Gold Outlook', tag: 'PODCAST' },
-  { title: 'Engineering Marvels: World’s Largest Excavators', tag: 'VIDEO' },
+  { title: 'Engineering Marvels: World\'s Largest Excavators', tag: 'VIDEO' },
 ]
 
 export default function MultimediaHighlights(): JSX.Element {
