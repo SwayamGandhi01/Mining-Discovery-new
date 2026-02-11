@@ -1,8 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+
+interface NewsCategory {
+  id: number
+  documentId: string
+  category: string
+  slug: string
+}
 
 const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [magazineDropdownOpen, setMagazineDropdownOpen] = useState(false)
+  const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
+  const [categories, setCategories] = useState<NewsCategory[]>([])
 
   const magazineMenuItems = [
     { label: 'Magazine', href: '#/magazines' },
@@ -10,6 +19,24 @@ const Header: React.FC = () => {
     { label: 'Newsletter', href: '#/newsletter-page' },
     { label: 'Company Profile', href: '#/company-profile' },
   ]
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(
+          'https://admins.miningdiscovery.com/api/news-categories?pagination[limit]=100'
+        )
+        if (res.ok) {
+          const data = await res.json()
+          setCategories(data?.data || [])
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err)
+      }
+    }
+
+    fetchCategories()
+  }, [])
   return (
     <header className="border-b border-primary/20 bg-white dark:bg-background-dark/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto">
@@ -44,7 +71,39 @@ const Header: React.FC = () => {
         {/* Navigation - Full width below */}
         <div className="hidden md:flex border-t border-slate-200 dark:border-slate-800">
           <nav className="flex items-center space-x-8 text-sm font-bold w-full justify-center py-3 px-4">
-            <a className="hover:text-primary transition-colors" href="#">LATEST NEWS</a>
+            {/* News Dropdown */}
+            <div 
+              className="relative group"
+              onMouseEnter={() => setNewsDropdownOpen(true)}
+              onMouseLeave={() => setNewsDropdownOpen(false)}
+            >
+              <button className="hover:text-primary transition-colors flex items-center gap-1">
+                NEWS
+                <svg className={`w-4 h-4 transition-transform ${newsDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              
+              {newsDropdownOpen && (
+                <div className="absolute top-full left-0 pt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-2 min-w-max z-50 max-h-96 overflow-y-auto">
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <a
+                        key={category.id}
+                        href={`#/news/${category.slug}`}
+                        onClick={() => setNewsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                      >
+                        {category.category}
+                      </a>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-sm text-slate-500">Loading categories...</div>
+                  )}
+                </div>
+              )}
+            </div>
+            
             <a className="hover:text-primary transition-colors" href="#">MARKETS</a>
             <a className="hover:text-primary transition-colors" href="#">COMMODITIES</a>
             
@@ -94,7 +153,36 @@ const Header: React.FC = () => {
             <a className="text-slate-800 hover:text-primary" href="#">AFRICA</a>
           </div>
           <nav className="flex flex-col space-y-3 border-t border-slate-200 dark:border-slate-800 pt-4">
-            <a className="text-sm font-bold hover:text-primary" href="#">LATEST NEWS</a>
+            {/* Mobile News Dropdown */}
+            <div>
+              <button 
+                onClick={() => setNewsDropdownOpen(!newsDropdownOpen)}
+                className="text-sm font-bold hover:text-primary w-full text-left flex items-center justify-between"
+              >
+                NEWS
+                <svg className={`w-4 h-4 transition-transform ${newsDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {newsDropdownOpen && (
+                <div className="mt-2 ml-4 space-y-2 max-h-60 overflow-y-auto">
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <a
+                        key={category.id}
+                        href={`#/news/${category.slug}`}
+                        className="block text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
+                      >
+                        {category.category}
+                      </a>
+                    ))
+                  ) : (
+                    <div className="text-sm text-slate-500">Loading categories...</div>
+                  )}
+                </div>
+              )}
+            </div>
+            
             <a className="text-sm font-bold hover:text-primary" href="#">MARKETS</a>
             <a className="text-sm font-bold hover:text-primary" href="#">COMMODITIES</a>
             

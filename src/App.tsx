@@ -16,6 +16,7 @@ import Magazines from './pages/Magazines'
 import ArticleDetail from './pages/ArticleDetail'
 import CEOProfiles from './pages/CEOProfiles'
 import CompanyProfiles from './pages/CompanyProfiles'
+import CategoryNews from './pages/CategoryNews'
 
 // Placeholder components for magazine dropdown pages
 const DigitalEdition = () => (
@@ -36,6 +37,7 @@ const NewsletterPage = () => (
 export default function App(): JSX.Element {
   const [route, setRoute] = useState<string>(window.location.hash || '')
   const [documentId, setDocumentId] = useState<string | null>(null)
+  const [categorySlug, setCategorySlug] = useState<string | null>(null)
 
   useEffect(() => {
     const onHash = () => {
@@ -46,8 +48,17 @@ export default function App(): JSX.Element {
       const articleMatch = hash.match(/#\/article\/(.+)$/)
       if (articleMatch) {
         setDocumentId(articleMatch[1])
+        setCategorySlug(null)
       } else {
         setDocumentId(null)
+      }
+
+      // Parse category slug from hash like #/news/latest-news
+      const categoryMatch = hash.match(/#\/news\/(.+)$/)
+      if (categoryMatch) {
+        setCategorySlug(categoryMatch[1])
+      } else {
+        setCategorySlug(null)
       }
     }
     onHash()
@@ -70,6 +81,18 @@ export default function App(): JSX.Element {
         <Header />
         <BreakingNews />
         <ArticleDetail documentId={documentId} onBack={closeArticle} />
+        <Footer />
+      </div>
+    )
+  }
+
+  // Category news page
+  if (categorySlug) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <CategoryNews />
         <Footer />
       </div>
     )
@@ -135,7 +158,7 @@ export default function App(): JSX.Element {
           <HeroSection onArticleClick={openArticle} />
           <RightColumn onArticleClick={openArticle} />
         </section>
-        <NewsGrid />
+        <NewsGrid onArticleClick={openArticle} />
         <RegionalIntelligence />
         <MultimediaHighlights />
         <EditorsPicks />
