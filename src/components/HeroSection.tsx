@@ -22,7 +22,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
     const fetchLatestNews = async () => {
       try {
         const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=1&populate=*"
+          "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=1&populate=*"
         );
 
         const data = await res.json();

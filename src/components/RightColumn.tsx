@@ -19,7 +19,7 @@ const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
     const fetchLatestNews = async () => {
       try {
         const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=7"
+          "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=7"
         );
 
         const data = await res.json();

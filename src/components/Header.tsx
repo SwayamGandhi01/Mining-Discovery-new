@@ -11,7 +11,18 @@ const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [magazineDropdownOpen, setMagazineDropdownOpen] = useState(false)
   const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
   const [categories, setCategories] = useState<NewsCategory[]>([])
+
+  const servicesMenuItems = [
+    { label: 'Investor Campaign', href: '#/investor-campaigns' },
+    { label: 'YouTube', href: 'https://www.youtube.com/@miningdiscovery?si=t0TMA3H1QN-Jgu0j' },
+    { label: 'News Syndication', href: '#/news-syndication' },
+    { label: 'Conference Media Coverage', href: '#/conference-media' },
+    { label: 'Digital Branding', href: '#/digital-branding' },
+    { label: 'Newsletter & Email Blast', href: '#/newsletter-email-blast' },
+    { label: 'Press Office', href: '#/press-office' },
+  ]
 
   const magazineMenuItems = [
     { label: 'Magazine', href: '#/magazines' },
@@ -104,8 +115,36 @@ const Header: React.FC = () => {
               )}
             </div>
             
-            <a className="hover:text-primary transition-colors" href="#">MARKETS</a>
-            <a className="hover:text-primary transition-colors" href="#">COMMODITIES</a>
+            <a className="hover:text-primary transition-colors" href="#/about-us">ABOUT US</a>
+            
+            {/* Services Dropdown */}
+            <div 
+              className="relative group"
+              onMouseEnter={() => setServicesDropdownOpen(true)}
+              onMouseLeave={() => setServicesDropdownOpen(false)}
+            >
+              <button className="hover:text-primary transition-colors flex items-center gap-1">
+                SERVICES
+                <svg className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              
+              {servicesDropdownOpen && (
+                <div className="absolute top-full left-0 pt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-2 min-w-max z-50">
+                  {servicesMenuItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setServicesDropdownOpen(false)}
+                      className="block px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
             
             {/* Magazine Dropdown */}
             <div 
@@ -136,8 +175,7 @@ const Header: React.FC = () => {
               )}
             </div>
             
-            <a className="hover:text-primary transition-colors" href="#">ESG &amp; SUSTAINABILITY</a>
-            <a className="hover:text-primary transition-colors" href="#">EVENTS</a>
+            <a className="hover:text-primary transition-colors" href="#/contact-us">CONTACT US</a>
           </nav>
         </div>
       </div>
@@ -183,8 +221,33 @@ const Header: React.FC = () => {
               )}
             </div>
             
-            <a className="text-sm font-bold hover:text-primary" href="#">MARKETS</a>
-            <a className="text-sm font-bold hover:text-primary" href="#">COMMODITIES</a>
+            <a className="text-sm font-bold hover:text-primary" href="#/about-us">ABOUT US</a>
+            
+            {/* Mobile Services Dropdown */}
+            <div>
+              <button 
+                onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
+                className="text-sm font-bold hover:text-primary w-full text-left flex items-center justify-between"
+              >
+                SERVICES
+                <svg className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {servicesDropdownOpen && (
+                <div className="mt-2 ml-4 space-y-2">
+                  {servicesMenuItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="block text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
             
             {/* Mobile Magazine Dropdown */}
             <div>
@@ -212,8 +275,7 @@ const Header: React.FC = () => {
               )}
             </div>
             
-            <a className="text-sm font-bold hover:text-primary" href="#">ESG &amp; SUSTAINABILITY</a>
-            <a className="text-sm font-bold hover:text-primary" href="#">EVENTS</a>
+            <a className="text-sm font-bold hover:text-primary" href="#/contact-us">CONTACT US</a>
           </nav>
         </div>
       )}

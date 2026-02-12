@@ -17,14 +17,18 @@ import ArticleDetail from './pages/ArticleDetail'
 import CEOProfiles from './pages/CEOProfiles'
 import CompanyProfiles from './pages/CompanyProfiles'
 import CategoryNews from './pages/CategoryNews'
+import Services from './pages/Services'
+import InvestorCampaigns from './pages/InvestorCampaigns'
+import NewsSyndication from './pages/NewsSyndication'
+import DigitalBranding from './pages/DigitalBranding'
+import PressOffice from './pages/PressOffice'
+import ConferenceMediaCoverage from './pages/ConferenceMediaCoverage'
+import NewsletterEmailBlast from './pages/NewsletterEmailBlast'
+import AboutUs from './pages/AboutUs'
+import ContactUs from './pages/ContactUs'
 
 // Placeholder components for magazine dropdown pages
-const DigitalEdition = () => (
-  <div className="max-w-7xl mx-auto px-4 py-12">
-    <h1 className="serif-title text-4xl mb-6">Digital Edition</h1>
-    <p className="text-slate-600">Digital Edition content coming soon...</p>
-  </div>
-)
+
 
 const NewsletterPage = () => (
   <div>
@@ -43,19 +47,22 @@ export default function App(): JSX.Element {
     const onHash = () => {
       const hash = window.location.hash || ''
       setRoute(hash)
+      console.log('Hash changed:', hash)
 
       // Parse documentId from hash like #/article/sx6gn6ckwbiljfpq226eqzbz
       const articleMatch = hash.match(/#\/article\/(.+)$/)
       if (articleMatch) {
+        console.log('Detected article:', articleMatch[1])
         setDocumentId(articleMatch[1])
         setCategorySlug(null)
       } else {
         setDocumentId(null)
       }
 
-      // Parse category slug from hash like #/news/latest-news
-      const categoryMatch = hash.match(/#\/news\/(.+)$/)
+      // Parse category slug from hash like #/news/evening-chatter
+      const categoryMatch = hash.match(/#\/news\/([^/]+)$/)
       if (categoryMatch) {
+        console.log('Detected category:', categoryMatch[1])
         setCategorySlug(categoryMatch[1])
       } else {
         setCategorySlug(null)
@@ -92,7 +99,7 @@ export default function App(): JSX.Element {
       <div>
         <Header />
         <BreakingNews />
-        <CategoryNews />
+        <CategoryNews categorySlug={categorySlug} />
         <Footer />
       </div>
     )
@@ -102,6 +109,15 @@ export default function App(): JSX.Element {
   const isCEOProfile = route === '#/ceo-profile'
   const isNewsletterPage = route === '#/newsletter-page'
   const isCompanyProfile = route === '#/company-profile'
+  const isServicesPage = route === '#/services'
+  const isInvestorCampaignsPage = route === '#/investor-campaigns'
+  const isNewsSyndicationPage = route === '#/news-syndication'
+  const isDigitalBrandingPage = route === '#/digital-branding'
+  const isPressOfficePage = route === '#/press-office'
+  const isConferenceMediaPage = route === '#/conference-media'
+  const isNewsletterEmailBlastPage = route === '#/newsletter-email-blast'
+  const isAboutUsPage = route === '#/about-us'
+  const isContactUsPage = route === '#/contact-us'
 
 
   if (isCEOProfile) {
@@ -137,6 +153,105 @@ export default function App(): JSX.Element {
     )
   }
 
+  if (isServicesPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <Services />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isInvestorCampaignsPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <InvestorCampaigns />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isNewsSyndicationPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <NewsSyndication />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isDigitalBrandingPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <DigitalBranding />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isPressOfficePage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <PressOffice />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isConferenceMediaPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <ConferenceMediaCoverage />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isNewsletterEmailBlastPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <NewsletterEmailBlast />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isAboutUsPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <AboutUs />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isContactUsPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <ContactUs />
+        <Footer />
+      </div>
+    )
+  }
+
   if (isMagPage) {
     return (
       <div>
@@ -160,7 +275,6 @@ export default function App(): JSX.Element {
         </section>
         <NewsGrid onArticleClick={openArticle} />
         <RegionalIntelligence />
-        <MultimediaHighlights />
         <EditorsPicks />
         <MagazineProfiles />
       </main>
