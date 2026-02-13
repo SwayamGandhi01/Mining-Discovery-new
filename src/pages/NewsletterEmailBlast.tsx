@@ -252,7 +252,7 @@ const NewsletterEmailBlast: React.FC = () => {
         {/* Subscribe Section */}
         <div className="text-center mb-12">
           <h2 className="text-2xl font-bold mb-3">Subscribe to Mining Discovery</h2>
-          <p className="text-amber-600 dark:text-amber-500 text-lg mb-8">
+          <p className="text-primary-600 dark:text-primary-500 text-lg mb-8">
             Get the latest mining news, market updates, and exclusive insights straight to your inbox every week.
           </p>
         </div>
@@ -278,7 +278,7 @@ const NewsletterEmailBlast: React.FC = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
 
               {/* Last Name */}
@@ -289,7 +289,7 @@ const NewsletterEmailBlast: React.FC = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
 
               {/* Email Address */}
@@ -300,7 +300,7 @@ const NewsletterEmailBlast: React.FC = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
 
               {/* Job Title */}
@@ -311,7 +311,7 @@ const NewsletterEmailBlast: React.FC = () => {
                 value={formData.jobTitle}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
 
               {/* Company Name */}
@@ -322,7 +322,7 @@ const NewsletterEmailBlast: React.FC = () => {
                 value={formData.companyName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
 
               {/* Country Dropdown */}
@@ -331,7 +331,7 @@ const NewsletterEmailBlast: React.FC = () => {
                 value={formData.country}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600"
               >
                 {countries.map((country) => (
                   <option key={country} value={country} disabled={country === 'Select Country'}>
@@ -343,7 +343,7 @@ const NewsletterEmailBlast: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600 text-white font-semibold py-3 rounded transition mt-6"
+                className="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 text-white font-semibold py-3 rounded transition mt-6"
               >
                 Join For Free
               </button>

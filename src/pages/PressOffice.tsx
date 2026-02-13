@@ -102,7 +102,7 @@ const PressOffice: React.FC = () => {
               <div className="flex-shrink-0">
                 <button
                   onClick={() => handleViewMore(company.name)}
-                  className="bg-white dark:bg-slate-800 border border-amber-600 text-amber-600 dark:text-amber-500 hover:bg-amber-50 dark:hover:bg-slate-700 px-4 py-2 rounded font-semibold text-sm transition whitespace-nowrap"
+                  className="bg-white dark:bg-slate-800 border border-primary-600 text-primary-600 dark:text-primary-500 hover:bg-primary-50 dark:hover:bg-slate-700 px-4 py-2 rounded font-semibold text-sm transition whitespace-nowrap"
                 >
                   View More
                 </button>

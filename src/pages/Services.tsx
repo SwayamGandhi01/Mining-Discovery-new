@@ -20,7 +20,7 @@ const Services: React.FC = () => {
       title: 'Social Media Marketing',
       description:
         'Create strategies that are optimized for both you and your consumers. Our team takes care of all social needs, be it monthly posts, strategies creation, or brand awareness and strengthening your brand.',
-      color: 'bg-amber-700',
+      color: 'bg-primary-700',
     },
     {
       title: 'Google Ads & Paid Campaigns',
@@ -32,7 +32,7 @@ const Services: React.FC = () => {
       title: 'LinkedIn & Meta Ads',
       description:
         'Our team specializes in LinkedIn and advertising campaigns in both B2B and B2C industries in expanding roles. Connecting with professionals in engaging with a large audience but add it to brand impact.',
-      color: 'bg-amber-700',
+      color: 'bg-primary-700',
     },
     {
       title: 'Logo & Visual Design',
@@ -44,7 +44,7 @@ const Services: React.FC = () => {
       title: 'Public Relations (PR)',
       description:
         'The public face that you compile in is core to the branding and success. A strong press release, press releases, and. This media contacts, press releases, and through features, we create credibility and exposure for your brand.',
-      color: 'bg-amber-700',
+      color: 'bg-primary-700',
     },
     {
       title: 'Webinars & Events',
@@ -56,7 +56,7 @@ const Services: React.FC = () => {
       title: 'Website Development',
       description:
         'Your website is the centerpiece of your online presence. We use the latest technologies, secure, open, user-friendly, user-flexible, and conversion-focused options and business aims.',
-      color: 'bg-amber-700',
+      color: 'bg-primary-700',
     },
     {
       title: 'App Development',

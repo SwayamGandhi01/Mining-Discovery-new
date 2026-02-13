@@ -103,7 +103,7 @@ const InvestorCampaigns: React.FC = () => {
       <section className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 text-white py-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Investor Campaigns</h1>
-          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-amber-400">
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary-400">
             Unlocking the Future of Mining Insights
           </h2>
           <p className="text-lg mb-8 text-slate-300 max-w-3xl mx-auto">
@@ -126,7 +126,7 @@ const InvestorCampaigns: React.FC = () => {
           {statistics.map((stat, idx) => (
             <div
               key={idx}
-              className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg p-8 text-center transition transform hover:scale-105"
+              className="bg-primary-600 hover:bg-primary-700 text-white rounded-lg p-8 text-center transition transform hover:scale-105"
             >
               <div className="text-4xl md:text-5xl font-bold mb-2">{stat.count}</div>
               <div className="text-lg font-semibold">{stat.label}</div>
@@ -183,12 +183,12 @@ const InvestorCampaigns: React.FC = () => {
                 key={idx}
                 className="bg-white dark:bg-slate-800 rounded-lg p-8 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition"
               >
-                <div className="text-amber-600 font-bold text-sm mb-2 uppercase">{opp.badge}</div>
+                <div className="text-primary-600 font-bold text-sm mb-2 uppercase">{opp.badge}</div>
                 <div className="text-2xl font-bold mb-6">{opp.range}</div>
                 <ul className="space-y-3">
                   {opp.features.map((feature, fidx) => (
                     <li key={fidx} className="flex items-start gap-2 text-sm">
-                      <span className="text-amber-600 font-bold">✓</span>
+                      <span className="text-primary-600 font-bold">✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}

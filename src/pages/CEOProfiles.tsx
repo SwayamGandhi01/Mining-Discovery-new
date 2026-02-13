@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
 
 interface CEOImage {
   url: string;
@@ -42,6 +43,8 @@ const CEOProfiles: React.FC = () => {
   const [profiles, setProfiles] = useState<CEOProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const itemsPerView = 3;
 
   useEffect(() => {
     const fetchCEOProfiles = async () => {
@@ -77,65 +80,156 @@ const CEOProfiles: React.FC = () => {
     fetchCEOProfiles();
   }, []);
 
+  const handlePrevious = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) =>
+      Math.min(Math.max(0, profiles.length - itemsPerView), prev + 1)
+    );
+  };
+
+  const visibleProfiles = profiles.slice(currentIndex, currentIndex + itemsPerView);
+  const maxIndex = Math.max(0, profiles.length - itemsPerView);
+
   return (
-    <main className="max-w-7xl mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold mb-6">CEO Profiles</h2>
-
-      {loading && <div className="text-sm text-slate-500">Loading CEO profiles...</div>}
-      {error && <div className="text-sm text-red-500">{error}</div>}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {profiles.map((profile) => (
-          <article key={profile.id} className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-100 dark:border-slate-800">
-            <div className="flex flex-col h-full">
-              {/* Profile Image */}
-              <div className="w-full h-56 overflow-hidden rounded bg-slate-100 flex items-center justify-center">
-                {profile.ceo_image ? (
-                  <img
-                    src={profile.ceo_image.url}
-                    alt={profile.name}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-sm text-slate-400">No image</div>
-                )}
-              </div>
-
-              {/* Profile Content */}
-              <div className="mt-3 flex-1 flex flex-col">
-                <h3 className="font-semibold text-lg">{profile.name}</h3>
-                <p className="text-xs text-slate-500 mt-1">{profile.designation}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 line-clamp-4">
-                  {profile.shortDescription}
-                </p>
-
-                {/* PDF Download Button */}
-                <div className="mt-4">
-                  {profile.ceo_pdf && profile.ceo_pdf.length > 0 && (
-                    <>
-                      <a
-                        href={profile.ceo_pdf[0].url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block bg-slate-900 dark:bg-slate-700 text-white px-3 py-1 rounded text-sm hover:bg-slate-800 dark:hover:bg-slate-600 transition-colors"
-                      >
-                        View Profile
-                      </a>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </article>
-        ))}
+    <section className="max-w-7xl mx-auto px-4 py-16">
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl font-bold text-yellow-500">CEO-PROFILES</h2>
+        
+        {/* Navigation Arrows */}
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Previous profiles"
+          >
+            <ChevronLeft className="w-6 h-6 text-slate-700 dark:text-slate-300" />
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={currentIndex >= maxIndex}
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Next profiles"
+          >
+            <ChevronRight className="w-6 h-6 text-slate-700 dark:text-slate-300" />
+          </button>
+        </div>
       </div>
 
-      {!loading && profiles.length === 0 && !error && (
-        <div className="text-center py-20">
-          <p className="text-sm text-slate-500">No CEO profiles available at the moment.</p>
+      {loading && (
+        <div className="text-center py-12">
+          <p className="text-sm text-slate-500">Loading CEO profiles...</p>
         </div>
       )}
-    </main>
+      {error && (
+        <div className="text-center py-12">
+          <p className="text-sm text-red-500">{error}</p>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {/* Profile Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            {visibleProfiles.map((profile) => (
+              <article
+                key={profile.id}
+                className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-slate-100 dark:border-slate-800"
+              >
+                {/* Profile Image Container */}
+                <div className="relative w-full h-64 bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
+                  {profile.ceo_image ? (
+                    <img
+                      src={profile.ceo_image.url}
+                      alt={profile.name}
+                      className="w-full h-full object-contain p-4"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-sm text-slate-400">
+                      No image available
+                    </div>
+                  )}
+                </div>
+
+                {/* Profile Content */}
+                <div className="p-5 flex flex-col h-full">
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">
+                      {profile.name}
+                    </h3>
+                    <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-3">
+                      {profile.designation}
+                    </p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300 line-clamp-3 leading-relaxed">
+                      {profile.shortDescription}
+                    </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-slate-700">
+                    {profile.ceo_pdf && profile.ceo_pdf.length > 0 ? (
+                      <>
+                        <a
+                          href={profile.ceo_pdf[0].url}
+                          download
+                          className="flex items-center gap-2 flex-1 justify-center bg-slate-900 dark:bg-slate-700 text-white px-4 py-2 rounded font-medium text-sm hover:bg-slate-800 dark:hover:bg-slate-600 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download
+                        </a>
+                        <a
+                          href={profile.ceo_pdf[0].url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 flex-1 justify-center border-2 border-slate-900 dark:border-slate-300 text-slate-900 dark:text-slate-300 px-4 py-2 rounded font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Open
+                        </a>
+                      </>
+                    ) : (
+                      <div className="w-full text-center py-2 text-xs text-slate-500">
+                        No profile available
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* Progress Bar Indicator */}
+          {profiles.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-slate-400 to-slate-600 dark:from-slate-500 dark:to-slate-400 transition-all duration-300"
+                  style={{
+                    width: `${maxIndex > 0 ? (currentIndex / maxIndex) * 100 : 100}%`,
+                  }}
+                />
+              </div>
+              <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                {currentIndex + 1} - {Math.min(currentIndex + itemsPerView, profiles.length)} of {profiles.length}
+              </span>
+            </div>
+          )}
+
+          {/* No Profiles Message */}
+          {profiles.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-sm text-slate-500">
+                No CEO profiles available at the moment.
+              </p>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 };
 

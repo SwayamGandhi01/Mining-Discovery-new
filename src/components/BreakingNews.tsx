@@ -28,9 +28,9 @@ export default function BreakingNews(): JSX.Element {
   }, []);
 
   return (
-    <div className="bg-blue-900 text-white">
+    <div className=" bg-black text-white">
       <div className="max-w-7xl mx-auto flex items-center gap-4 px-4 py-2">
-        <span className="bg-yellow-400 text-black font-bold text-xs px-2 py-1">
+        <span className="text-white font-bold text-xs px-2 py-1" style={{ backgroundColor: '#ae8a4c' }}>
           BREAKING NEWS
         </span>
 

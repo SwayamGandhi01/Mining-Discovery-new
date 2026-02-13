@@ -184,7 +184,7 @@ const NewsSyndication: React.FC = () => {
       <section className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 text-white py-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">News Syndication</h1>
-          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-amber-400">
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary-400">
             Mining News Amplified
           </h2>
           <p className="text-lg mb-8 text-slate-300 max-w-3xl mx-auto">
@@ -247,7 +247,7 @@ const NewsSyndication: React.FC = () => {
       {/* Where Your Content Gets Featured */}
       <section className="py-12 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-3">Where Your Content Gets Featured</h2>
-        <p className="text-center text-amber-600 dark:text-amber-500 mb-8 text-sm">
+        <p className="text-center text-primary-600 dark:text-primary-500 mb-8 text-sm">
           Open-door channels tailored to different kinds of content and audiences
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">

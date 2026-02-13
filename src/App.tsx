@@ -278,7 +278,7 @@ export default function App(): JSX.Element {
         <EditorsPicks />
         <MagazineProfiles />
       </main>
-      <MorningDigest />
+   
       <Newsletter />
       <Footer />
     </div>
