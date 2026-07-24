@@ -109,22 +109,22 @@ const InvestorCampaigns: React.FC = () => {
   ]
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 text-white py-16">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Investor Campaigns</h1>
-          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary-400">
+      <section className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 text-white py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Investor Campaigns</h1>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 sm:mb-6 text-primary-400">
             Unlocking the Future of Mining Insights
           </h2>
-          <p className="text-lg mb-8 text-slate-300 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg mb-6 sm:mb-8 text-slate-300 max-w-3xl mx-auto">
             Fast, verified, investor-focused news and data built for the mining and metals sector. Turn growth to core watch.
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded font-semibold transition">
+          <div className="flex gap-3 sm:gap-4 justify-center flex-wrap">
+            <button className="bg-slate-900 hover:bg-slate-800 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded font-semibold transition text-sm sm:text-base">
               Download Our Deck
             </button>
-            <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded font-semibold transition">
+            <button className="bg-slate-900 hover:bg-slate-800 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded font-semibold transition text-sm sm:text-base">
               Schedule a Meeting
             </button>
           </div>

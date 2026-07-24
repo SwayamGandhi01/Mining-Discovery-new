@@ -2,11 +2,11 @@ import React from 'react'
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-slate-900 text-white py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-16">
-          <div className="col-span-2">
-            <h3 className="serif-title text-3xl font-bold mb-6">Laura's Liaisons <span className="text-primary italic"></span></h3>
+    <footer className="bg-slate-900 text-white py-12 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 sm:gap-10 mb-12">
+          <div className="col-span-1 sm:col-span-2">
+            <h3 className="serif-title text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Laura's Liaisons <span className="text-primary italic"></span></h3>
             <p className="text-slate-400 text-sm leading-relaxed mb-4">The leading independent news source for the global mining industry, delivering actionable intelligence and deep-dive analysis since 2008.</p>
             <div className="mb-6 text-sm text-slate-300">
               <span className="font-semibold text-primary">Email: </span>

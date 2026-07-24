@@ -288,11 +288,11 @@ export default function App(): JSX.Element {
   }
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <Header />
       <BreakingNews />
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mb-10 sm:mb-12">
           <LeftColumn onArticleClick={openArticle} />
           <HeroSection onArticleClick={openArticle} />
           <RightColumn onArticleClick={openArticle} />

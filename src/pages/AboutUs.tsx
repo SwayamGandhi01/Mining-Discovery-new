@@ -163,18 +163,18 @@ const AboutUs: React.FC = () => {
   ]
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
       {/* Hero Banner Section */}
-      <section className="relative bg-gradient-to-br from-[#0B132B] via-[#1C2541] to-[#0B132B] text-white py-20 overflow-hidden border-b border-slate-800">
+      <section className="relative bg-gradient-to-br from-[#0B132B] via-[#1C2541] to-[#0B132B] text-white py-12 sm:py-20 overflow-hidden border-b border-slate-800">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C59B27_1px,transparent_1px)] [background-size:16px_16px]" />
-        <div className="max-w-6xl mx-auto px-4 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#C59B27]/10 text-[#C59B27] border border-[#C59B27]/30 text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-wider">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 bg-[#C59B27]/10 text-[#C59B27] border border-[#C59B27]/30 text-xs font-bold px-4 py-1.5 rounded-full mb-5 sm:mb-6 uppercase tracking-wider">
             <Award className="w-4 h-4" /> Global Mining Media & Investor Relations
           </div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight mb-4 sm:mb-6 leading-tight">
             ABOUT <span className="text-[#C59B27]">LAURA'S LIAISONS</span>
           </h1>
-          <p className="text-base md:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
+          <p className="text-sm sm:text-base md:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
             Connecting mining companies, institutional investors, analysts, and industry professionals through unmatched relationships, rigorous communications, and strategic introductions.
           </p>
         </div>
@@ -218,7 +218,7 @@ const AboutUs: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg overflow-hidden mb-12 transition-all hover:shadow-xl">
             <div className="flex flex-col md:flex-row">
               {/* Left Column: Avatar & Tag Highlights */}
-              <div className="md:w-72 bg-gradient-to-b from-slate-900 to-[#1C2541] text-white flex flex-col items-center justify-start p-8 gap-4 flex-shrink-0 text-center relative">
+              <div className="w-full md:w-72 bg-gradient-to-b from-slate-900 to-[#1C2541] text-white flex flex-col items-center justify-start p-6 md:p-8 gap-4 flex-shrink-0 text-center relative">
                 <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#C59B27] to-amber-700 p-1 shadow-xl mt-2">
                   <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-3xl font-black text-[#C59B27]">
                     LS
@@ -254,7 +254,7 @@ const AboutUs: React.FC = () => {
               </div>
 
               {/* Right Column: Bio & Core Panels */}
-              <div className="flex-1 p-8 sm:p-10">
+              <div className="flex-1 p-5 sm:p-8 md:p-10">
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-normal">
                   Laura Stein is an investor relations, business development, and networking professional with more than <strong>30 years of experience</strong> in the mining industry. She is best known as the founder and President of Laura's Liaisons — a company focused on connecting mining companies, investors, analysts, and industry professionals through conferences, introductions, and strategic relationship building.
                 </p>
@@ -431,7 +431,8 @@ const AboutUs: React.FC = () => {
         </div>
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-md">
-          <div className="grid grid-cols-12 bg-slate-900 text-white text-xs uppercase tracking-wider font-extrabold px-6 py-4">
+          {/* Table header - hidden on mobile */}
+          <div className="hidden md:grid md:grid-cols-12 bg-slate-900 text-white text-xs uppercase tracking-wider font-extrabold px-6 py-4">
             <div className="col-span-5">Feature</div>
             <div className="col-span-7">Why It Matters</div>
           </div>
@@ -440,13 +441,13 @@ const AboutUs: React.FC = () => {
             {uniqueFeatures.map((item, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-12 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+                className="flex flex-col md:grid md:grid-cols-12 px-4 sm:px-6 py-4 md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors gap-2 md:gap-0"
               >
-                <div className="col-span-5 font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                <div className="md:col-span-5 font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#C59B27] flex-shrink-0" />
                   {item.feature}
                 </div>
-                <div className="col-span-7 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                <div className="md:col-span-7 text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-6 md:pl-0">
                   {item.benefit}
                 </div>
               </div>

@@ -65,16 +65,16 @@ const ContactUs: React.FC = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden">
       {/* Page Title */}
-      <div className="bg-slate-900 dark:bg-slate-950 text-white py-8">
+      <div className="bg-slate-900 dark:bg-slate-950 text-white py-8 sm:py-10">
         <div className="max-w-6xl mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center">Contact us</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-center">Contact us</h1>
         </div>
       </div>
 
       {/* Contact Section */}
-      <section className="py-12 max-w-6xl mx-auto px-4">
+      <section className="py-8 sm:py-12 max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Send Us a Message Form */}
           <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-lg p-8">

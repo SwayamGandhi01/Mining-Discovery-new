@@ -50,20 +50,20 @@ const Header: React.FC = () => {
   }, [])
   return (
     <header className="border-b border-primary/20 bg-white dark:bg-background-dark/50 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-1 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 flex items-center justify-between gap-2">
         {/* Logo - Left side */}
-        <div className="flex-shrink-0 md:w-64 flex items-center justify-start py-0">
+        <div className="flex-shrink-0 flex items-center justify-start py-1">
           <a href="#" className="hover:opacity-90 transition-opacity">
             <img 
               src="/Laura's Liaisons LLC.webp" 
               alt="Laura's Liaisons LLC" 
-              className="h-16 sm:h-20 md:h-24 lg:h-26 max-h-28 w-auto object-contain" 
+              className="h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 max-h-36 w-auto object-contain" 
             />
           </a>
         </div>
 
-        {/* Navigation - Centered in page */}
-        <nav className="hidden md:flex items-center space-x-8 text-sm font-bold flex-grow justify-center">
+        {/* Navigation - Centered, desktop only */}
+        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 text-sm font-bold flex-1 justify-center">
           {/* News Dropdown */}
           <div 
             className="relative group"
@@ -160,12 +160,14 @@ const Header: React.FC = () => {
           <a className="hover:text-primary transition-colors" href="#/contact-us">CONTACT US</a>
         </nav>
 
-        {/* Right side spacer for centering nav on desktop / Mobile menu button */}
-        <div className="flex-shrink-0 md:w-64 flex items-center justify-end">
-          <button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="md:hidden p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex-shrink-0">
+        {/* Mobile menu button - always on right side on mobile */}
+        <div className="flex-shrink-0 flex items-center justify-end md:hidden">
+          <button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
             <span className="material-icons">{mobileOpen ? 'close' : 'menu'}</span>
           </button>
         </div>
+        {/* Desktop spacer to help center nav */}
+        <div className="hidden md:block flex-shrink-0 w-32 lg:w-48" />
       </div>
 
       {mobileOpen && (
