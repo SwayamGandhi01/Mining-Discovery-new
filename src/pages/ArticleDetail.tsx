@@ -153,14 +153,14 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ documentId, onBack }) => 
 
             {/* Author Info */}
             <div className="flex items-center gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-bold text-white">
-                  {(article.author || "M").charAt(0).toUpperCase()}
+              <div className="w-12 h-12 bg-gradient-to-br from-[#C59B27] to-amber-700 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                <span className="text-sm font-extrabold text-white">
+                  L
                 </span>
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-slate-900 dark:text-slate-100">
-                  {article.author || "Laura's Liaisons"}
+                <p className="font-bold text-slate-900 dark:text-slate-100">
+                  Laura's Liaisons
                 </p>
                 <p className="text-sm text-slate-500">
                   {article.publishedAt

@@ -92,8 +92,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
           )}
 
           <div className="mt-6 flex items-center justify-center space-x-4 text-xs font-bold text-slate-400">
-            <span>{news.author}</span>
-            <span className="w-1 h-1 bg-primary rounded-full" />
             <span>
               {news.publishedAt
                 ? new Date(news.publishedAt).toLocaleDateString()

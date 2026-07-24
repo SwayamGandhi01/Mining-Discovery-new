@@ -57,7 +57,7 @@ const Header: React.FC = () => {
             <img 
               src="/Laura's Liaisons LLC.webp" 
               alt="Laura's Liaisons LLC" 
-              className="h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 max-h-36 w-auto object-contain" 
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all" 
             />
           </a>
         </div>

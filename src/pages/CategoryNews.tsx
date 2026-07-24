@@ -273,12 +273,6 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                       day: 'numeric',
                     })}
                   </span>
-                  {articles[0].author && (
-                    <>
-                      <span>•</span>
-                      <span>{articles[0].author}</span>
-                    </>
-                  )}
                 </div>
               </article>
             </div>
@@ -387,7 +381,6 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                             day: 'numeric',
                           })}
                         </span>
-                        {article.author && <span className="font-semibold">{article.author}</span>}
                       </div>
                     </div>
                   </article>
