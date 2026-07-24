@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileText } from 'lucide-react'
+import { cachedFetch } from '../utils/cachedFetch'
 
 const navigate = (path: string) => {
   window.history.pushState(null, '', path)
@@ -46,15 +47,15 @@ export default function OurArticles(): JSX.Element {
     let mounted = true
     setLoading(true)
 
-    fetch(API_URL)
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch articles')
-        return res.json()
-      })
+    cachedFetch(API_URL, {
+      onUpdate: (fresh: any) => {
+        if (!mounted) return
+        setArticles(fresh?.data || [])
+      },
+    })
       .then((data) => {
         if (!mounted) return
-        const list = data?.data || []
-        setArticles(list)
+        setArticles(data?.data || [])
         setLoading(false)
       })
       .catch((err) => {

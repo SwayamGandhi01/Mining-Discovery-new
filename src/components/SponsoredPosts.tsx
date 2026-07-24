@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { cachedFetch } from '../utils/cachedFetch'
 
 interface NewsArticle {
   id?: number
@@ -62,25 +63,29 @@ export default function SponsoredPosts({ onArticleClick }: SponsoredPostsProps):
           'https://admins.miningdiscovery.com/api/news-sections' +
           '?filters[news_categories][slug][$eq]=sponsored-post&sort=publishedAt:desc&pagination[limit]=6&populate=*'
 
-        const data = await fetchWithRetry(url)
+        const mapPosts = (data: any): NewsArticle[] => {
+          const posts = (data?.data || []).filter((post: any) => post && post.title)
+          return posts.map((item: any) => ({
+            id: item.id,
+            documentId: item.documentId,
+            title: item.title,
+            short_description: item.short_description,
+            description: item.description,
+            publishedAt: item.publishedAt,
+            image: item.image,
+          }))
+        }
+
+        const data = await cachedFetch(url, {
+          onUpdate: (fresh: any) => {
+            if (!mounted) return
+            setPosts(mapPosts(fresh))
+          },
+        })
 
         if (!mounted) return
 
-        // Get posts - already sorted by publishedAt
-        const posts = (data?.data || [])
-          .filter((post: any) => post && post.title) // Filter out empty/invalid posts
-
-        const mappedPosts: NewsArticle[] = posts.map((item: any) => ({
-          id: item.id,
-          documentId: item.documentId,
-          title: item.title,
-          short_description: item.short_description,
-          description: item.description,
-          publishedAt: item.publishedAt,
-          image: item.image,
-        }))
-
-        setPosts(mappedPosts)
+        setPosts(mapPosts(data))
         setError(null)
       } catch (e) {
         console.error('Error loading sponsored posts:', e)

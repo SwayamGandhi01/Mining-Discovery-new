@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
+import { cachedFetch } from "../utils/cachedFetch";
 
 interface CEOImage {
   url: string;
@@ -17,27 +18,27 @@ interface CEOPdf {
   url: string;
 }
 
-interface CoverImage {
-  id: number;
-  name: string;
-  url: string;
-  formats?: {
-    large?: { url: string };
-    medium?: { url: string };
-    small?: { url: string };
-  };
-}
-
 interface CEOProfile {
   id: number;
   documentId: string;
   name: string;
   designation: string;
   shortDescription: string;
-  ceo_image?: CEOImage;
+  ceo_image?: CEOImage | null;
   ceo_pdf?: CEOPdf[];
-  cover_image?: CoverImage[];
 }
+
+const CEO_URL = "https://admins.miningdiscovery.com/api/ceo-profiles?populate=*&pagination[limit]=100&sort=publishedAt:desc";
+
+const mapProfile = (item: any): CEOProfile => ({
+  id: item.id,
+  documentId: item.documentId,
+  name: item.name || "Unknown",
+  designation: item.designation || "Executive",
+  shortDescription: item.shortDescription || item.short_description || item.description || "",
+  ceo_image: item.ceo_image || (item.image ? { url: item.image?.formats?.medium?.url || item.image?.url } : null),
+  ceo_pdf: item.ceo_pdf || (item.pdf?.url ? [{ id: 1, name: item.name || "PDF", url: item.pdf.url }] : []),
+});
 
 const CEOProfiles: React.FC = () => {
   const [profiles, setProfiles] = useState<CEOProfile[]>([]);
@@ -49,25 +50,14 @@ const CEOProfiles: React.FC = () => {
   useEffect(() => {
     const fetchCEOProfiles = async () => {
       try {
-        const res = await fetch(
-          "https://admins.miningdiscovery.com/api/ceo-profiles?populate=*&pagination[limit]=100&sort=publishedAt:desc"
-        );
+        const data = await cachedFetch(CEO_URL, {
+          onUpdate: (fresh: any) => {
+            const formattedProfiles = (fresh.data || []).map(mapProfile);
+            setProfiles(formattedProfiles);
+          },
+        });
 
-        if (!res.ok) {
-          throw new Error(`Failed to fetch CEO profiles: ${res.status}`);
-        }
-
-        const data = await res.json();
-        const formattedProfiles = (data.data || []).map((item: any) => ({
-          id: item.id,
-          documentId: item.documentId,
-          name: item.name || "Unknown",
-          designation: item.designation || "Executive",
-          shortDescription: item.shortDescription || "",
-          ceo_image: item.ceo_image || null,
-          ceo_pdf: item.ceo_pdf || [],
-          cover_image: item.cover_image || [],
-        }));
+        const formattedProfiles = (data.data || []).map(mapProfile);
         setProfiles(formattedProfiles);
       } catch (err) {
         console.error("Error fetching CEO profiles:", err);

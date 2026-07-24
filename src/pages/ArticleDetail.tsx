@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { ArrowLeft, Clock, Calendar, User, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
+import { cachedFetch } from "../utils/cachedFetch";
+
+interface ArticleDetailProps {
+  documentId: string;
+  onBack?: () => void;
+}
 
 interface Article {
   id: number;
@@ -12,50 +19,44 @@ interface Article {
   slug?: string;
 }
 
-interface ArticleDetailProps {
-  documentId: string;
-  onBack: () => void;
-}
+const mapArticleItem = (item: any): Article => ({
+  id: item.id,
+  documentId: item.documentId,
+  title: item.title,
+  shortDescription: item.short_description,
+  description: item.description,
+  image: item.image?.formats?.large?.url || item.image?.url || "",
+  author: item.author,
+  publishedAt: item.publish_on || item.publishedAt,
+  slug: item.slug,
+});
 
-const ArticleDetail: React.FC<ArticleDetailProps> = ({ documentId, onBack }) => {
+export default function ArticleDetail({
+  documentId,
+  onBack,
+}: ArticleDetailProps): JSX.Element {
   const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const res = await fetch(
-          `https://admins.miningdiscovery.com/api/news-sections/${documentId}?populate=*`
-        );
+        const url = `https://admins.miningdiscovery.com/api/news-sections/${documentId}?populate=*`;
+        const data = await cachedFetch(url, {
+          onUpdate: (fresh: any) => {
+            const item = fresh?.data;
+            if (item) setArticle(mapArticleItem(item));
+          },
+        });
 
-        if (!res.ok) {
-          console.error(`Error: ${res.status} - Article not found`);
-          setArticle(null);
-          return;
-        }
-
-        const data = await res.json();
-        const item = data.data;
-
+        const item = data?.data;
         if (!item) {
           setArticle(null);
           return;
         }
 
-        setArticle({
-          id: item.id,
-          documentId: item.documentId,
-          title: item.title,
-          shortDescription: item.short_description,
-          description: item.description,
-          image:
-            item.image?.formats?.large?.url || item.image?.url || "",
-          author: item.author,
-          publishedAt: item.publish_on || item.publishedAt,
-          slug: item.slug,
-        });
-
+        setArticle(mapArticleItem(item));
         fetchRelatedArticles();
       } catch (error) {
         console.error("Error fetching article:", error);
@@ -67,11 +68,24 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ documentId, onBack }) => 
 
     const fetchRelatedArticles = async () => {
       try {
-        const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=15&populate=image"
-        );
-        const data = await res.json();
-        const articles = (data.data || [])
+        const url = "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=15&populate=image";
+        const data = await cachedFetch(url, {
+          onUpdate: (fresh: any) => {
+            const articles = (fresh?.data || [])
+              .filter((item: any) => item.documentId !== documentId)
+              .slice(0, 15)
+              .map((item: any) => ({
+                id: item.id,
+                documentId: item.documentId,
+                title: item.title,
+                image: item.image?.formats?.medium?.url || item.image?.url || "",
+                slug: item.slug,
+              }));
+            setRelatedArticles(articles);
+          },
+        });
+
+        const articles = (data?.data || [])
           .filter((item: any) => item.documentId !== documentId)
           .slice(0, 15)
           .map((item: any) => ({
@@ -312,5 +326,3 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ documentId, onBack }) => 
     </div>
   );
 };
-
-export default ArticleDetail;

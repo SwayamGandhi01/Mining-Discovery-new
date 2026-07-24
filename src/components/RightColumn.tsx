@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cachedFetch } from "../utils/cachedFetch";
 
 interface NewsItem {
   id: number;
@@ -11,6 +12,8 @@ interface RightColumnProps {
   onArticleClick?: (documentId: string) => void;
 }
 
+const TRENDING_URL = "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=8";
+
 const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,13 +21,16 @@ const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
-        const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=8"
-        );
+        const data = await cachedFetch(TRENDING_URL, {
+          onUpdate: (fresh: any) => {
+            const formattedNews = (fresh.data || []).map((item: any) => ({
+              id: item.id, documentId: item.documentId, title: item.title, slug: item.slug,
+            }));
+            setNews(formattedNews);
+          },
+        });
 
-        const data = await res.json();
-
-        const formattedNews = data.data.map((item: any) => ({
+        const formattedNews = (data.data || []).map((item: any) => ({
           id: item.id,
           documentId: item.documentId,
           title: item.title,

@@ -1,4 +1,21 @@
 import React, { useEffect, useState } from 'react'
+import { Download, ExternalLink, Building2 } from 'lucide-react'
+import { cachedFetch } from '../utils/cachedFetch'
+
+interface PdfFile {
+  id: number
+  name: string
+  url: string
+}
+
+interface CoverImage {
+  id: number
+  url: string
+  formats?: {
+    small?: { url: string }
+    medium?: { url: string }
+  }
+}
 
 interface CompanyProfile {
   id: number
@@ -7,20 +24,22 @@ interface CompanyProfile {
   shortDescription: string
   createdAt: string
   publishedAt: string
-  companyPdf?: Array<{
-    id: number
-    url: string
-    name: string
-  }>
-  cover_image?: Array<{
-    id: number
-    url: string
-    formats?: {
-      small?: { url: string }
-      medium?: { url: string }
-    }
-  }>
+  companyPdf: PdfFile[]
+  cover_image: CoverImage[]
 }
+
+const COMPANY_PROFILES_URL = 'https://admins.miningdiscovery.com/api/company-profiles?populate=*'
+
+const mapCompanyItem = (item: any): CompanyProfile => ({
+  id: item.id,
+  documentId: item.documentId,
+  title: item.title,
+  shortDescription: item.shortDescription,
+  createdAt: item.createdAt,
+  publishedAt: item.publishedAt,
+  companyPdf: item.companyPdf || [],
+  cover_image: item.cover_image || [],
+})
 
 export default function CompanyProfiles(): JSX.Element {
   const [profiles, setProfiles] = useState<CompanyProfile[]>([])
@@ -33,28 +52,21 @@ export default function CompanyProfiles(): JSX.Element {
     async function loadProfiles() {
       try {
         setLoading(true)
-        const res = await fetch('https://admins.miningdiscovery.com/api/company-profiles?populate=*')
-        if (!res.ok) throw new Error('Failed to fetch company profiles')
-        const json = await res.json()
+        const json = await cachedFetch(COMPANY_PROFILES_URL, {
+          onUpdate: (fresh: any) => {
+            if (!mounted) return
+            setProfiles((fresh?.data || []).map(mapCompanyItem))
+          },
+        })
         if (!mounted) return
 
-        const data: CompanyProfile[] = (json?.data || []).map((item: any) => ({
-          id: item.id,
-          documentId: item.documentId,
-          title: item.title,
-          shortDescription: item.shortDescription,
-          createdAt: item.createdAt,
-          publishedAt: item.publishedAt,
-          companyPdf: item.companyPdf || [],
-          cover_image: item.cover_image || [],
-        }))
-
-        setProfiles(data)
+        setProfiles((json?.data || []).map(mapCompanyItem))
         setError(null)
       } catch (e) {
+        if (!mounted) return
         setError(e instanceof Error ? e.message : 'Error loading profiles')
       } finally {
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 

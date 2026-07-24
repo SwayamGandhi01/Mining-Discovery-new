@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cachedFetch } from "../utils/cachedFetch";
 
 export default function BreakingNews(): JSX.Element {
   const [headlines, setHeadlines] = useState<string[]>([]);
@@ -6,11 +7,14 @@ export default function BreakingNews(): JSX.Element {
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
-        const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=8"
+        const data = await cachedFetch(
+          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=8",
+          { onUpdate: (fresh: any) => {
+              const titles = (fresh.data || []).map((item: any) => item.title).filter(Boolean);
+              if (titles.length > 0) setHeadlines(titles);
+            }
+          }
         );
-
-        const data = await res.json();
 
         if (!data.data || data.data.length === 0) return;
 
@@ -23,6 +27,7 @@ export default function BreakingNews(): JSX.Element {
 
     fetchBreakingNews();
   }, []);
+
 
   return (
     <div className="w-full bg-[#DCE4F6] border-y border-slate-300/80 text-slate-800 flex items-center overflow-hidden h-9">

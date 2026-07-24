@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cachedFetch } from "../utils/cachedFetch";
 
 interface HeroNews {
   id: number;
@@ -14,6 +15,18 @@ interface HeroSectionProps {
   onArticleClick?: (documentId: string) => void;
 }
 
+const mapHeroItem = (item: any): HeroNews => ({
+  id: item.id,
+  documentId: item.documentId,
+  title: item.title,
+  shortDescription: item.short_description,
+  image: item.image?.formats?.large?.url || item.image?.url || "",
+  author: item.author,
+  publishedAt: item.publish_on || item.publishedAt,
+});
+
+const HERO_URL = "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=1&populate=*";
+
 const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
   const [news, setNews] = useState<HeroNews | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,27 +34,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
-        const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=1&populate=*"
-        );
-
-        const data = await res.json();
-        const item = data.data[0];
-
-        if (!item) return;
-
-        setNews({
-          id: item.id,
-          documentId: item.documentId,
-          title: item.title,
-          shortDescription: item.short_description,
-          image:
-            item.image?.formats?.large?.url ||
-            item.image?.url ||
-            "",
-          author: item.author,
-          publishedAt: item.publish_on || item.publishedAt,
+        const data = await cachedFetch(HERO_URL, {
+          onUpdate: (fresh: any) => {
+            const item = fresh.data?.[0];
+            if (item) setNews(mapHeroItem(item));
+          },
         });
+
+        const item = data.data?.[0];
+        if (item) setNews(mapHeroItem(item));
       } catch (error) {
         console.error("Error fetching hero news:", error);
       } finally {

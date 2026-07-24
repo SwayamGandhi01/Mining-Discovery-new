@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Download } from "lucide-react";
+import { cachedFetch } from "../utils/cachedFetch";
 
 type SectionItem = any;
 
@@ -24,11 +25,12 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   const fetchPosts = async (slug: string) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=2&populate=*`
-      );
-
-      const json = await res.json();
+      const url = `https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=2&populate=*`;
+      const json = await cachedFetch(url, {
+        onUpdate: (fresh: any) => {
+          setPosts(fresh?.data || []);
+        },
+      });
       setPosts(json?.data || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -44,10 +46,20 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   useEffect(() => {
     async function fetchMagazine() {
       try {
-        const res = await fetch(
-          "https://admins.miningdiscovery.com/api/magazines?populate=*"
-        );
-        const json = await res.json();
+        const url = "https://admins.miningdiscovery.com/api/magazines?populate=*";
+        const json = await cachedFetch(url, {
+          onUpdate: (fresh: any) => {
+            const mags = fresh?.data || [];
+            if (mags.length) {
+              const sorted = mags.sort(
+                (a: any, b: any) =>
+                  new Date(b.publishedAt).getTime() -
+                  new Date(a.publishedAt).getTime()
+              );
+              setLatestMag(sorted[0]);
+            }
+          },
+        });
         const mags = json?.data || [];
 
         if (mags.length) {

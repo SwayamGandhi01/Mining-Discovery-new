@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { cachedFetch } from '../utils/cachedFetch'
 
 interface Pick {
   id: number
@@ -16,6 +17,8 @@ interface Pick {
   publishedAt?: string
 }
 
+const EDITORS_PICKS_URL = 'https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=announcement&sort=publishedAt:desc&populate=*'
+
 export default function EditorsPicks(): JSX.Element {
   const [picks, setPicks] = useState<Pick[]>([])
   const [loading, setLoading] = useState(true)
@@ -25,18 +28,14 @@ export default function EditorsPicks(): JSX.Element {
     const fetchPicks = async () => {
       try {
         setLoading(true)
-        const response = await fetch(
-          'https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=announcement&sort=publishedAt:desc&populate=*'
-        )
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`)
-        }
+        const data = await cachedFetch(EDITORS_PICKS_URL, {
+          onUpdate: (fresh: any) => {
+            const latestPicks = (fresh.data || []).slice(0, 3)
+            setPicks(latestPicks)
+          },
+        })
 
-        const data = await response.json()
-        
-        // Get the latest 3 announcements
-        const latestPicks = data.data.slice(0, 3)
+        const latestPicks = (data.data || []).slice(0, 3)
         setPicks(latestPicks)
         setError(null)
       } catch (err) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cachedFetch } from "../utils/cachedFetch";
 
 interface NewsItem {
   id: number;
@@ -22,13 +23,18 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
   useEffect(() => {
     const fetchCategoryNews = async (slug: string, setter: any) => {
       try {
-        const res = await fetch(
-          `${BASE_URL}/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=1&populate=*`
-        );
+        const url = `${BASE_URL}/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=1&populate=*`;
+        const data = await cachedFetch(url, {
+          onUpdate: (fresh: any) => {
+            const item = fresh.data?.[0];
+            if (item) setter({
+              id: item.id, documentId: item.documentId, title: item.title,
+              shortDescription: item.short_description, slug: item.slug,
+            });
+          },
+        });
 
-        const data = await res.json();
-        const item = data.data[0];
-
+        const item = data.data?.[0];
         if (!item) return;
 
         setter({

@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import Header from './components/Header'
 import LeftColumn from './components/LeftColumn'
 import HeroSection from './components/HeroSection'
 import RightColumn from './components/RightColumn'
 import NewsGrid from './components/NewsGrid'
 import RegionalIntelligence from './components/RegionalIntelligence'
-import MultimediaHighlights from './components/MultimediaHighlights'
 import EditorsPicks from './components/EditorsPicks'
-import MagazineProfiles from './components/MagazineProfiles'
-import MorningDigest from './components/MorningDigest'
 import Newsletter from './components/Newsletter'
 import Footer from './components/Footer'
 import BreakingNews from './components/BreakingNews'
-import Magazines from './pages/Magazines'
-import ArticleDetail from './pages/ArticleDetail'
-import CEOProfiles from './pages/CEOProfiles'
-import CompanyProfiles from './pages/CompanyProfiles'
-import CategoryNews from './pages/CategoryNews'
-import Services from './pages/Services'
-import InvestorCampaigns from './pages/InvestorCampaigns'
-import NewsSyndication from './pages/NewsSyndication'
-import DigitalBranding from './pages/DigitalBranding'
-import PressOffice from './pages/PressOffice'
-import ConferenceMediaCoverage from './pages/ConferenceMediaCoverage'
-import NewsletterEmailBlast from './pages/NewsletterEmailBlast'
-import AboutUs from './pages/AboutUs'
-import ContactUs from './pages/ContactUs'
-import OurArticles from './pages/OurArticles'
 import TrustedBrands from './components/TrustedBrands'
+
+// Lazy-loaded page components for optimal bundle splitting
+const Magazines = lazy(() => import('./pages/Magazines'))
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'))
+const CEOProfiles = lazy(() => import('./pages/CEOProfiles'))
+const CompanyProfiles = lazy(() => import('./pages/CompanyProfiles'))
+const CategoryNews = lazy(() => import('./pages/CategoryNews'))
+const Services = lazy(() => import('./pages/Services'))
+const InvestorCampaigns = lazy(() => import('./pages/InvestorCampaigns'))
+const NewsSyndication = lazy(() => import('./pages/NewsSyndication'))
+const DigitalBranding = lazy(() => import('./pages/DigitalBranding'))
+const PressOffice = lazy(() => import('./pages/PressOffice'))
+const ConferenceMediaCoverage = lazy(() => import('./pages/ConferenceMediaCoverage'))
+const NewsletterEmailBlast = lazy(() => import('./pages/NewsletterEmailBlast'))
+const AboutUs = lazy(() => import('./pages/AboutUs'))
+const ContactUs = lazy(() => import('./pages/ContactUs'))
+const OurArticles = lazy(() => import('./pages/OurArticles'))
+
+const PageFallback = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+)
 
 // Placeholder components for magazine dropdown pages
 
@@ -82,29 +87,22 @@ export default function App(): JSX.Element {
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
+  const renderPage = (Component: React.ComponentType<any>, props = {}) => (
+    <div>
+      <Header />
+      <BreakingNews />
+      <Suspense fallback={<PageFallback />}>
+        <Component {...props} />
+      </Suspense>
+      <Footer />
+    </div>
+  )
+
   // Article detail page
-  if (documentId) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <ArticleDetail documentId={documentId} onBack={closeArticle} />
-        <Footer />
-      </div>
-    )
-  }
+  if (documentId) return renderPage(ArticleDetail, { documentId, onBack: closeArticle })
 
   // Category news page
-  if (categorySlug) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <CategoryNews categorySlug={categorySlug} />
-        <Footer />
-      </div>
-    )
-  }
+  if (categorySlug) return renderPage(CategoryNews, { categorySlug })
 
   const isMagPage = route === '/magazines'
   const isOurArticlesPage = route === '/our-articles'
@@ -121,171 +119,20 @@ export default function App(): JSX.Element {
   const isAboutUsPage = route === '/about-us'
   const isContactUsPage = route === '/contact-us'
 
-
-  if (isOurArticlesPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <OurArticles />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isMagPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <Magazines />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isCEOProfile) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <CEOProfiles />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isNewsletterPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <NewsletterPage />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isCompanyProfile) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <CompanyProfiles />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isServicesPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <Services />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isInvestorCampaignsPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <InvestorCampaigns />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isNewsSyndicationPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <NewsSyndication />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isDigitalBrandingPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <DigitalBranding />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isPressOfficePage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <PressOffice />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isConferenceMediaPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <ConferenceMediaCoverage />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isNewsletterEmailBlastPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <NewsletterEmailBlast />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isAboutUsPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <AboutUs />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isContactUsPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <ContactUs />
-        <Footer />
-      </div>
-    )
-  }
-
-  if (isMagPage) {
-    return (
-      <div>
-        <Header />
-        <BreakingNews />
-        <Magazines />
-        <Footer />
-      </div>
-    )
-  }
+  if (isOurArticlesPage) return renderPage(OurArticles)
+  if (isMagPage) return renderPage(Magazines)
+  if (isCEOProfile) return renderPage(CEOProfiles)
+  if (isNewsletterPage) return renderPage(NewsletterPage)
+  if (isCompanyProfile) return renderPage(CompanyProfiles)
+  if (isServicesPage) return renderPage(Services)
+  if (isInvestorCampaignsPage) return renderPage(InvestorCampaigns)
+  if (isNewsSyndicationPage) return renderPage(NewsSyndication)
+  if (isDigitalBrandingPage) return renderPage(DigitalBranding)
+  if (isPressOfficePage) return renderPage(PressOffice)
+  if (isConferenceMediaPage) return renderPage(ConferenceMediaCoverage)
+  if (isNewsletterEmailBlastPage) return renderPage(NewsletterEmailBlast)
+  if (isAboutUsPage) return renderPage(AboutUs)
+  if (isContactUsPage) return renderPage(ContactUs)
 
   return (
     <div className="overflow-x-hidden">

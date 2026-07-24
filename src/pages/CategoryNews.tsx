@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Clock, Calendar, ArrowRight, FileText, TrendingUp, ChevronLeft, Tag } from 'lucide-react'
+import { cachedFetch } from '../utils/cachedFetch'
 
 interface NewsArticle {
   id: number
@@ -90,11 +91,8 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           `https://admins.miningdiscovery.com/api/news-sections` +
           `?filters[news_categories][slug][$eq]=${encodeURIComponent(slug)}&sort=publishedAt:desc&populate=*`
 
-        const res = await fetch(url)
-        if (!res.ok) throw new Error(`Failed to fetch articles: ${res.status}`)
-        const data = await res.json()
-
-        if (mounted) {
+        const processData = (data: any) => {
+          if (!mounted) return
           const mapped: NewsArticle[] = (data?.data || []).map((item: any) => {
             let pdfUrl: string | undefined
             if (item.pdf) {
@@ -127,6 +125,12 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
             )
           }
         }
+
+        const data = await cachedFetch(url, {
+          onUpdate: (fresh: any) => processData(fresh),
+        })
+
+        processData(data)
       } catch (e) {
         if (mounted) setError(e instanceof Error ? e.message : 'Error loading articles')
       } finally {

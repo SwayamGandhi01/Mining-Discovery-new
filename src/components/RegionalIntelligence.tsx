@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { cachedFetch } from '../utils/cachedFetch'
 
 interface AdvertisementItem {
   id: number
@@ -28,6 +29,7 @@ interface AdvertisementItem {
 }
 
 const BASE_URL = 'https://admins.miningdiscovery.com'
+const ADS_URL = 'https://admins.miningdiscovery.com/api/advertisements?populate=*'
 
 export default function RegionalIntelligence(): JSX.Element {
   const [ads, setAds] = useState<AdvertisementItem[]>([])
@@ -40,15 +42,15 @@ export default function RegionalIntelligence(): JSX.Element {
     let mounted = true
     setLoading(true)
 
-    fetch('https://admins.miningdiscovery.com/api/advertisements?populate=*')
-      .then((r) => {
-        if (!r.ok) throw new Error('Failed to fetch advertisements')
-        return r.json()
-      })
+    cachedFetch(ADS_URL, {
+      onUpdate: (fresh: any) => {
+        if (!mounted) return
+        setAds(fresh?.data || [])
+      },
+    })
       .then((data) => {
         if (!mounted) return
-        const rawAds: AdvertisementItem[] = data?.data || []
-        setAds(rawAds)
+        setAds(data?.data || [])
         setLoading(false)
       })
       .catch((e) => {
