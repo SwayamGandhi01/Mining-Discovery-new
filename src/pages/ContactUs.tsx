@@ -268,33 +268,6 @@ const ContactUs: React.FC = () => {
               </div>
             </div>
 
-            {/* Connect Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-              <h3 className="font-bold text-lg mb-2">Connect with Laura Stein</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-5">Follow Laura's work in mining media and investor relations.</p>
-              <div className="flex flex-col gap-3">
-                <a
-                  href="https://www.linkedin.com/in/laura-stein-b4867313"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-[#0A66C2]/10 hover:bg-[#0A66C2]/20 border border-[#0A66C2]/30 text-[#0A66C2] dark:text-blue-400 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group"
-                >
-                  <Linkedin className="w-4 h-4" />
-                  LinkedIn Profile
-                  <span className="ml-auto text-xs opacity-60 group-hover:opacity-100">→</span>
-                </a>
-                <a
-                  href="https://www.youtube.com/watch?v=KzyysYdoLzI"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-[#FF0000]/10 hover:bg-[#FF0000]/20 border border-[#FF0000]/30 text-[#FF0000] dark:text-red-400 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group"
-                >
-                  <Youtube className="w-4 h-4" />
-                  YouTube Feature
-                  <span className="ml-auto text-xs opacity-60 group-hover:opacity-100">→</span>
-                </a>
-              </div>
-            </div>
 
 
           </div>

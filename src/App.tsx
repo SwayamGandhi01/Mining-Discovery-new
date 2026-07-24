@@ -41,46 +41,45 @@ const NewsletterPage = () => (
 
 
 export default function App(): JSX.Element {
-  const [route, setRoute] = useState<string>(window.location.hash || '')
+  const [route, setRoute] = useState<string>(window.location.pathname || '/')
   const [documentId, setDocumentId] = useState<string | null>(null)
   const [categorySlug, setCategorySlug] = useState<string | null>(null)
 
   useEffect(() => {
-    const onHash = () => {
-      const hash = window.location.hash || ''
-      setRoute(hash)
-      console.log('Hash changed:', hash)
+    const onRoute = () => {
+      const path = window.location.pathname || '/'
+      setRoute(path)
 
-      // Parse documentId from hash like #/article/sx6gn6ckwbiljfpq226eqzbz
-      const articleMatch = hash.match(/#\/article\/(.+)$/)
+      // Parse documentId from path like /article/sx6gn6ckwbiljfpq226eqzbz
+      const articleMatch = path.match(/^\/article\/(.+)$/)
       if (articleMatch) {
-        console.log('Detected article:', articleMatch[1])
         setDocumentId(articleMatch[1])
         setCategorySlug(null)
       } else {
         setDocumentId(null)
       }
 
-      // Parse category slug from hash like #/news/evening-chatter
-      const categoryMatch = hash.match(/#\/news\/([^/]+)$/)
+      // Parse category slug from path like /news/evening-chatter
+      const categoryMatch = path.match(/^\/news\/([^/]+)$/)
       if (categoryMatch) {
-        console.log('Detected category:', categoryMatch[1])
         setCategorySlug(categoryMatch[1])
       } else {
         setCategorySlug(null)
       }
     }
-    onHash()
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
+    onRoute()
+    window.addEventListener('popstate', onRoute)
+    return () => window.removeEventListener('popstate', onRoute)
   }, [])
 
   const openArticle = (docId: string) => {
-    window.location.hash = `#/article/${docId}`
+    window.history.pushState(null, '', `/article/${docId}`)
+    window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
   const closeArticle = () => {
-    window.location.hash = '#'
+    window.history.pushState(null, '', '/')
+    window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
   // Article detail page
@@ -107,20 +106,20 @@ export default function App(): JSX.Element {
     )
   }
 
-  const isMagPage = route === '#/magazines' || window.location.pathname === '/magazines'
-  const isOurArticlesPage = route === '#/our-articles'
-  const isCEOProfile = route === '#/ceo-profile'
-  const isNewsletterPage = route === '#/newsletter-page'
-  const isCompanyProfile = route === '#/company-profile'
-  const isServicesPage = route === '#/services'
-  const isInvestorCampaignsPage = route === '#/investor-campaigns'
-  const isNewsSyndicationPage = route === '#/news-syndication'
-  const isDigitalBrandingPage = route === '#/digital-branding'
-  const isPressOfficePage = route === '#/press-office'
-  const isConferenceMediaPage = route === '#/conference-media'
-  const isNewsletterEmailBlastPage = route === '#/newsletter-email-blast'
-  const isAboutUsPage = route === '#/about-us'
-  const isContactUsPage = route === '#/contact-us'
+  const isMagPage = route === '/magazines'
+  const isOurArticlesPage = route === '/our-articles'
+  const isCEOProfile = route === '/ceo-profile'
+  const isNewsletterPage = route === '/newsletter-page'
+  const isCompanyProfile = route === '/company-profile'
+  const isServicesPage = route === '/services'
+  const isInvestorCampaignsPage = route === '/investor-campaigns'
+  const isNewsSyndicationPage = route === '/news-syndication'
+  const isDigitalBrandingPage = route === '/digital-branding'
+  const isPressOfficePage = route === '/press-office'
+  const isConferenceMediaPage = route === '/conference-media'
+  const isNewsletterEmailBlastPage = route === '/newsletter-email-blast'
+  const isAboutUsPage = route === '/about-us'
+  const isContactUsPage = route === '/contact-us'
 
 
   if (isOurArticlesPage) {

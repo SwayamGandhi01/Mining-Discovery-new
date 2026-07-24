@@ -7,6 +7,12 @@ interface NewsCategory {
   slug: string
 }
 
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo(0, 0)
+}
+
 const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [magazineDropdownOpen, setMagazineDropdownOpen] = useState(false)
@@ -15,20 +21,19 @@ const Header: React.FC = () => {
   const [categories, setCategories] = useState<NewsCategory[]>([])
 
   const servicesMenuItems = [
-    { label: 'Investor Campaign', href: '#/investor-campaigns' },
-    { label: 'YouTube', href: 'https://www.youtube.com/@miningdiscovery?si=t0TMA3H1QN-Jgu0j' },
-    { label: 'News Syndication', href: '#/news-syndication' },
-    { label: 'Conference Media Coverage', href: '#/conference-media' },
-    { label: 'Digital Branding', href: '#/digital-branding' },
-    { label: 'Newsletter & Email Blast', href: '#/newsletter-email-blast' },
-    { label: 'Press Office', href: '#/press-office' },
+    { label: 'Investor Campaign', href: '/investor-campaigns' },
+    { label: 'News Syndication', href: '/news-syndication' },
+    { label: 'Conference Media Coverage', href: '/conference-media' },
+    { label: 'Digital Branding', href: '/digital-branding' },
+    { label: 'Newsletter & Email Blast', href: '/newsletter-email-blast' },
+    { label: 'Press Office', href: '/press-office' },
   ]
 
   const magazineMenuItems = [
-    { label: 'Magazine', href: '#/magazines' },
-    { label: 'Articles', href: '#/our-articles' },
-    { label: 'Newsletter', href: '#/newsletter-page' },
-    { label: 'Company Profile', href: '#/company-profile' },
+    { label: 'Magazine', href: '/magazines' },
+    { label: 'Articles', href: '/our-articles' },
+    { label: 'Newsletter', href: '/newsletter-page' },
+    { label: 'Company Profile', href: '/company-profile' },
   ]
 
   useEffect(() => {
@@ -53,11 +58,15 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 flex items-center justify-between gap-2">
         {/* Logo - Left side */}
         <div className="flex-shrink-0 flex items-center justify-start py-1">
-          <a href="#" className="hover:opacity-90 transition-opacity">
-            <img 
-              src="/Laura's Liaisons LLC.webp" 
-              alt="Laura's Liaisons LLC" 
-              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all" 
+          <a
+            href="/"
+            onClick={(e) => { e.preventDefault(); navigate('/') }}
+            className="hover:opacity-90 transition-opacity"
+          >
+            <img
+              src="/Laura's Liaisons LLC.webp"
+              alt="Laura's Liaisons LLC"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all"
             />
           </a>
         </div>
@@ -65,7 +74,7 @@ const Header: React.FC = () => {
         {/* Navigation - Centered, desktop only */}
         <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 text-sm font-bold flex-1 justify-center">
           {/* News Dropdown */}
-          <div 
+          <div
             className="relative group"
             onMouseEnter={() => setNewsDropdownOpen(true)}
             onMouseLeave={() => setNewsDropdownOpen(false)}
@@ -76,15 +85,15 @@ const Header: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </button>
-            
+
             {newsDropdownOpen && (
               <div className="absolute top-full left-0 pt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-2 min-w-max z-50 max-h-96 overflow-y-auto">
                 {categories.length > 0 ? (
                   categories.map((category) => (
                     <a
                       key={category.id}
-                      href={`#/news/${category.slug}`}
-                      onClick={() => setNewsDropdownOpen(false)}
+                      href={`/news/${category.slug}`}
+                      onClick={(e) => { e.preventDefault(); navigate(`/news/${category.slug}`); setNewsDropdownOpen(false) }}
                       className="block px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary transition-colors"
                     >
                       {category.category}
@@ -96,11 +105,15 @@ const Header: React.FC = () => {
               </div>
             )}
           </div>
-          
-          <a className="hover:text-primary transition-colors" href="#/about-us">ABOUT US</a>
-          
+
+          <a
+            className="hover:text-primary transition-colors"
+            href="/about-us"
+            onClick={(e) => { e.preventDefault(); navigate('/about-us') }}
+          >ABOUT US</a>
+
           {/* Services Dropdown */}
-          <div 
+          <div
             className="relative group"
             onMouseEnter={() => setServicesDropdownOpen(true)}
             onMouseLeave={() => setServicesDropdownOpen(false)}
@@ -111,14 +124,14 @@ const Header: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </button>
-            
+
             {servicesDropdownOpen && (
               <div className="absolute top-full left-0 pt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-2 min-w-max z-50">
                 {servicesMenuItems.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
-                    onClick={() => setServicesDropdownOpen(false)}
+                    onClick={(e) => { e.preventDefault(); navigate(item.href); setServicesDropdownOpen(false) }}
                     className="block px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary transition-colors"
                   >
                     {item.label}
@@ -127,9 +140,9 @@ const Header: React.FC = () => {
               </div>
             )}
           </div>
-          
+
           {/* Magazine Dropdown */}
-          <div 
+          <div
             className="relative group"
             onMouseEnter={() => setMagazineDropdownOpen(true)}
             onMouseLeave={() => setMagazineDropdownOpen(false)}
@@ -140,14 +153,14 @@ const Header: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </button>
-            
+
             {magazineDropdownOpen && (
               <div className="absolute top-full left-0 pt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-2 min-w-max z-50">
                 {magazineMenuItems.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
-                    onClick={() => setMagazineDropdownOpen(false)}
+                    onClick={(e) => { e.preventDefault(); navigate(item.href); setMagazineDropdownOpen(false) }}
                     className="block px-4 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary transition-colors"
                   >
                     {item.label}
@@ -156,8 +169,12 @@ const Header: React.FC = () => {
               </div>
             )}
           </div>
-          
-          <a className="hover:text-primary transition-colors" href="#/contact-us">CONTACT US</a>
+
+          <a
+            className="hover:text-primary transition-colors"
+            href="/contact-us"
+            onClick={(e) => { e.preventDefault(); navigate('/contact-us') }}
+          >CONTACT US</a>
         </nav>
 
         {/* Mobile menu button - always on right side on mobile */}
@@ -190,7 +207,8 @@ const Header: React.FC = () => {
                     categories.map((category) => (
                       <a
                         key={category.id}
-                        href={`#/news/${category.slug}`}
+                        href={`/news/${category.slug}`}
+                        onClick={(e) => { e.preventDefault(); navigate(`/news/${category.slug}`); setMobileOpen(false) }}
                         className="block text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
                       >
                         {category.category}
@@ -203,7 +221,11 @@ const Header: React.FC = () => {
               )}
             </div>
 
-            <a className="text-sm font-bold hover:text-primary" href="#/about-us">ABOUT US</a>
+            <a
+              className="text-sm font-bold hover:text-primary"
+              href="/about-us"
+              onClick={(e) => { e.preventDefault(); navigate('/about-us'); setMobileOpen(false) }}
+            >ABOUT US</a>
 
             {/* Mobile Services Dropdown */}
             <div>
@@ -222,6 +244,7 @@ const Header: React.FC = () => {
                     <a
                       key={item.label}
                       href={item.href}
+                      onClick={(e) => { e.preventDefault(); navigate(item.href); setMobileOpen(false) }}
                       className="block text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
                     >
                       {item.label}
@@ -248,6 +271,7 @@ const Header: React.FC = () => {
                     <a
                       key={item.label}
                       href={item.href}
+                      onClick={(e) => { e.preventDefault(); navigate(item.href); setMobileOpen(false) }}
                       className="block text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
                     >
                       {item.label}
@@ -257,7 +281,11 @@ const Header: React.FC = () => {
               )}
             </div>
 
-            <a className="text-sm font-bold hover:text-primary" href="#/contact-us">CONTACT US</a>
+            <a
+              className="text-sm font-bold hover:text-primary"
+              href="/contact-us"
+              onClick={(e) => { e.preventDefault(); navigate('/contact-us'); setMobileOpen(false) }}
+            >CONTACT US</a>
           </nav>
         </div>
       )}

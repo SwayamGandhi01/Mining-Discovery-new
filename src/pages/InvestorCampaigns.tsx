@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import TrustedBrands from '../components/TrustedBrands'
 
 interface FAQItem {
   question: string
@@ -85,28 +86,7 @@ const InvestorCampaigns: React.FC = () => {
     },
   ]
 
-  const brands = [
-    {
-      name: 'Gold Hunter Resources',
-      logo: 'https://goldhunterresources.com/wp-content/uploads/2026/03/image.gif',
-    },
-    {
-      name: 'Arras Minerals',
-      logo: 'https://lirp.cdn-website.com/8c0a7d35/dms3rep/multi/opt/arras-minerals-corp-logo-345-236w.png',
-    },
-    {
-      name: 'Aurion Resources',
-      logo: 'https://aurionresources.com/aurion-logo.png',
-    },
-    {
-      name: 'Phenom Resources',
-      logo: 'https://i0.wp.com/www.phenomresources.com/wp-content/uploads/2024/10/Phenom_lg.png?w=500&ssl=1',
-    },
-    {
-      name: 'U.S. Gold Corp',
-      logo: 'https://www.usgoldcorp.com/_assets/_7b88ca6fb755a6b51f1247416aa5d941/usgoldcorp/files/theme/images/header-logo-fixed.png',
-    },
-  ]
+
 
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden">
@@ -243,33 +223,8 @@ const InvestorCampaigns: React.FC = () => {
         </div>
       </section>
 
-      {/* Brands Section */}
-      <section className="py-12 bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">Brands we are working with</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {brands.map((brand, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center justify-center p-4 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 hover:shadow-md transition group"
-              >
-                <div className="h-12 flex items-center justify-center mb-2">
-                  <img
-                    src={brand.logo}
-                    alt={`${brand.name} logo`}
-                    className="max-h-12 w-auto object-contain transition-all duration-300"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement
-                      target.style.display = 'none'
-                    }}
-                  />
-                </div>
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">{brand.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Trusted Brands */}
+      <TrustedBrands />
 
       {/* CTA Section */}
       <section className="bg-slate-900 dark:bg-slate-950 text-white py-12">

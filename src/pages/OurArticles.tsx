@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileText } from 'lucide-react'
 
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo(0, 0)
+}
+
 type OurArticle = {
   id: number
   documentId: string
@@ -102,7 +108,7 @@ export default function OurArticles(): JSX.Element {
     if (pdfUrl) {
       window.open(pdfUrl, '_blank', 'noopener,noreferrer')
     } else if (item.documentId) {
-      window.location.hash = `#/article/${item.documentId}`
+      navigate(`/article/${item.documentId}`)
     }
   }
 

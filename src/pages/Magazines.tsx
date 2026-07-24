@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { BookOpen, Download, Calendar, AlertCircle } from 'lucide-react'
 
 type Magazine = {
   id: number
@@ -10,18 +11,38 @@ type Magazine = {
   pdf?: { url?: string; name?: string }
 }
 
+const CACHE_KEY = 'md_magazines_cache_v1'
+const API_URL = 'https://admins.miningdiscovery.com/api/magazines?populate=*&sort=publishedAt:desc'
+
 export default function Magazines(): JSX.Element {
-  const [items, setItems] = useState<Magazine[]>([])
-  const [loading, setLoading] = useState(false)
+  const [items, setItems] = useState<Magazine[]>(() => {
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY)
+      if (cached) return JSON.parse(cached)
+    } catch (e) {
+      // Ignore cache parse error
+    }
+    return []
+  })
+  const [loading, setLoading] = useState<boolean>(() => {
+    try {
+      return !sessionStorage.getItem(CACHE_KEY)
+    } catch (e) {
+      return true
+    }
+  })
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
-    setLoading(true)
-    fetch('https://admins.miningdiscovery.com/api/magazines?populate=*')
-      .then((r) => r.json())
-      .then((data) => {
+
+    async function loadMagazines() {
+      try {
+        const res = await fetch(API_URL)
+        if (!res.ok) throw new Error(`Server returned status ${res.status}`)
+        const data = await res.json()
         if (!mounted) return
+
         const list = (data?.data || []).map((it: any) => ({
           id: it.id,
           Title: it.Title,
@@ -31,20 +52,32 @@ export default function Magazines(): JSX.Element {
           coverImage: it.coverImage,
           pdf: it.pdf,
         }))
-        // sort newest first by publishDate (fallback to publishedAt when publishDate missing)
+
+        // Sort newest first by publishDate
         list.sort((a: any, b: any) => {
           const ta = a.publishDate ? new Date(a.publishDate).getTime() : 0
           const tb = b.publishDate ? new Date(b.publishDate).getTime() : 0
           return tb - ta
         })
+
         setItems(list)
-        setLoading(false)
-      })
-      .catch((e) => {
+        setError(null)
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(list))
+        } catch (e) {
+          // Ignore cache write error
+        }
+      } catch (e: any) {
         if (!mounted) return
-        setError(String(e))
-        setLoading(false)
-      })
+        if (items.length === 0) {
+          setError(e.message || 'Failed to load magazines')
+        }
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    loadMagazines()
     return () => {
       mounted = false
     }
@@ -71,7 +104,7 @@ export default function Magazines(): JSX.Element {
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-14 sm:py-20">
+      <div className="bg-gradient-to-br from-slate-900 via-[#1C2541] to-slate-900 text-white py-14 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <span className="text-xs font-extrabold uppercase tracking-widest text-[#3B82F6]">
             PUBLICATIONS
@@ -80,23 +113,23 @@ export default function Magazines(): JSX.Element {
             Our Magazines
           </h1>
           <div className="w-16 h-1 bg-[#1E3B6E] mx-auto rounded-full mt-4" />
-          <p className="text-slate-400 text-sm sm:text-base mt-4 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-300 text-sm sm:text-base mt-4 max-w-2xl mx-auto leading-relaxed font-light">
             Explore our collection of in-depth mining industry magazines featuring exclusive insights, market analysis, and expert commentary.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        {loading && (
+        {loading && items.length === 0 && (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-4 border-[#1E3B6E] border-t-transparent rounded-full animate-spin" />
-            <span className="ml-3 text-slate-500 text-sm">Loading magazines...</span>
+            <span className="ml-3 text-slate-500 text-sm font-medium">Loading magazines...</span>
           </div>
         )}
-        {error && (
-          <div className="text-center py-12">
-            <span className="material-icons text-red-400 text-4xl">error_outline</span>
-            <p className="text-sm text-red-500 mt-2">{error}</p>
+        {error && items.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <AlertCircle className="w-10 h-10 text-red-500 mb-2" />
+            <p className="text-sm text-red-500 font-semibold">{error}</p>
           </div>
         )}
 
@@ -104,68 +137,73 @@ export default function Magazines(): JSX.Element {
           {items.map((m) => (
             <article
               key={m.id}
-              className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
+              className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between group"
             >
-              {/* Cover Image */}
-              <div className="w-full h-64 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative">
-                {(() => {
-                  const url =
-                    m.coverImage?.formats?.large?.url ||
-                    m.coverImage?.formats?.medium?.url ||
-                    m.coverImage?.formats?.small?.url ||
-                    m.coverImage?.url
-                  if (url) {
+              <div>
+                {/* Cover Image */}
+                <div className="w-full h-64 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative p-3">
+                  {(() => {
+                    const url =
+                      m.coverImage?.formats?.medium?.url ||
+                      m.coverImage?.formats?.small?.url ||
+                      m.coverImage?.formats?.large?.url ||
+                      m.coverImage?.url
+                    if (url) {
+                      return (
+                        <img
+                          src={url}
+                          alt={m.Title || 'cover'}
+                          loading="lazy"
+                          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 rounded-lg drop-shadow-md"
+                        />
+                      )
+                    }
                     return (
-                      <img
-                        src={url}
-                        alt={m.Title || 'cover'}
-                        className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                      />
+                      <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                        <BookOpen className="w-12 h-12 mb-2 opacity-50" />
+                        <span className="text-xs">No cover available</span>
+                      </div>
                     )
-                  }
-                  return (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                      <span className="material-icons text-5xl mb-2">menu_book</span>
-                      <span className="text-sm">No cover available</span>
+                  })()}
+                  {/* Date badge */}
+                  {m.publishDate && (
+                    <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-[11px] font-semibold text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-[#3B82F6]" />
+                      {m.publishDate}
                     </div>
-                  )
-                })()}
-                {/* Date badge */}
-                {m.publishDate && (
-                  <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-xs font-semibold text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full shadow-sm border border-slate-200/50 dark:border-slate-700/50">
-                    <span className="material-icons text-[11px] mr-1 align-middle">calendar_today</span>
-                    {m.publishDate}
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-5 sm:p-6 flex flex-col items-center text-center">
+                  <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white group-hover:text-[#1E3B6E] dark:group-hover:text-[#3B82F6] transition-colors duration-300">
+                    {m.Title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-3 line-clamp-4 leading-relaxed">
+                    {m.Description}
+                  </p>
+                </div>
               </div>
 
-              {/* Content */}
-              <div className="p-5 sm:p-6 flex flex-col items-center text-center">
-                <h3 className="font-bold text-lg sm:text-xl text-slate-900 dark:text-white group-hover:text-[#1E3B6E] transition-colors duration-300">
-                  {m.Title}
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-3 line-clamp-4 text-justify leading-relaxed">
-                  {m.Description}
-                </p>
-
+              <div className="p-5 sm:p-6 pt-0 flex flex-col items-center w-full">
                 {/* Action Buttons */}
-                <div className="mt-5 flex gap-3 justify-center flex-wrap w-full">
+                <div className="flex gap-2.5 justify-center w-full mt-2">
                   {m.pdf?.url && (
                     <>
                       <a
                         href={m.pdf.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#1E3B6E] to-slate-900 hover:from-[#2563EB] hover:to-[#1E3B6E] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
                       >
-                        <span className="material-icons text-sm">picture_as_pdf</span>
+                        <BookOpen className="w-4 h-4 flex-shrink-0" />
                         Read PDF
                       </a>
                       <button
                         onClick={() => handleDownloadPdf(m.pdf?.url, m.pdf?.name)}
-                        className="inline-flex items-center gap-1.5 border-2 border-slate-200 dark:border-slate-700 hover:border-[#1E3B6E] text-slate-700 dark:text-slate-300 hover:text-[#1E3B6E] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+                        className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-bold border border-slate-200/80 dark:border-slate-700 transition-all duration-200 whitespace-nowrap cursor-pointer"
                       >
-                        <span className="material-icons text-sm">download</span>
+                        <Download className="w-4 h-4 text-[#3B82F6] flex-shrink-0" />
                         Download
                       </button>
                     </>
@@ -174,12 +212,11 @@ export default function Magazines(): JSX.Element {
 
                 {/* Features toggle */}
                 {m.features && (
-                  <details className="mt-4 w-full text-sm text-slate-500">
-                    <summary className="cursor-pointer inline-flex items-center gap-1 hover:text-[#1E3B6E] transition-colors font-medium">
-                      <span className="material-icons text-sm">auto_awesome</span>
+                  <details className="mt-4 w-full text-xs text-slate-500">
+                    <summary className="cursor-pointer inline-flex items-center gap-1 hover:text-[#1E3B6E] transition-colors font-semibold">
                       Features
                     </summary>
-                    <div className="mt-3 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300 text-justify bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-100 dark:border-slate-700/50">
+                    <div className="mt-2.5 whitespace-pre-wrap text-xs text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50 leading-relaxed">
                       {m.features}
                     </div>
                   </details>

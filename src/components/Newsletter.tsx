@@ -1,141 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Mail, Check } from 'lucide-react'
+import { Download, ExternalLink, Calendar } from 'lucide-react'
+import SubscribeFormCard from './SubscribeFormCard'
 
 type Category = { id: number; name: string; publishedAt?: string }
 type NewsletterItem = any
 
 const CATEGORIES_API = 'https://admins.miningdiscovery.com/api/newsletter-categories'
 const NEWSLETTERS_API = 'https://admins.miningdiscovery.com/api/post-newsletters?populate=*'
-
-const SubscribeFormCard: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [subscriptions, setSubscriptions] = useState({
-    corporateNews: false,
-    magazine: false,
-    dailyNewsletter: true,
-    weeklyNewsletter: false,
-  })
-  const [submitted, setSubmitted] = useState(false)
-
-  const handleCheckboxChange = (key: keyof typeof subscriptions) => {
-    setSubscriptions((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => {
-      setSubmitted(false)
-      setEmail('')
-    }, 4000)
-  }
-
-  return (
-    <div className="w-full bg-[#0A0F1D] text-white rounded-2xl p-6 sm:p-7 shadow-2xl border border-slate-800/80 relative overflow-hidden">
-      {/* Top left accent line */}
-      <div className="w-14 h-1 bg-[#1E3B6E] rounded-full mb-6" />
-
-      {/* Circular Mail Icon */}
-      <div className="w-14 h-14 bg-[#111827] border border-[#1E3B6E]/60 rounded-full flex items-center justify-center mx-auto mb-5 shadow-md">
-        <Mail className="w-6 h-6 text-[#3B82F6]" />
-      </div>
-
-      {/* Headline & Subtitle */}
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-black tracking-wide mb-1.5 uppercase">
-          <span className="text-white">DAILY </span>
-          <span className="text-[#3B82F6]">NEWSLETTER</span>
-        </h3>
-        <p className="text-slate-300 text-xs leading-relaxed max-w-xs mx-auto">
-          Get the top mining stories delivered to your inbox.
-        </p>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email Input */}
-        <div>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your e-mail"
-            required
-            className="w-full bg-[#131C2E] border border-slate-700/80 rounded-lg px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-[#3B82F6] transition-colors"
-          />
-        </div>
-
-        {/* Checkboxes */}
-        <div className="space-y-2.5 pt-1 pl-1">
-          <label className="flex items-center gap-3 cursor-pointer group text-xs sm:text-sm text-slate-200 select-none">
-            <input
-              type="checkbox"
-              checked={subscriptions.corporateNews}
-              onChange={() => handleCheckboxChange('corporateNews')}
-              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-[#1E3B6E] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1E3B6E]"
-            />
-            <span className="font-medium group-hover:text-white transition-colors">
-              Corporate News
-            </span>
-          </label>
-
-          <label className="flex items-center gap-3 cursor-pointer group text-xs sm:text-sm text-slate-200 select-none">
-            <input
-              type="checkbox"
-              checked={subscriptions.magazine}
-              onChange={() => handleCheckboxChange('magazine')}
-              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-[#1E3B6E] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1E3B6E]"
-            />
-            <span className="font-medium group-hover:text-white transition-colors">
-              Magazine
-            </span>
-          </label>
-
-          <label className="flex items-center gap-3 cursor-pointer group text-xs sm:text-sm text-slate-200 select-none">
-            <input
-              type="checkbox"
-              checked={subscriptions.dailyNewsletter}
-              onChange={() => handleCheckboxChange('dailyNewsletter')}
-              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-[#1E3B6E] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1E3B6E]"
-            />
-            <span className="font-medium group-hover:text-white transition-colors">
-              Daily Newsletter
-            </span>
-          </label>
-
-          <label className="flex items-center gap-3 cursor-pointer group text-xs sm:text-sm text-slate-200 select-none">
-            <input
-              type="checkbox"
-              checked={subscriptions.weeklyNewsletter}
-              onChange={() => handleCheckboxChange('weeklyNewsletter')}
-              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-[#1E3B6E] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1E3B6E]"
-            />
-            <span className="font-medium group-hover:text-white transition-colors">
-              Weekly Newsletter
-            </span>
-          </label>
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-[#1E3B6E] hover:bg-[#2563EB] active:bg-[#152a4f] text-white font-extrabold text-xs sm:text-sm py-3 px-4 rounded-lg tracking-wider uppercase transition-colors shadow-md mt-4"
-        >
-          {submitted ? (
-            <span className="flex items-center justify-center gap-2 text-white">
-              <Check className="w-4 h-4" /> SUBSCRIBED!
-            </span>
-          ) : (
-            'SUBSCRIBE NOW'
-          )}
-        </button>
-      </form>
-    </div>
-  )
-}
 
 const Newsletter: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([])
@@ -248,23 +119,36 @@ const Newsletter: React.FC = () => {
               </div>
 
               {/* Current month newsletter cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6">
                 {(selectedNewsletters.length ? selectedNewsletters : newslettersForCategory(selectedCat)).slice(0, 6).map((n: any) => (
-                  <div key={n.id} className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 flex gap-5 items-start shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <div className="w-28 sm:w-32 flex-shrink-0">
-                      <img src={n.coverImage?.formats?.small?.url || n.coverImage?.url} alt={n.title} className="w-full h-auto object-cover rounded-lg shadow-sm" />
+                  <div key={n.id} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row gap-4 sm:gap-5 items-center sm:items-start shadow-sm hover:shadow-xl hover:border-[#1E3B6E]/40 transition-all duration-300 group overflow-hidden">
+                    <div className="w-32 sm:w-36 flex-shrink-0 mx-auto sm:mx-0">
+                      <img src={n.coverImage?.formats?.small?.url || n.coverImage?.url} alt={n.title} className="w-full h-auto max-h-52 object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-300" />
                     </div>
-                    <div className="flex-1">
-                      <div className="font-bold text-base sm:text-lg text-slate-900 dark:text-white mb-1">{n.title}</div>
-                      <div className="text-sm text-slate-500 mb-4">{new Date(n.publishedAt).toLocaleDateString()}</div>
-                      <div className="flex gap-3 flex-wrap">
-                        <button onClick={() => downloadPdf(n.pdfFile?.url, n.pdfFile?.name)} className="inline-flex items-center gap-1.5 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-[#C59B27] hover:to-[#a8832a] text-white px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 shadow-sm hover:shadow-md">
-                          <span className="material-icons text-sm">picture_as_pdf</span>
-                          Download PDF
+                    <div className="flex-1 flex flex-col justify-between min-w-0 w-full h-full">
+                      <div>
+                        <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white mb-2 line-clamp-2">{n.title}</h3>
+                        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-full">
+                          <Calendar className="w-3.5 h-3.5 text-[#3B82F6]" />
+                          {new Date(n.publishedAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 mt-auto w-full">
+                        <button
+                          onClick={() => downloadPdf(n.pdfFile?.url, n.pdfFile?.name)}
+                          className="w-full inline-flex items-center justify-center gap-2 bg-[#1E3B6E] hover:bg-[#2563EB] active:bg-[#152a4f] text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                        >
+                          <Download className="w-4 h-4 flex-shrink-0" />
+                          <span>Download PDF</span>
                         </button>
-                        <a target="_blank" rel="noopener noreferrer" href={n.pdfFile?.url} className="inline-flex items-center gap-1.5 border-2 border-slate-200 dark:border-slate-700 hover:border-[#C59B27] text-slate-700 dark:text-slate-300 hover:text-[#C59B27] px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300">
-                          <span className="material-icons text-sm">open_in_new</span>
-                          Open
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={n.pdfFile?.url}
+                          className="w-full inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200/80 dark:border-slate-700 transition-all duration-200 text-center"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-[#3B82F6] flex-shrink-0" />
+                          <span>Open</span>
                         </a>
                       </div>
                     </div>

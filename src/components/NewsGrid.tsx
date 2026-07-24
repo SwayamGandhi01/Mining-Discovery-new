@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Download } from "lucide-react";
 
 type SectionItem = any;
 
@@ -203,10 +204,10 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                   href={latestMag.pdf.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 mt-4 w-full bg-primary hover:bg-[#152a4f] text-white px-5 py-2.5 text-xs font-bold uppercase rounded-xl transition-all duration-300 shadow-md"
+                  className="inline-flex items-center justify-center gap-2 mt-4 w-full bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-5 py-3 text-xs font-extrabold uppercase tracking-wider rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 whitespace-nowrap cursor-pointer"
                 >
-                  <span className="material-icons text-sm">download</span>
-                  Download PDF
+                  <Download className="w-4 h-4 flex-shrink-0" />
+                  <span>Download PDF</span>
                 </a>
               )}
             </>

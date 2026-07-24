@@ -14,9 +14,8 @@ import {
   Target,
   TrendingUp,
   User,
-  Linkedin,
-  Youtube,
 } from 'lucide-react'
+import TrustedBrands from '../components/TrustedBrands'
 
 interface TeamMember {
   name: string
@@ -141,28 +140,6 @@ const AboutUs: React.FC = () => {
     },
   ]
 
-  const brands = [
-    {
-      name: 'Gold Hunter Resources',
-      logo: 'https://goldhunterresources.com/wp-content/uploads/2026/03/image.gif',
-    },
-    {
-      name: 'Arras Minerals',
-      logo: 'https://lirp.cdn-website.com/8c0a7d35/dms3rep/multi/opt/arras-minerals-corp-logo-345-236w.png',
-    },
-    {
-      name: 'Aurion Resources',
-      logo: 'https://aurionresources.com/aurion-logo.png',
-    },
-    {
-      name: 'Phenom Resources',
-      logo: 'https://i0.wp.com/www.phenomresources.com/wp-content/uploads/2024/10/Phenom_lg.png?w=500&ssl=1',
-    },
-    {
-      name: 'U.S. Gold Corp',
-      logo: 'https://www.usgoldcorp.com/_assets/_7b88ca6fb755a6b51f1247416aa5d941/usgoldcorp/files/theme/images/header-logo-fixed.png',
-    },
-  ]
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
@@ -235,25 +212,7 @@ const AboutUs: React.FC = () => {
                     <Calendar className="w-3.5 h-3.5 text-[#C59B27]" /> 30+ Years Industry Experience
                   </p>
                 </div>
-                {/* Laura Stein LinkedIn & YouTube Links */}
-                <div className="flex items-center justify-center gap-2 mt-1">
-                  <a
-                    href="https://www.linkedin.com/in/laura-stein-b4867313"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-[#0A66C2] hover:bg-[#084e96] text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all shadow-md hover:scale-105"
-                  >
-                    <Linkedin className="w-3.5 h-3.5" /> LinkedIn
-                  </a>
-                  <a
-                    href="https://www.youtube.com/watch?v=KzyysYdoLzI"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-[#FF0000] hover:bg-[#cc0000] text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all shadow-md hover:scale-105"
-                  >
-                    <Youtube className="w-3.5 h-3.5" /> Watch Video
-                  </a>
-                </div>
+
                 {/* Expertise Badges */}
                 <div className="flex flex-wrap gap-1.5 justify-center mt-2">
                   {[
@@ -477,44 +436,8 @@ const AboutUs: React.FC = () => {
         </div>
       </section>
 
-      {/* Brands We Are Working With */}
-      <section className="py-16 bg-white dark:bg-slate-950 border-t border-slate-200/80 dark:border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-[#C59B27]">
-            TRUSTED PARTNERSHIPS
-          </span>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1 mb-2">
-            Brands We Are Working With
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mb-10">
-            Trusted partners across the global mining and investment community
-          </p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {brands.map((brand) => (
-              <div
-                key={brand.name}
-                className="flex flex-col items-center justify-center gap-3 p-5 bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl hover:shadow-md hover:border-[#C59B27]/30 transition-all group"
-              >
-                <div className="h-14 flex items-center justify-center">
-                  <img
-                    src={brand.logo}
-                    alt={`${brand.name} logo`}
-                    className="max-h-14 w-auto object-contain transition-all duration-300"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement
-                      target.style.display = 'none'
-                    }}
-                  />
-                </div>
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">
-                  {brand.name}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Trusted Brands */}
+      <TrustedBrands />
 
       {/* Looking Ahead Banner */}
       <section className="py-16 max-w-5xl mx-auto px-4">
