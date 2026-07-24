@@ -9,8 +9,8 @@ interface Company {
 const PressOffice: React.FC = () => {
   const companies: Company[] = [
     {
-      name: 'Mining Discovery',
-      description: 'Mining Discovery is a global digital platform and event organizer connecting investors, explorers, and industry innovators. It offers project-matching tools, digital branding solutions, and networking opportunities to help early-stage mining ventures attract investment and build visibility through curated showcases and strategic partnerships.',
+      name: 'Laura\'s Liaisons',
+      description: 'Laura\'s Liaisons is a global digital platform and event organizer connecting investors, explorers, and industry innovators. It offers project-matching tools, digital branding solutions, and networking opportunities to help early-stage mining ventures attract investment and build visibility through curated showcases and strategic partnerships.',
     },
     {
       name: 'U.S. Gold Corp',

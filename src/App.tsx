@@ -26,6 +26,7 @@ import ConferenceMediaCoverage from './pages/ConferenceMediaCoverage'
 import NewsletterEmailBlast from './pages/NewsletterEmailBlast'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
+import OurArticles from './pages/OurArticles'
 
 // Placeholder components for magazine dropdown pages
 
@@ -106,6 +107,7 @@ export default function App(): JSX.Element {
   }
 
   const isMagPage = route === '#/magazines' || window.location.pathname === '/magazines'
+  const isOurArticlesPage = route === '#/our-articles'
   const isCEOProfile = route === '#/ceo-profile'
   const isNewsletterPage = route === '#/newsletter-page'
   const isCompanyProfile = route === '#/company-profile'
@@ -119,6 +121,28 @@ export default function App(): JSX.Element {
   const isAboutUsPage = route === '#/about-us'
   const isContactUsPage = route === '#/contact-us'
 
+
+  if (isOurArticlesPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <OurArticles />
+        <Footer />
+      </div>
+    )
+  }
+
+  if (isMagPage) {
+    return (
+      <div>
+        <Header />
+        <BreakingNews />
+        <Magazines />
+        <Footer />
+      </div>
+    )
+  }
 
   if (isCEOProfile) {
     return (
@@ -276,10 +300,9 @@ export default function App(): JSX.Element {
         <NewsGrid onArticleClick={openArticle} />
         <RegionalIntelligence />
         <EditorsPicks />
-        <MagazineProfiles />
+        <Newsletter />
       </main>
    
-      <Newsletter />
       <Footer />
     </div>
   )

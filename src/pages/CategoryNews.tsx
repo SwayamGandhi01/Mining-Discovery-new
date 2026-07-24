@@ -250,7 +250,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       {articles[0].pdfUrl && (
-                        <div className="absolute top-4 right-4 bg-yellow-500 text-slate-900 px-3 py-1 rounded-full text-xs font-bold">
+                        <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-bold">
                           📄 PDF
                         </div>
                       )}
@@ -307,7 +307,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                           {article.pdfUrl && (
-                            <div className="absolute top-2 right-2 bg-yellow-500 text-slate-900 px-2 py-0.5 rounded text-xs font-bold">
+                            <div className="absolute top-2 right-2 bg-primary text-white px-2 py-0.5 rounded text-xs font-bold">
                               PDF
                             </div>
                           )}
@@ -364,7 +364,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                           {article.pdfUrl && (
-                            <div className="absolute top-2 right-2 bg-yellow-500 text-slate-900 px-2 py-1 rounded text-xs font-bold">
+                            <div className="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded text-xs font-bold">
                               PDF
                             </div>
                           )}

@@ -16,26 +16,52 @@ const ContactUs: React.FC = () => {
   })
 
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Contact form submitted:', formData)
-    setSubmitted(true)
-    // Reset form after 3 seconds
-    setTimeout(() => {
+    setSubmitting(true)
+    setSubmitError(null)
+
+    try {
+      const res = await fetch('https://admins.miningdiscovery.com/api/contact-uses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+          },
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to send message. Please try again.')
+      }
+
+      setSubmitted(true)
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: '',
       })
-      setSubmitted(false)
-    }, 3000)
+    } catch (err: any) {
+      console.error('Contact submission error:', err)
+      setSubmitError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -105,12 +131,17 @@ const ContactUs: React.FC = () => {
                   className="w-full px-4 py-3 bg-slate-800 text-white placeholder-slate-400 rounded border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-600 resize-none"
                 />
 
+                {submitError && (
+                  <p className="text-sm text-red-400 font-medium">{submitError}</p>
+                )}
+
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded transition"
+                  disabled={submitting}
+                  className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send Message
+                  {submitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             )}
@@ -123,8 +154,8 @@ const ContactUs: React.FC = () => {
             {/* Email */}
             <div className="mb-6">
               <p className="text-amber-400 font-semibold mb-1">Email:</p>
-              <a href="mailto:info@miningdiscovery.com" className="text-blue-400 hover:text-blue-300">
-                info@miningdiscovery.com
+              <a href="mailto:laura@laurastein.net" className="text-blue-400 hover:text-blue-300">
+                laura@laurastein.net
               </a>
             </div>
 
@@ -169,7 +200,7 @@ const ContactUs: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">We're Here to Help</h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-6">
-            Have a question about Mining Discovery? Our team is ready to assist you. Reach out today!
+            Have a question about Laura's Liaisons? Our team is ready to assist you. Reach out today!
           </p>
           <button className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded transition">
             Schedule a Call

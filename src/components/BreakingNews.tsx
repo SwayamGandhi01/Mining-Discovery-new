@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
 
 export default function BreakingNews(): JSX.Element {
-  const [headline, setHeadline] = useState<string>("Loading latest news...");
+  const [headlines, setHeadlines] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
         const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=5"
+          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=8"
         );
 
         const data = await res.json();
 
         if (!data.data || data.data.length === 0) return;
 
-        const titles = data.data.map((item: any) => item.title);
-
-        const joinedHeadlines = titles.join(" · ");
-
-        setHeadline(joinedHeadlines);
+        const titles = data.data.map((item: any) => item.title).filter(Boolean);
+        setHeadlines(titles);
       } catch (error) {
         console.error("Error fetching breaking news:", error);
       }
@@ -28,18 +25,36 @@ export default function BreakingNews(): JSX.Element {
   }, []);
 
   return (
-    <div className=" bg-black text-white">
-      <div className="max-w-7xl mx-auto flex items-center gap-4 px-4 py-2">
-        <span className="text-white font-bold text-xs px-2 py-1" style={{ backgroundColor: '#ae8a4c' }}>
-          BREAKING NEWS
-        </span>
+    <div className="w-full bg-[#DCE4F6] border-y border-slate-300/80 text-slate-800 flex items-center overflow-hidden h-9">
+      {/* Left Badge: LATEST NEWS */}
+      <div className="bg-[#0B132B] text-white px-5 h-full text-xs font-black uppercase tracking-wider flex items-center justify-center flex-shrink-0 z-10 shadow-sm whitespace-nowrap">
+        LATEST NEWS
+      </div>
 
-        <div className="flex-1 overflow-hidden">
-          <div className="breaking-ticker-wrapper">
-            <div className="breaking-ticker-content text-sm md:text-base">
-              <span className="mr-8">{headline}</span>
-              <span className="mr-8">{headline}</span>
-            </div>
+      {/* Scrolling Ticker */}
+      <div className="flex-1 overflow-hidden h-full flex items-center px-2">
+        <div className="breaking-ticker-wrapper w-full">
+          <div className="breaking-ticker-content text-xs sm:text-sm font-semibold text-slate-800">
+            {headlines.length > 0 ? (
+              <>
+                {headlines.map((title, idx) => (
+                  <span key={idx} className="inline-flex items-center gap-2">
+                    <span className="hover:underline cursor-pointer">{title}</span>
+                    <span className="text-slate-400 font-normal mx-3 select-none">|</span>
+                    <span className="text-[#C59B27] text-[10px] select-none mr-1">▶</span>
+                  </span>
+                ))}
+                {headlines.map((title, idx) => (
+                  <span key={`dup-${idx}`} className="inline-flex items-center gap-2">
+                    <span className="hover:underline cursor-pointer">{title}</span>
+                    <span className="text-slate-400 font-normal mx-3 select-none">|</span>
+                    <span className="text-[#C59B27] text-[10px] select-none mr-1">▶</span>
+                  </span>
+                ))}
+              </>
+            ) : (
+              <span>Loading latest news...</span>
+            )}
           </div>
         </div>
       </div>

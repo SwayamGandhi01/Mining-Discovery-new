@@ -202,7 +202,7 @@ const Services: React.FC = () => {
       {/* Why Choose Us */}
       <div className="max-w-7xl mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-12 text-slate-900 dark:text-white serif-title">
-          Why Choose Mining Discovery
+          Why Choose Laura's Liaisons
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {whyChooseUs.map((item, index) => (
@@ -262,7 +262,7 @@ const Services: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold text-white mb-4 serif-title">Ready to grow?</h2>
           <p className="text-slate-300 mb-8">
-            Let's discuss how Mining Discovery can help your business—strategy, creative, and performance-to
+            Let's discuss how Laura's Liaisons can help your business—strategy, creative, and performance-to
             set your part.
           </p>
           <button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold transition-colors">

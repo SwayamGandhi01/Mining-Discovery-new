@@ -160,7 +160,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ documentId, onBack }) => 
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-slate-900 dark:text-slate-100">
-                  {article.author || "Mining Discovery"}
+                  {article.author || "Laura's Liaisons"}
                 </p>
                 <p className="text-sm text-slate-500">
                   {article.publishedAt

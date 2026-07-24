@@ -46,7 +46,7 @@ const ConferenceMediaCoverage: React.FC = () => {
 
   const distributionChannels: DistributionChannel[] = [
     { name: 'MiningDiscovery.com' },
-    { name: 'Mining Discovery Newsletter' },
+    { name: 'Laura\'s Liaisons Newsletter' },
     { name: 'Email Newsletters' },
     { name: 'YouTube' },
     { name: 'LinkedIn' },
@@ -187,7 +187,7 @@ const ConferenceMediaCoverage: React.FC = () => {
         <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-lg p-8 text-center">
           <h2 className="text-2xl font-bold mb-3 text-amber-400">Amplify Your Next Event</h2>
           <p className="text-slate-300 mb-6">
-            Partner with Mining Discovery to capture, share, and extend the reach of your next conference through expert coverage
+            Partner with Laura's Liaisons to capture, share, and extend the reach of your next conference through expert coverage
           </p>
           <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition">
             Get Started
@@ -224,7 +224,7 @@ const ConferenceMediaCoverage: React.FC = () => {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to showcase your conference?</h2>
           <p className="text-lg text-slate-300 mb-8">
-            Let Mining Discovery handle your event coverage and reach global mining industry stakeholders.
+            Let Laura's Liaisons handle your event coverage and reach global mining industry stakeholders.
           </p>
           <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition">
             Contact Us

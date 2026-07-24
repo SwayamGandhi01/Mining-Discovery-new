@@ -95,7 +95,7 @@ const NewsSyndication: React.FC = () => {
     },
     {
       number: '2',
-      name: 'Mining Discovery Newsletter',
+      name: 'Laura\'s Liaisons Newsletter',
       description: 'Broad readership from our audiences subscribers',
       details: ['Daily Newsletter', 'Weekly Analysis', 'Alerts'],
     },
@@ -155,7 +155,7 @@ const NewsSyndication: React.FC = () => {
   const amplificationTools: AmplificationTool[] = [
     {
       title: 'Email Campaigns & Newsletters',
-      description: 'Strategy, editorial calendar and distribution through Mining Discovery network.',
+      description: 'Strategy, editorial calendar and distribution through Laura\'s Liaisons network.',
     },
     {
       title: 'Substack Setup & Management',
@@ -188,7 +188,7 @@ const NewsSyndication: React.FC = () => {
             Mining News Amplified
           </h2>
           <p className="text-lg mb-8 text-slate-300 max-w-3xl mx-auto">
-            At Mining Discovery we don't just see news—we amplify it. Ready for your update. From press releases to market forecasts, we put your story partners, regulators and industry insiders.
+            At Laura's Liaisons we don't just see news—we amplify it. Ready for your update. From press releases to market forecasts, we put your story partners, regulators and industry insiders.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded font-semibold transition">

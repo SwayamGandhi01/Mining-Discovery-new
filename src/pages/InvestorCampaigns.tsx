@@ -72,8 +72,8 @@ const InvestorCampaigns: React.FC = () => {
 
   const faqItems: FAQItem[] = [
     {
-      question: 'How does Mining Discovery generate revenue through premium subscriptions, advertising and data sales?',
-      answer: 'Mining Discovery operates a multi-revenue model including premium subscriptions, targeted advertising, partnerships, and enterprise data products delivered through APIs and custom reports.',
+      question: 'How does Laura\'s Liaisons generate revenue through premium subscriptions, advertising and data sales?',
+      answer: 'Laura\'s Liaisons operates a multi-revenue model including premium subscriptions, targeted advertising, partnerships, and enterprise data products delivered through APIs and custom reports.',
     },
     {
       question: 'What makes our mining news and investment analysis different?',
@@ -86,15 +86,26 @@ const InvestorCampaigns: React.FC = () => {
   ]
 
   const brands = [
-    { name: 'ASTRA', logo: '🏢' },
-    { name: 'ARRAS', logo: '🏔️' },
-    { name: 'Aurion', logo: '⚙️' },
-    { name: 'PHENOM', logo: '🔧' },
-    { name: 'Empire', logo: '🏛️' },
-    { name: 'U.S. Gold', logo: '🥇' },
-    { name: 'Empowered X', logo: '⚡' },
-    { name: 'Empire', logo: '👑' },
-    { name: 'Ultiverse', logo: '🌐' },
+    {
+      name: 'Gold Hunter Resources',
+      logo: 'https://goldhunterresources.com/wp-content/uploads/2026/03/image.gif',
+    },
+    {
+      name: 'Arras Minerals',
+      logo: 'https://lirp.cdn-website.com/8c0a7d35/dms3rep/multi/opt/arras-minerals-corp-logo-345-236w.png',
+    },
+    {
+      name: 'Aurion Resources',
+      logo: 'https://aurionresources.com/aurion-logo.png',
+    },
+    {
+      name: 'Phenom Resources',
+      logo: 'https://i0.wp.com/www.phenomresources.com/wp-content/uploads/2024/10/Phenom_lg.png?w=500&ssl=1',
+    },
+    {
+      name: 'U.S. Gold Corp',
+      logo: 'https://www.usgoldcorp.com/_assets/_7b88ca6fb755a6b51f1247416aa5d941/usgoldcorp/files/theme/images/header-logo-fixed.png',
+    },
   ]
 
   return (
@@ -154,7 +165,7 @@ const InvestorCampaigns: React.FC = () => {
 
       {/* Why Invest Section */}
       <section className="py-12 max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-4">Why invest in Mining Discovery</h2>
+        <h2 className="text-3xl font-bold text-center mb-4">Why invest in Laura's Liaisons</h2>
         <p className="text-center text-slate-600 dark:text-slate-400 mb-8 max-w-3xl mx-auto">
           Mining is critical to the global energy transition and infrastructure growth. Forward-looking investors
           understand how essential mining discovery is.
@@ -240,10 +251,20 @@ const InvestorCampaigns: React.FC = () => {
             {brands.map((brand, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-center p-4 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 hover:shadow-md transition"
+                className="flex flex-col items-center justify-center p-4 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 hover:shadow-md transition group"
               >
-                <span className="text-2xl mr-2">{brand.logo}</span>
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{brand.name}</span>
+                <div className="h-12 flex items-center justify-center mb-2">
+                  <img
+                    src={brand.logo}
+                    alt={`${brand.name} logo`}
+                    className="max-h-12 w-auto object-contain transition-all duration-300"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement
+                      target.style.display = 'none'
+                    }}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">{brand.name}</span>
               </div>
             ))}
           </div>
@@ -253,7 +274,7 @@ const InvestorCampaigns: React.FC = () => {
       {/* CTA Section */}
       <section className="bg-slate-900 dark:bg-slate-950 text-white py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to invest in Mining Discovery?</h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to invest in Laura's Liaisons?</h2>
           <p className="text-lg text-slate-300 mb-8 max-w-2xl mx-auto">
             Join a growing community of investors backing the future of mining intelligence
           </p>

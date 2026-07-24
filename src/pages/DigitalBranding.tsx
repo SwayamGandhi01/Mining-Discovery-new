@@ -218,7 +218,7 @@ const DigitalBranding: React.FC = () => {
 
       {/* Why Choose Mining Discovery */}
       <section className="py-12 max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-3">Why choose Mining Discovery?</h2>
+        <h2 className="text-3xl font-bold text-center mb-3">Why choose Laura's Liaisons?</h2>
         <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
           We believe industry cruelty with modern digital marketing to make your brand stand out where it matters most
         </p>

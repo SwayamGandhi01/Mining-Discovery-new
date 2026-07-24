@@ -97,7 +97,7 @@ const CEOProfiles: React.FC = () => {
     <section className="max-w-7xl mx-auto px-4 py-16">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-yellow-500">CEO-PROFILES</h2>
+        <h2 className="text-3xl font-bold text-primary">CEO-PROFILES</h2>
         
         {/* Navigation Arrows */}
         <div className="flex gap-3">

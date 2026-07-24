@@ -251,7 +251,7 @@ const NewsletterEmailBlast: React.FC = () => {
 
         {/* Subscribe Section */}
         <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold mb-3">Subscribe to Mining Discovery</h2>
+          <h2 className="text-2xl font-bold mb-3">Subscribe to Laura's Liaisons</h2>
           <p className="text-primary-600 dark:text-primary-500 text-lg mb-8">
             Get the latest mining news, market updates, and exclusive insights straight to your inbox every week.
           </p>
@@ -259,7 +259,7 @@ const NewsletterEmailBlast: React.FC = () => {
 
         {/* Signup Form */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-8 max-w-2xl mx-auto">
-          <h3 className="text-xl font-bold text-center mb-8">Sign Up for the Mining Discovery Insights Newsletter</h3>
+          <h3 className="text-xl font-bold text-center mb-8">Sign Up for the Laura's Liaisons Insights Newsletter</h3>
 
           {submitted ? (
             <div className="text-center py-12">
