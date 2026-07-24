@@ -19,7 +19,7 @@ const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
     const fetchLatestNews = async () => {
       try {
         const res = await fetch(
-          "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=7"
+          "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=8"
         );
 
         const data = await res.json();
@@ -43,26 +43,34 @@ const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
   }, []);
 
   return (
-    <div className="lg:col-span-3 order-3 lg:border-l lg:border-slate-200 lg:dark:border-slate-800 lg:pl-6">
-      <h4 className="font-bold text-xs uppercase tracking-widest border-b-2 border-primary w-fit pb-1 mb-6">
-        Trending Now
-      </h4>
+    <div className="lg:col-span-3 order-3 lg:border-l lg:border-slate-200/80 lg:dark:border-slate-800 lg:pl-6 flex flex-col h-full">
+      <div className="flex items-center gap-2 mb-5">
+        <span className="material-icons text-primary text-base">trending_up</span>
+        <h4 className="font-extrabold text-xs uppercase tracking-widest text-slate-900 dark:text-white">
+          Trending Now
+        </h4>
+        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+      </div>
 
       {loading ? (
-        <p className="text-sm text-slate-500">Loading...</p>
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+            <div key={i} className="h-10 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+          ))}
+        </div>
       ) : (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-3">
           {news.map((item, index) => (
             <div
               key={item.id}
-              className="flex gap-4 cursor-pointer"
+              className="flex items-start gap-3.5 px-2.5 py-3 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group border-b border-slate-100 dark:border-slate-800/60 last:border-b-0"
               onClick={() => onArticleClick?.(item.documentId)}
             >
-              <span className="serif-title text-3xl text-primary/30 font-bold">
+              <span className="serif-title text-2xl font-black text-primary/40 group-hover:text-primary transition-colors leading-none min-w-[30px] mt-0.5">
                 {String(index + 1).padStart(2, "0")}
               </span>
 
-              <p className="text-sm font-semibold hover:text-primary transition-colors">
+              <p className="text-sm sm:text-[15px] font-semibold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-snug line-clamp-2">
                 {item.title}
               </p>
             </div>

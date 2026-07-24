@@ -6,7 +6,8 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 sm:gap-10 mb-12">
           <div className="col-span-1 sm:col-span-2">
-            <h3 className="serif-title text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Laura's Liaisons <span className="text-primary italic"></span></h3>
+            <img src="/Footer logo.webp" alt="Laura's Liaisons" className="h-14 sm:h-16 w-auto mb-4" />
+            <h3 className="serif-title text-2xl sm:text-3xl font-bold mb-4 sm:mb-6"><span className="text-primary italic"></span></h3>
             <p className="text-slate-400 text-sm leading-relaxed mb-4">The leading independent news source for the global mining industry, delivering actionable intelligence and deep-dive analysis since 2008.</p>
             <div className="mb-6 text-sm text-slate-300">
               <span className="font-semibold text-primary">Email: </span>
@@ -14,10 +15,32 @@ const Footer: React.FC = () => {
                 laura@laurastein.net
               </a>
             </div>
-            <div className="flex space-x-4">
-              <a className="w-10 h-10 bg-slate-800 flex items-center justify-center rounded-full hover:bg-primary transition-colors" href="#"><span className="material-icons text-sm">facebook</span></a>
-              <a className="w-10 h-10 bg-slate-800 flex items-center justify-center rounded-full hover:bg-primary transition-colors" href="#"><span className="material-icons text-sm">alternate_email</span></a>
-              <a className="w-10 h-10 bg-slate-800 flex items-center justify-center rounded-full hover:bg-primary transition-colors" href="#"><span className="material-icons text-sm">podcasts</span></a>
+            <div className="flex space-x-3">
+              <a 
+                className="w-10 h-10 bg-slate-800 flex items-center justify-center rounded-full hover:bg-[#0A66C2] transition-colors" 
+                href="https://www.linkedin.com/in/laura-stein-b4867313" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="Laura Stein on LinkedIn"
+              >
+                <span className="material-icons text-sm">link</span>
+              </a>
+              <a 
+                className="w-10 h-10 bg-slate-800 flex items-center justify-center rounded-full hover:bg-[#FF0000] transition-colors" 
+                href="https://www.youtube.com/watch?v=KzyysYdoLzI" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="Laura Stein YouTube Video"
+              >
+                <span className="material-icons text-sm">play_arrow</span>
+              </a>
+              <a 
+                className="w-10 h-10 bg-slate-800 flex items-center justify-center rounded-full hover:bg-primary transition-colors" 
+                href="mailto:laura@laurastein.net"
+                title="Email Laura Stein"
+              >
+                <span className="material-icons text-sm">alternate_email</span>
+              </a>
             </div>
           </div>
           <div>

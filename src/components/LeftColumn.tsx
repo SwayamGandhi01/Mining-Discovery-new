@@ -51,41 +51,52 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
   const renderArticle = (
     tag: string,
     colorClass: string,
+    bgClass: string,
     newsItem: NewsItem | null
   ) => {
     if (!newsItem) return null;
 
     return (
-      <>
-        <article
-          className="group cursor-pointer"
-          onClick={() => onArticleClick?.(newsItem.documentId)}
-        >
-          <p className={`text-[10px] font-bold ${colorClass} mb-1 uppercase tracking-wider`}>
+      <article
+        className="group cursor-pointer p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300"
+        onClick={() => onArticleClick?.(newsItem.documentId)}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <span
+            className={`text-[10px] font-black ${colorClass} ${bgClass} px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-current/20`}
+          >
             {tag}
+          </span>
+          <span className="material-icons text-slate-300 dark:text-slate-600 group-hover:text-primary group-hover:translate-x-1 transition-all text-sm">
+            arrow_forward
+          </span>
+        </div>
+
+        <h3 className="serif-title text-lg font-bold leading-snug text-slate-900 dark:text-white group-hover:text-primary transition-colors duration-300">
+          {newsItem.title}
+        </h3>
+
+        {newsItem.shortDescription && (
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+            {newsItem.shortDescription}
           </p>
-
-          <h3 className="serif-title text-xl leading-tight group-hover:text-primary transition-colors">
-            {newsItem.title}
-          </h3>
-
-          {newsItem.shortDescription && (
-            <p className="text-sm text-slate-500 mt-2 line-clamp-3 leading-relaxed">
-              {newsItem.shortDescription}
-            </p>
-          )}
-        </article>
-
-        <hr className="border-slate-100 dark:border-slate-800" />
-      </>
+        )}
+      </article>
     );
   };
 
   return (
-    <div className="lg:col-span-3 flex flex-col gap-6 order-2 lg:order-1 lg:border-r lg:border-slate-200 lg:dark:border-slate-800 lg:pr-6">
-      {renderArticle("GOLD", "text-yellow-500", gold)}
-      {renderArticle("SILVER", "text-gray-400", silver)}
-      {renderArticle("COPPER", "text-orange-500", copper)}
+    <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 lg:pr-6">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-2 h-2 rounded-full bg-primary" />
+        <h4 className="font-extrabold text-xs uppercase tracking-widest text-slate-900 dark:text-white">
+          Market Intelligence
+        </h4>
+      </div>
+
+      {renderArticle("GOLD", "text-amber-600 dark:text-amber-400", "bg-amber-500/10", gold)}
+      {renderArticle("SILVER", "text-slate-600 dark:text-slate-300", "bg-slate-500/10", silver)}
+      {renderArticle("COPPER", "text-orange-600 dark:text-orange-400", "bg-orange-500/10", copper)}
     </div>
   );
 };

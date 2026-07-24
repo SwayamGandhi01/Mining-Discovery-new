@@ -72,31 +72,40 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   };
 
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+    <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 my-10 sm:my-14">
       {/* LEFT SIDE */}
       <div className="lg:col-span-3">
         {/* CATEGORY HEADING TABS */}
-        <div className="flex gap-6 border-b border-slate-200 mb-8 overflow-x-auto">
+        <div className="flex gap-2 sm:gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 mb-8 overflow-x-auto no-scrollbar">
           {CATEGORY_LIST.map((cat) => (
             <button
               key={cat.slug}
               onClick={() => setActiveCategory(cat.slug)}
-              className={`text-sm font-bold pb-4 whitespace-nowrap ${
+              className={`text-xs sm:text-sm font-bold px-4 py-2 rounded-full transition-all duration-300 whitespace-nowrap ${
                 activeCategory === cat.slug
-                  ? "border-b-2 border-primary text-primary"
-                  : "text-slate-400 hover:text-slate-700 border-b-2 border-transparent"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                  : "bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
-              {cat.label.toUpperCase()}
+              {cat.label}
             </button>
           ))}
         </div>
 
         {/* POSTS */}
         {loading ? (
-          <div className="py-10">Loading...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[1, 2].map((i) => (
+              <div key={i} className="animate-pulse bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-xl mb-4" />
+                <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded mb-2 w-3/4" />
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full mb-2" />
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
+              </div>
+            ))}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {posts.map((item, idx) => {
               const readTime = calculateReadTime(
                 item.description || item.short_description || ""
@@ -111,7 +120,7 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                 item.publish_on || item.publishedAt
               ).toLocaleDateString("en-US", {
                 year: "numeric",
-                month: "long",
+                month: "short",
                 day: "numeric",
               });
 
@@ -123,29 +132,40 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                       ? onArticleClick(item.documentId)
                       : null
                   }
-                  className="group cursor-pointer"
+                  className="group cursor-pointer bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
                 >
-                  <div className="aspect-video bg-slate-200 overflow-hidden mb-4 rounded-lg relative">
-                    {imageUrl && (
-                      <img
-                        src={imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    )}
+                  <div>
+                    <div className="aspect-video bg-slate-100 dark:bg-slate-800 overflow-hidden mb-4 rounded-xl relative shadow-inner">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                          <span className="material-icons text-4xl">newspaper</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <h4 className="serif-title text-xl font-bold mb-2.5 text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                      {item.title}
+                    </h4>
+
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-3 leading-relaxed">
+                      {item.short_description}
+                    </p>
                   </div>
 
-                  <h4 className="serif-title text-2xl mb-2 group-hover:text-primary transition-colors">
-                    {item.title}
-                  </h4>
-
-                  <p className="text-sm text-slate-500 mb-4 line-clamp-3">
-                    {item.short_description}
-                  </p>
-
-                  <div className="flex justify-between text-xs text-slate-400 uppercase font-bold">
-                    <span>{publishDate}</span>
-                    <span>{readTime} MIN READ</span>
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 uppercase font-bold pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <span className="flex items-center gap-1">
+                      <span className="material-icons text-xs text-primary">schedule</span>
+                      {publishDate}
+                    </span>
+                    <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-400">
+                      {readTime} MIN READ
+                    </span>
                   </div>
                 </article>
               );
@@ -156,34 +176,39 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
 
       {/* RIGHT SIDE - MAGAZINE */}
       <div className="lg:col-span-1">
-        <div className="lg:sticky lg:top-40 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-xl text-center">
-          <h5 className="text-xs font-extrabold text-primary mb-6 uppercase tracking-[0.2em]">
-            Latest Magazine
-          </h5>
+        <div className="lg:sticky lg:top-40 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white border border-slate-800 p-6 rounded-2xl text-center shadow-xl">
+          <span className="text-[10px] font-extrabold text-[#3B82F6] mb-4 uppercase tracking-[0.25em] inline-block border border-[#3B82F6]/30 px-3 py-1 rounded-full bg-[#3B82F6]/10">
+            LATEST ISSUE
+          </span>
 
           {latestMag && (
             <>
-              <img
-                src={
-                  latestMag?.coverImage?.formats?.medium?.url ||
-                  latestMag?.coverImage?.url
-                }
-                alt={latestMag.Title}
-                className="w-auto h-48 mx-auto object-contain rounded shadow-lg mb-4"
-              />
+              <div className="my-4 relative group">
+                <img
+                  src={
+                    latestMag?.coverImage?.formats?.medium?.url ||
+                    latestMag?.coverImage?.url
+                  }
+                  alt={latestMag.Title}
+                  className="w-auto h-52 mx-auto object-contain rounded-lg shadow-2xl transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
 
-              <p className="font-bold serif-title text-xl mb-2">
+              <p className="font-bold serif-title text-lg sm:text-xl text-white mb-2 line-clamp-2">
                 {latestMag.Title}
               </p>
 
-              <a
-                href={latestMag.pdf?.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 bg-primary text-white px-6 py-3 text-xs font-bold uppercase rounded hover:opacity-90"
-              >
-                Download PDF
-              </a>
+              {latestMag.pdf?.url && (
+                <a
+                  href={latestMag.pdf.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 mt-4 w-full bg-primary hover:bg-[#152a4f] text-white px-5 py-2.5 text-xs font-bold uppercase rounded-xl transition-all duration-300 shadow-md"
+                >
+                  <span className="material-icons text-sm">download</span>
+                  Download PDF
+                </a>
+              )}
             </>
           )}
         </div>

@@ -14,6 +14,8 @@ import {
   Target,
   TrendingUp,
   User,
+  Linkedin,
+  Youtube,
 } from 'lucide-react'
 
 interface TeamMember {
@@ -227,11 +229,30 @@ const AboutUs: React.FC = () => {
                 <div>
                   <h3 className="text-2xl font-black tracking-tight">Laura Stein</h3>
                   <p className="text-[#C59B27] font-bold text-xs uppercase tracking-wider mt-1">
-                    Founder & President
+                    Founder &amp; President
                   </p>
                   <p className="text-xs text-slate-300 mt-1 flex items-center justify-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-[#C59B27]" /> 30+ Years Industry Experience
                   </p>
+                </div>
+                {/* Laura Stein LinkedIn & YouTube Links */}
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <a
+                    href="https://www.linkedin.com/in/laura-stein-b4867313"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-[#0A66C2] hover:bg-[#084e96] text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all shadow-md hover:scale-105"
+                  >
+                    <Linkedin className="w-3.5 h-3.5" /> LinkedIn
+                  </a>
+                  <a
+                    href="https://www.youtube.com/watch?v=KzyysYdoLzI"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-[#FF0000] hover:bg-[#cc0000] text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all shadow-md hover:scale-105"
+                  >
+                    <Youtube className="w-3.5 h-3.5" /> Watch Video
+                  </a>
                 </div>
                 {/* Expertise Badges */}
                 <div className="flex flex-wrap gap-1.5 justify-center mt-2">

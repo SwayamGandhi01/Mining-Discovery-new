@@ -173,6 +173,29 @@ const ContactUs: React.FC = () => {
               <p className="text-slate-300">Address: 180 Lafayette Street, Passaic, New Jersey 07055, USA</p>
             </div>
 
+            {/* Social & Media Links */}
+            <div className="mb-6">
+              <p className="text-amber-400 font-semibold mb-2">Connect with Laura Stein:</p>
+              <div className="flex gap-3 flex-wrap">
+                <a
+                  href="https://www.linkedin.com/in/laura-stein-b4867313"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#0A66C2] hover:bg-[#084e96] text-white px-4 py-2 rounded text-xs font-bold transition flex items-center gap-1.5"
+                >
+                  LinkedIn Profile
+                </a>
+                <a
+                  href="https://www.youtube.com/watch?v=KzyysYdoLzI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#FF0000] hover:bg-[#cc0000] text-white px-4 py-2 rounded text-xs font-bold transition flex items-center gap-1.5"
+                >
+                  YouTube Feature
+                </a>
+              </div>
+            </div>
+
             {/* Map */}
             <div className="mt-8">
               <button className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded text-sm mb-4 transition">
