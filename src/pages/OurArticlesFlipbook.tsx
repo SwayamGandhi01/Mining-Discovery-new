@@ -31,9 +31,15 @@ type OurArticlesFlipbookProps = {
 }
 
 const getImageUrl = (item: OurArticle): string | null => {
-  const imgObj = item.image || item.coverImage || item.media
-  if (!imgObj) return null
-  const url = imgObj?.formats?.medium?.url || imgObj?.formats?.small?.url || imgObj?.url
+  const rawImg = item.coverImage || item.image || item.media
+  if (!rawImg) return null
+  const imgObj = rawImg?.data?.attributes || rawImg?.attributes || rawImg
+  const url =
+    imgObj?.formats?.medium?.url ||
+    imgObj?.formats?.small?.url ||
+    imgObj?.formats?.thumbnail?.url ||
+    imgObj?.formats?.large?.url ||
+    imgObj?.url
   if (!url) return null
   return url.startsWith('http') ? url : `${BASE_URL}${url}`
 }

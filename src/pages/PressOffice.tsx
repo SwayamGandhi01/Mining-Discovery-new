@@ -13,10 +13,6 @@ const PressOffice: React.FC = () => {
       description: 'Laura\'s Liaisons is a global digital platform and event organizer connecting investors, explorers, and industry innovators. It offers project-matching tools, digital branding solutions, and networking opportunities to help early-stage mining ventures attract investment and build visibility through curated showcases and strategic partnerships.',
     },
     {
-      name: 'U.S. Gold Corp',
-      description: 'U.S. Gold specializes in gold exploration and development across the United States, including the Keysite QE Gold Project in Wyoming. CEO George Scan leads a team with extensive mine-building experience, focusing on permitting milestones and rare earth production. The company also develops the Keystone project in Nevada and the Chalice project in Idaho.',
-    },
-    {
       name: 'Freyr Metals',
       description: 'Freyr Metals is a Canadian exploration company focused on developing the high-grade Ni-Cu Copper-PGM-Gold Nickel Risk project in Quebec. With a strong technical foundation and a commitment to environmental stewardship, the company aims to advance this project toward development. Canada\'s most major polymetallic mine.',
     },

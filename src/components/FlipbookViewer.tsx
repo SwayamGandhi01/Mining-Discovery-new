@@ -77,6 +77,8 @@ export default function FlipbookViewer({
   const [error, setError] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [pageSize, setPageSize] = useState<PageSize>({ width: 420, height: 594 })
+  const [visiblePageCount, setVisiblePageCount] = useState(2)
+  const [loadProgress, setLoadProgress] = useState(0)
 
   const goNext = useCallback(() => {
     if (isMobile) {
@@ -107,6 +109,16 @@ export default function FlipbookViewer({
     window.addEventListener('resize', setFromViewport)
     return () => window.removeEventListener('resize', setFromViewport)
   }, [])
+
+  useEffect(() => {
+    if (isMobile || numPages <= 2) return
+
+    const timer = window.setTimeout(() => {
+      setVisiblePageCount((prev) => Math.min(numPages, prev + 2))
+    }, 120)
+
+    return () => window.clearTimeout(timer)
+  }, [isMobile, numPages, visiblePageCount])
 
   const isFirst = isMobile ? currentPage === 1 : rawIdx === 0
   const isLast = isMobile ? currentPage >= numPages : numPages > 0 && rawIdx >= numPages - 2
@@ -177,10 +189,17 @@ export default function FlipbookViewer({
                 file={pdfUrl}
                 onLoadSuccess={(pdf) => {
                   setNumPages(pdf.numPages)
+                  setVisiblePageCount(Math.min(2, pdf.numPages || 2))
                   setCurrentPage(1)
                   setRawIdx(0)
+                  setLoadProgress(100)
                   setLoading(false)
                   setError(false)
+                }}
+                onLoadProgress={({ loaded, total }) => {
+                  if (total) {
+                    setLoadProgress(Math.round((loaded / total) * 100))
+                  }
                 }}
                 onLoadError={() => {
                   setLoading(false)
@@ -190,9 +209,10 @@ export default function FlipbookViewer({
               >
                 {loading ? (
                   <div className="flex min-h-[320px] items-center justify-center rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-center gap-3 text-center">
                       <Loader2 className="h-5 w-5 animate-spin text-[#1E3B6E]" />
-                      <span>Loading article…</span>
+                      <span>Preparing the flipbook…</span>
+                      {loadProgress > 0 ? <span className="text-sm text-slate-500">{loadProgress}% ready</span> : null}
                     </div>
                   </div>
                 ) : error ? (
@@ -209,6 +229,7 @@ export default function FlipbookViewer({
                             width={typeof window !== 'undefined' ? Math.min(pageSize.width, window.innerWidth - 28) : pageSize.width}
                             renderTextLayer={false}
                             renderAnnotationLayer={false}
+                            renderMode="canvas"
                           />
                         </div>
                       </div>
@@ -226,7 +247,7 @@ export default function FlipbookViewer({
                         startZIndex={0}
                         onFlip={(event: { data: number }) => setRawIdx(event.data)}
                       >
-                        {Array.from({ length: numPages }, (_, index) => (
+                        {Array.from({ length: visiblePageCount }, (_, index) => (
                           <div
                             key={index}
                             className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm"
@@ -237,6 +258,7 @@ export default function FlipbookViewer({
                               width={pageSize.width}
                               renderTextLayer={false}
                               renderAnnotationLayer={false}
+                              renderMode="canvas"
                             />
                           </div>
                         ))}

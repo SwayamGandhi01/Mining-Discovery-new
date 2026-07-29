@@ -9,6 +9,7 @@ import RegionalIntelligence from './components/RegionalIntelligence'
 import EditorsPicks from './components/EditorsPicks'
 import Newsletter from './components/Newsletter'
 import OurArticlesSection from './components/OurArticlesSection'
+import MetalNewsSections from './components/MetalNewsSections'
 import Footer from './components/Footer'
 import BreakingNews from './components/BreakingNews'
 import TrustedBrands from './components/TrustedBrands'
@@ -228,6 +229,7 @@ export default function App(): JSX.Element {
         <EditorsPicks />
         <Newsletter />
         <OurArticlesSection onArticleClick={openFlipbook} />
+        <MetalNewsSections onArticleClick={openArticle} />
       </main>
 
       <TrustedBrands />
