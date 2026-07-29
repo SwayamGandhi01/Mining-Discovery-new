@@ -104,10 +104,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
             <span>
               {news.publishedAt
                 ? new Date(news.publishedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
                 : ""}
             </span>
           </div>

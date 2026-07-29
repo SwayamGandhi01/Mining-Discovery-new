@@ -94,11 +94,10 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
             <button
               key={cat.slug}
               onClick={() => setActiveCategory(cat.slug)}
-              className={`text-xs sm:text-sm font-bold px-4 py-2 rounded-full transition-all duration-300 whitespace-nowrap ${
-                activeCategory === cat.slug
+              className={`text-xs sm:text-sm font-bold px-4 py-2 rounded-full transition-all duration-300 whitespace-nowrap ${activeCategory === cat.slug
                   ? "bg-primary text-white shadow-md shadow-primary/20"
                   : "bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
+                }`}
             >
               {cat.label}
             </button>

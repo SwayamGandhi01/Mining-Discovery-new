@@ -1,5 +1,6 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react'
 import Header from './components/Header'
+import AnnouncementBar from './components/AnnouncementBar'
 import LeftColumn from './components/LeftColumn'
 import HeroSection from './components/HeroSection'
 import RightColumn from './components/RightColumn'
@@ -27,6 +28,7 @@ const NewsletterEmailBlast = lazy(() => import('./pages/NewsletterEmailBlast'))
 const AboutUs = lazy(() => import('./pages/AboutUs'))
 const ContactUs = lazy(() => import('./pages/ContactUs'))
 const OurArticles = lazy(() => import('./pages/OurArticles'))
+const SearchResults = lazy(() => import('./pages/SearchResults'))
 
 const PageFallback = () => (
   <div className="min-h-[60vh] flex items-center justify-center">
@@ -47,6 +49,10 @@ const NewsletterPage = () => (
 
 export default function App(): JSX.Element {
   const [route, setRoute] = useState<string>(window.location.pathname || '/')
+  const [searchQuery, setSearchQuery] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('q')?.trim() || ''
+  })
   const [documentId, setDocumentId] = useState<string | null>(null)
   const [categorySlug, setCategorySlug] = useState<string | null>(null)
 
@@ -54,6 +60,9 @@ export default function App(): JSX.Element {
     const onRoute = () => {
       const path = window.location.pathname || '/'
       setRoute(path)
+
+      const params = new URLSearchParams(window.location.search)
+      setSearchQuery(params.get('q')?.trim() || '')
 
       // Parse documentId from path like /article/sx6gn6ckwbiljfpq226eqzbz
       const articleMatch = path.match(/^\/article\/(.+)$/)
@@ -89,7 +98,8 @@ export default function App(): JSX.Element {
 
   const renderPage = (Component: React.ComponentType<any>, props = {}) => (
     <div>
-      <Header />
+      <AnnouncementBar />
+      <Header initialSearchQuery={searchQuery} />
       <BreakingNews />
       <Suspense fallback={<PageFallback />}>
         <Component {...props} />
@@ -103,6 +113,9 @@ export default function App(): JSX.Element {
 
   // Category news page
   if (categorySlug) return renderPage(CategoryNews, { categorySlug })
+
+  const isSearchPage = route === '/search'
+  if (isSearchPage) return renderPage(SearchResults, { query: searchQuery, onArticleClick: openArticle })
 
   const isMagPage = route === '/magazines'
   const isOurArticlesPage = route === '/our-articles'
@@ -136,7 +149,8 @@ export default function App(): JSX.Element {
 
   return (
     <div className="overflow-x-hidden">
-      <Header />
+      <AnnouncementBar />
+      <Header initialSearchQuery={searchQuery} />
       <BreakingNews />
       <main className="max-w-7xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mb-10 sm:mb-12 lg:items-stretch">

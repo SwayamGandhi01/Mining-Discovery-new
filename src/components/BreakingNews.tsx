@@ -9,7 +9,8 @@ export default function BreakingNews(): JSX.Element {
       try {
         const data = await cachedFetch(
           "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=8",
-          { onUpdate: (fresh: any) => {
+          {
+            onUpdate: (fresh: any) => {
               const titles = (fresh.data || []).map((item: any) => item.title).filter(Boolean);
               if (titles.length > 0) setHeadlines(titles);
             }

@@ -95,7 +95,7 @@ export async function cachedFetch<T = any>(
           options.onUpdate(freshData)
         }
       })
-      .catch(() => {})
+      .catch(() => { })
 
     return cached.data
   }

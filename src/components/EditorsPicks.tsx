@@ -71,7 +71,7 @@ export default function EditorsPicks(): JSX.Element {
           </h3>
         </div>
       </div>
-      
+
       {loading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
@@ -95,16 +95,16 @@ export default function EditorsPicks(): JSX.Element {
           {picks.map((p) => {
             const imageUrl = getImageUrl(p)
             return (
-              <article 
-                key={p.documentId} 
+              <article
+                key={p.documentId}
                 className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 cursor-pointer shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group"
                 onClick={() => openArticle(p.documentId)}
               >
                 <div>
                   {imageUrl ? (
                     <div className="h-44 w-full overflow-hidden rounded-xl mb-4 bg-slate-100 dark:bg-slate-800 shadow-inner">
-                      <img 
-                        src={imageUrl} 
+                      <img
+                        src={imageUrl}
                         alt={p.title}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />

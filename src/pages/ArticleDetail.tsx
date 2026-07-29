@@ -179,10 +179,10 @@ export default function ArticleDetail({
                 <p className="text-sm text-slate-500">
                   {article.publishedAt
                     ? new Date(article.publishedAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
                     : ""}
                 </p>
               </div>

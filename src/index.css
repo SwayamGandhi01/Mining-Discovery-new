@@ -37,7 +37,37 @@
     transform: translateX(-50%);
   }
 }
+.announcement-marquee-wrapper {
+  overflow: hidden;
+  position: relative;
+}
 
+.announcement-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+  white-space: nowrap;
+  animation: announcementScroll 45s linear infinite;
+  will-change: transform;
+}
+
+.announcement-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.announcement-marquee-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+@keyframes announcementScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 .logo-marquee-track {
   display: flex;
   align-items: center;

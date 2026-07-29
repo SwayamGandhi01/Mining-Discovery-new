@@ -7,18 +7,36 @@ interface NewsCategory {
   slug: string
 }
 
+interface HeaderProps {
+  initialSearchQuery?: string
+}
+
 const navigate = (path: string) => {
   window.history.pushState(null, '', path)
   window.dispatchEvent(new PopStateEvent('popstate'))
   window.scrollTo(0, 0)
 }
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [magazineDropdownOpen, setMagazineDropdownOpen] = useState(false)
   const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
   const [categories, setCategories] = useState<NewsCategory[]>([])
+  const [searchInput, setSearchInput] = useState(initialSearchQuery)
+
+  useEffect(() => {
+    setSearchInput(initialSearchQuery)
+  }, [initialSearchQuery])
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const trimmed = searchInput.trim()
+    if (!trimmed) return
+
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`)
+    setMobileOpen(false)
+  }
 
   const servicesMenuItems = [
     { label: 'Investor Campaign', href: '/investor-campaigns' },
@@ -177,18 +195,56 @@ const Header: React.FC = () => {
           >CONTACT US</a>
         </nav>
 
+        <div className="hidden md:flex items-center justify-end flex-shrink-0 max-w-[360px] w-full">
+          <form onSubmit={handleSearchSubmit} className="w-full flex items-center gap-2">
+            <label htmlFor="nav-search" className="sr-only">Search articles</label>
+            <input
+              id="nav-search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              type="text"
+              placeholder="Search articles..."
+              className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+            />
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-white transition hover:opacity-95"
+            >
+              <span className="material-icons text-base">search</span>
+              Search
+            </button>
+          </form>
+        </div>
+
         {/* Mobile menu button - always on right side on mobile */}
         <div className="flex-shrink-0 flex items-center justify-end md:hidden">
           <button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
             <span className="material-icons">{mobileOpen ? 'close' : 'menu'}</span>
           </button>
         </div>
-        {/* Desktop spacer to help center nav */}
-        <div className="hidden md:block flex-shrink-0 w-32 lg:w-48" />
       </div>
 
       {mobileOpen && (
         <div id="mobile-menu" className="md:hidden bg-white dark:bg-background-dark/80 border-t border-slate-200 dark:border-slate-800 px-4 py-4">
+          <div className="mb-4">
+            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+              <label htmlFor="mobile-nav-search" className="sr-only">Search articles</label>
+              <input
+                id="mobile-nav-search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                type="text"
+                placeholder="Search articles"
+                className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+              />
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-white transition hover:opacity-95"
+              >
+                <span className="material-icons text-base">search</span>
+              </button>
+            </form>
+          </div>
           <nav className="flex flex-col space-y-3 pt-2">
             {/* Mobile News Dropdown */}
             <div>
