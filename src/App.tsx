@@ -68,6 +68,12 @@ export default function App(): JSX.Element {
       const path = window.location.pathname || '/'
       setRoute(path)
 
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      })
+
       const params = new URLSearchParams(window.location.search)
       setSearchQuery(params.get('q')?.trim() || '')
 

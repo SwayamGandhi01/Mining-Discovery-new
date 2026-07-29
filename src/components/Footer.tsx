@@ -1,6 +1,12 @@
 import React from 'react'
 import SubscribeFormCard from './SubscribeFormCard'
 
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+}
+
 const Footer: React.FC = () => {
   return (
     <footer className="bg-slate-900 text-white py-12 sm:py-16">
@@ -32,32 +38,32 @@ const Footer: React.FC = () => {
             </div>
 
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-primary">News</h4>
+              <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-primary">Explore</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><a className="hover:text-white" href="#">Gold &amp; Silver</a></li>
-                <li><a className="hover:text-white" href="#">Copper &amp; Zinc</a></li>
-                <li><a className="hover:text-white" href="#">Energy Minerals</a></li>
-                <li><a className="hover:text-white" href="#">ESG Reports</a></li>
+                <li><a className="hover:text-white" href="/" onClick={(e) => { e.preventDefault(); navigate('/') }}>Home</a></li>
+                <li><a className="hover:text-white" href="/magazines" onClick={(e) => { e.preventDefault(); navigate('/magazines') }}>Magazines</a></li>
+                <li><a className="hover:text-white" href="/our-articles" onClick={(e) => { e.preventDefault(); navigate('/our-articles') }}>Our Articles</a></li>
+                <li><a className="hover:text-white" href="/newsletter-page" onClick={(e) => { e.preventDefault(); navigate('/newsletter-page') }}>Newsletter</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-primary">Regions</h4>
+              <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-primary">Services</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><a className="hover:text-white" href="#">United Kingdom</a></li>
-                <li><a className="hover:text-white" href="#">Australia &amp; Asia</a></li>
-                <li><a className="hover:text-white" href="#">Americas</a></li>
-                <li><a className="hover:text-white" href="#">Africa</a></li>
+                <li><a className="hover:text-white" href="/services" onClick={(e) => { e.preventDefault(); navigate('/services') }}>Services</a></li>
+                <li><a className="hover:text-white" href="/investor-campaigns" onClick={(e) => { e.preventDefault(); navigate('/investor-campaigns') }}>Investor Campaigns</a></li>
+                <li><a className="hover:text-white" href="/news-syndication" onClick={(e) => { e.preventDefault(); navigate('/news-syndication') }}>News Syndication</a></li>
+                <li><a className="hover:text-white" href="/digital-branding" onClick={(e) => { e.preventDefault(); navigate('/digital-branding') }}>Digital Branding</a></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-primary">Company</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><a className="hover:text-white" href="#">About Us</a></li>
-                <li><a className="hover:text-white" href="#">Editorial Team</a></li>
-                <li><a className="hover:text-white" href="#">Advertise</a></li>
-                <li><a className="hover:text-white" href="#">Contact</a></li>
+                <li><a className="hover:text-white" href="/about-us" onClick={(e) => { e.preventDefault(); navigate('/about-us') }}>About Us</a></li>
+                <li><a className="hover:text-white" href="/company-profile" onClick={(e) => { e.preventDefault(); navigate('/company-profile') }}>Company Profile</a></li>
+                <li><a className="hover:text-white" href="/contact-us" onClick={(e) => { e.preventDefault(); navigate('/contact-us') }}>Contact</a></li>
+                <li><a className="hover:text-white" href="/ceo-profile" onClick={(e) => { e.preventDefault(); navigate('/ceo-profile') }}>CEO Profile</a></li>
               </ul>
             </div>
           </div>
@@ -70,10 +76,10 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
           <p>© 2024 Laura's Liaisons Media Group. All rights reserved.</p>
-          <div className="flex space-x-6">
-            <a className="hover:text-primary" href="#">Privacy Policy</a>
-            <a className="hover:text-primary" href="#">Terms of Service</a>
-            <a className="hover:text-primary" href="#">Cookie Settings</a>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+            <a className="hover:text-primary" href="/about-us" onClick={(e) => { e.preventDefault(); navigate('/about-us') }}>About Us</a>
+            <a className="hover:text-primary" href="/contact-us" onClick={(e) => { e.preventDefault(); navigate('/contact-us') }}>Contact</a>
+            <a className="hover:text-primary" href="/services" onClick={(e) => { e.preventDefault(); navigate('/services') }}>Services</a>
           </div>
         </div>
       </div>
