@@ -8,6 +8,7 @@ import NewsGrid from './components/NewsGrid'
 import RegionalIntelligence from './components/RegionalIntelligence'
 import EditorsPicks from './components/EditorsPicks'
 import Newsletter from './components/Newsletter'
+import OurArticlesSection from './components/OurArticlesSection'
 import Footer from './components/Footer'
 import BreakingNews from './components/BreakingNews'
 import TrustedBrands from './components/TrustedBrands'
@@ -162,6 +163,7 @@ export default function App(): JSX.Element {
         <RegionalIntelligence />
         <EditorsPicks />
         <Newsletter />
+        <OurArticlesSection onArticleClick={openArticle} />
       </main>
 
       <TrustedBrands />

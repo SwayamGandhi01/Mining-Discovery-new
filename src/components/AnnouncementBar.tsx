@@ -74,7 +74,7 @@ export default function AnnouncementBar({ socialLinks = defaultSocialLinks }: An
           </div>
         </div>
 
-        <div className="flex items-center gap-2 justify-end flex-wrap">
+        <div className="hidden md:flex items-center gap-2 justify-end flex-wrap">
           <a href={socialLinks.facebook} aria-label="Facebook" className="inline-flex items-center justify-center rounded-full bg-slate-900 p-2 text-slate-100 transition hover:bg-slate-800">
             <Facebook className="h-4 w-4" />
           </a>
