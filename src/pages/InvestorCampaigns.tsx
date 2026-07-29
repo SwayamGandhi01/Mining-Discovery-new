@@ -234,10 +234,10 @@ const InvestorCampaigns: React.FC = () => {
             Join a growing community of investors backing the future of mining intelligence
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition">
+            <button className="bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-8 py-3 rounded font-semibold transition">
               Get Started
             </button>
-            <button className="border border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white px-8 py-3 rounded font-semibold transition">
+            <button className="border border-[#1E3B6E] text-[#1E3B6E] hover:bg-[#1E3B6E] hover:text-white px-8 py-3 rounded font-semibold transition">
               Learn More
             </button>
           </div>

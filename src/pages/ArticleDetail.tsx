@@ -167,7 +167,7 @@ export default function ArticleDetail({
 
             {/* Author Info */}
             <div className="flex items-center gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#C59B27] to-amber-700 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#1E3B6E] to-[#3B82F6] rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                 <span className="text-sm font-extrabold text-white">
                   L
                 </span>

@@ -90,7 +90,7 @@ const ConferenceMediaCoverage: React.FC = () => {
       <section className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 text-white py-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">Conference Media Coverage</h1>
-          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-amber-400">
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-[#3B82F6]">
             Amplify Mining Conferences
           </h2>
           <p className="text-lg mb-8 text-slate-300 max-w-3xl mx-auto">
@@ -105,7 +105,7 @@ const ConferenceMediaCoverage: React.FC = () => {
       {/* Our Approach */}
       <section className="py-12 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-3">Our Approach</h2>
-        <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
+        <p className="text-center text-[#1E3B6E] dark:text-[#3B82F6] text-sm mb-8">
           Comprehensive coverage planning, during, and after to event to maximize impact
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -126,7 +126,7 @@ const ConferenceMediaCoverage: React.FC = () => {
       <section className="py-12 bg-slate-50 dark:bg-slate-900">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-3">Distribution Channels</h2>
-          <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
+          <p className="text-center text-[#1E3B6E] dark:text-[#3B82F6] text-sm mb-8">
             We amplify your event to reach across multiple platforms
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -146,7 +146,7 @@ const ConferenceMediaCoverage: React.FC = () => {
       {/* Why Partner With Us */}
       <section className="py-12 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-3">Why Partner With Us</h2>
-        <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
+        <p className="text-center text-[#1E3B6E] dark:text-[#3B82F6] text-sm mb-8">
           We combine credibility, reach, and innovation to deliver unmatched coverage
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -155,8 +155,8 @@ const ConferenceMediaCoverage: React.FC = () => {
               key={idx}
               className={`rounded-lg p-6 ${
                 idx === 3
-                  ? 'bg-slate-50 dark:bg-slate-800 border-l-4 border-amber-600 col-span-1 md:col-span-2 lg:col-span-1 lg:col-start-2'
-                  : 'bg-slate-50 dark:bg-slate-800 border-l-4 border-amber-600'
+                  ? 'bg-slate-50 dark:bg-slate-800 border-l-4 border-[#1E3B6E] col-span-1 md:col-span-2 lg:col-span-1 lg:col-start-2'
+                  : 'bg-slate-50 dark:bg-slate-800 border-l-4 border-[#1E3B6E]'
               }`}
             >
               <h3 className="font-bold text-lg mb-2">{benefit.title}</h3>
@@ -169,14 +169,14 @@ const ConferenceMediaCoverage: React.FC = () => {
       {/* Proven Impact */}
       <section className="py-12 max-w-4xl mx-auto px-4">
         <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-lg p-8 mb-6">
-          <h2 className="text-2xl font-bold text-center mb-2 text-amber-400">Proven Impact</h2>
+          <h2 className="text-2xl font-bold text-center mb-2 text-[#3B82F6]">Proven Impact</h2>
           <p className="text-center text-slate-300 text-sm mb-8">
             Our coverage testimonials deliver engagement and results for organizers and sponsors
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {impactStats.map((stat, idx) => (
               <div key={idx} className="bg-slate-800 dark:bg-slate-700 rounded-lg p-6 text-center">
-                <div className="text-3xl font-bold text-amber-400 mb-2">{stat.number}</div>
+                <div className="text-3xl font-bold text-[#3B82F6] mb-2">{stat.number}</div>
                 <p className="text-sm text-slate-300">{stat.label}</p>
               </div>
             ))}
@@ -185,11 +185,11 @@ const ConferenceMediaCoverage: React.FC = () => {
 
         {/* Amplify Your Next Event */}
         <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-bold mb-3 text-amber-400">Amplify Your Next Event</h2>
+          <h2 className="text-2xl font-bold mb-3 text-[#3B82F6]">Amplify Your Next Event</h2>
           <p className="text-slate-300 mb-6">
             Partner with Laura's Liaisons to capture, share, and extend the reach of your next conference through expert coverage
           </p>
-          <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition">
+          <button className="bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-8 py-3 rounded font-semibold transition">
             Get Started
           </button>
         </div>
@@ -200,7 +200,7 @@ const ConferenceMediaCoverage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">CONFERENCE MEDIA GALLERY</h2>
           <div className="text-center mb-8">
-            <span className="bg-slate-900 dark:bg-slate-800 text-amber-400 px-4 py-2 rounded text-sm font-semibold inline-block">
+            <span className="bg-slate-900 dark:bg-slate-800 text-[#3B82F6] px-4 py-2 rounded text-sm font-semibold inline-block">
               The Mining Investment Event
             </span>
           </div>
@@ -226,7 +226,7 @@ const ConferenceMediaCoverage: React.FC = () => {
           <p className="text-lg text-slate-300 mb-8">
             Let Laura's Liaisons handle your event coverage and reach global mining industry stakeholders.
           </p>
-          <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition">
+          <button className="bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-8 py-3 rounded font-semibold transition">
             Contact Us
           </button>
         </div>

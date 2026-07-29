@@ -47,14 +47,14 @@ export default function BreakingNews(): JSX.Element {
                   <span key={idx} className="inline-flex items-center gap-2">
                     <span className="hover:underline cursor-pointer">{title}</span>
                     <span className="text-slate-400 font-normal mx-3 select-none">|</span>
-                    <span className="text-[#C59B27] text-[10px] select-none mr-1">▶</span>
+                    <span className="text-[#3B82F6] text-[10px] select-none mr-1">▶</span>
                   </span>
                 ))}
                 {headlines.map((title, idx) => (
                   <span key={`dup-${idx}`} className="inline-flex items-center gap-2">
                     <span className="hover:underline cursor-pointer">{title}</span>
                     <span className="text-slate-400 font-normal mx-3 select-none">|</span>
-                    <span className="text-[#C59B27] text-[10px] select-none mr-1">▶</span>
+                    <span className="text-[#3B82F6] text-[10px] select-none mr-1">▶</span>
                   </span>
                 ))}
               </>

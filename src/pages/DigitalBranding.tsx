@@ -114,7 +114,7 @@ const DigitalBranding: React.FC = () => {
       <section className="bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 py-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">Digital Branding</h1>
-          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-amber-600 dark:text-amber-500">
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-[#1E3B6E] dark:text-[#3B82F6]">
             Your identity, amplified
           </h2>
           <p className="text-lg mb-8 text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
@@ -129,7 +129,7 @@ const DigitalBranding: React.FC = () => {
       {/* Trust & Visibility Cards */}
       <section className="py-12 max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border-l-4 border-amber-600 bg-slate-50 dark:bg-slate-800 p-6 rounded">
+          <div className="border-l-4 border-[#1E3B6E] bg-slate-50 dark:bg-slate-800 p-6 rounded">
             <h3 className="font-bold text-xl mb-3">Trust</h3>
             <p className="text-slate-700 dark:text-slate-300">Build credibility with stakeholders and partners</p>
           </div>
@@ -144,7 +144,7 @@ const DigitalBranding: React.FC = () => {
       <section className="py-12 bg-slate-50 dark:bg-slate-900">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-3">What we offer</h2>
-          <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
+          <p className="text-center text-[#1E3B6E] dark:text-[#3B82F6] text-sm mb-8">
             We bring you need to access every digital branding and take each service to insightful audiences
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -171,9 +171,9 @@ const DigitalBranding: React.FC = () => {
           {workSteps.map((step, idx) => (
             <div
               key={idx}
-              className="bg-slate-50 dark:bg-slate-800 border border-amber-200 dark:border-amber-900 rounded-lg p-6"
+              className="bg-slate-50 dark:bg-slate-800 border border-[#BFDBFE] dark:border-[#1E3B6E]/50 rounded-lg p-6"
             >
-              <h3 className="font-bold text-amber-600 dark:text-amber-500 mb-2">{step.title}</h3>
+              <h3 className="font-bold text-[#1E3B6E] dark:text-[#3B82F6] mb-2">{step.title}</h3>
               <p className="text-sm text-slate-700 dark:text-slate-400">{step.description}</p>
             </div>
           ))}
@@ -202,11 +202,11 @@ const DigitalBranding: React.FC = () => {
 
             {/* Right Side */}
             <div>
-              <h3 className="text-2xl font-bold mb-6 text-amber-600 dark:text-amber-500">What you'll gain</h3>
+              <h3 className="text-2xl font-bold mb-6 text-[#1E3B6E] dark:text-[#3B82F6]">What you'll gain</h3>
               <ul className="space-y-3">
                 {whatYouGain.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <span className="text-amber-600 dark:text-amber-500 font-bold">✓</span>
+                    <span className="text-[#1E3B6E] dark:text-[#3B82F6] font-bold">✓</span>
                     <span className="text-slate-700 dark:text-slate-300">{item}</span>
                   </li>
                 ))}
@@ -219,12 +219,12 @@ const DigitalBranding: React.FC = () => {
       {/* Why Choose Mining Discovery */}
       <section className="py-12 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-3">Why choose Laura's Liaisons?</h2>
-        <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
+        <p className="text-center text-[#1E3B6E] dark:text-[#3B82F6] text-sm mb-8">
           We believe industry cruelty with modern digital marketing to make your brand stand out where it matters most
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {whyChoose.map((item, idx) => (
-            <div key={idx} className="bg-slate-50 dark:bg-slate-800 border border-amber-200 dark:border-amber-900 rounded-lg p-6 text-center">
+            <div key={idx} className="bg-slate-50 dark:bg-slate-800 border border-[#BFDBFE] dark:border-[#1E3B6E]/50 rounded-lg p-6 text-center">
               <h3 className="font-bold text-lg mb-2">{item.title}</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400">{item.description}</p>
             </div>
@@ -273,7 +273,7 @@ const DigitalBranding: React.FC = () => {
           <p className="text-lg text-slate-300 mb-8">
             Let's create a digital presence that tells your story and resonates with investors, partners, and the mining industry.
           </p>
-          <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition">
+          <button className="bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-8 py-3 rounded font-semibold transition">
             Get Started
           </button>
         </div>

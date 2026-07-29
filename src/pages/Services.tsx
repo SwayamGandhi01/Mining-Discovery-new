@@ -20,7 +20,7 @@ const Services: React.FC = () => {
       title: 'Social Media Marketing',
       description:
         'Create strategies that are optimized for both you and your consumers. Our team takes care of all social needs, be it monthly posts, strategies creation, or brand awareness and strengthening your brand.',
-      color: 'bg-primary-700',
+      color: 'bg-[#1E3B6E]',
     },
     {
       title: 'Google Ads & Paid Campaigns',
@@ -32,7 +32,7 @@ const Services: React.FC = () => {
       title: 'LinkedIn & Meta Ads',
       description:
         'Our team specializes in LinkedIn and advertising campaigns in both B2B and B2C industries in expanding roles. Connecting with professionals in engaging with a large audience but add it to brand impact.',
-      color: 'bg-primary-700',
+      color: 'bg-[#1E3B6E]',
     },
     {
       title: 'Logo & Visual Design',
@@ -44,7 +44,7 @@ const Services: React.FC = () => {
       title: 'Public Relations (PR)',
       description:
         'The public face that you compile in is core to the branding and success. A strong press release, press releases, and. This media contacts, press releases, and through features, we create credibility and exposure for your brand.',
-      color: 'bg-primary-700',
+      color: 'bg-[#1E3B6E]',
     },
     {
       title: 'Webinars & Events',
@@ -56,7 +56,7 @@ const Services: React.FC = () => {
       title: 'Website Development',
       description:
         'Your website is the centerpiece of your online presence. We use the latest technologies, secure, open, user-friendly, user-flexible, and conversion-focused options and business aims.',
-      color: 'bg-primary-700',
+      color: 'bg-[#1E3B6E]',
     },
     {
       title: 'App Development',
@@ -190,7 +190,7 @@ const Services: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {howWeWork.map((item, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl mb-4 text-primary">{item.icon}</div>
+                <div className="text-4xl mb-4 text-[#1E3B6E]">{item.icon}</div>
                 <h3 className="font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-300">{item.description}</p>
               </div>
@@ -207,8 +207,8 @@ const Services: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {whyChooseUs.map((item, index) => (
             <div key={index} className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-primary">✓</span>
+              <div className="w-16 h-16 bg-[#3B82F6]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl text-[#1E3B6E]">✓</span>
               </div>
               <h3 className="font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
               <p className="text-sm text-slate-600 dark:text-slate-300">{item.description}</p>
@@ -239,7 +239,7 @@ const Services: React.FC = () => {
                     {faq.id}. {faq.question}
                   </span>
                   <span
-                    className={`text-primary text-xl transition-transform ${
+                    className={`text-[#1E3B6E] text-xl transition-transform ${
                       expandedFAQ === faq.id ? 'rotate-180' : ''
                     }`}
                   >
@@ -265,7 +265,7 @@ const Services: React.FC = () => {
             Let's discuss how Laura's Liaisons can help your business—strategy, creative, and performance-to
             set your part.
           </p>
-          <button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold transition-colors">
+          <button className="bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-8 py-3 rounded-lg font-bold transition-colors">
             Contact Our Team
           </button>
         </div>

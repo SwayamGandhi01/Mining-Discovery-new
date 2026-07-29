@@ -29,6 +29,9 @@ const NewsletterEmailBlast = lazy(() => import('./pages/NewsletterEmailBlast'))
 const AboutUs = lazy(() => import('./pages/AboutUs'))
 const ContactUs = lazy(() => import('./pages/ContactUs'))
 const OurArticles = lazy(() => import('./pages/OurArticles'))
+const OurArticlesFlipbook = lazy(() => import('./pages/OurArticlesFlipbook'))
+const MagazineFlipbook = lazy(() => import('./pages/MagazineFlipbook'))
+const NewsletterFlipbook = lazy(() => import('./pages/NewsletterFlipbook'))
 const SearchResults = lazy(() => import('./pages/SearchResults'))
 
 const PageFallback = () => (
@@ -56,6 +59,9 @@ export default function App(): JSX.Element {
   })
   const [documentId, setDocumentId] = useState<string | null>(null)
   const [categorySlug, setCategorySlug] = useState<string | null>(null)
+  const [flipbookDocumentId, setFlipbookDocumentId] = useState<string | null>(null)
+  const [magazineFlipbookId, setMagazineFlipbookId] = useState<string | null>(null)
+  const [newsletterFlipbookId, setNewsletterFlipbookId] = useState<string | null>(null)
 
   useEffect(() => {
     const onRoute = () => {
@@ -70,8 +76,41 @@ export default function App(): JSX.Element {
       if (articleMatch) {
         setDocumentId(articleMatch[1])
         setCategorySlug(null)
+        setFlipbookDocumentId(null)
       } else {
         setDocumentId(null)
+      }
+
+      const flipbookMatch = path.match(/^\/flipbook\/(.+)$/)
+      if (flipbookMatch) {
+        setFlipbookDocumentId(flipbookMatch[1])
+        setMagazineFlipbookId(null)
+        setDocumentId(null)
+        setCategorySlug(null)
+      } else if (!articleMatch) {
+        setFlipbookDocumentId(null)
+      }
+
+      const magazineFlipbookMatch = path.match(/^\/magazine-flipbook\/(.+)$/)
+      if (magazineFlipbookMatch) {
+        setMagazineFlipbookId(magazineFlipbookMatch[1])
+        setNewsletterFlipbookId(null)
+        setFlipbookDocumentId(null)
+        setDocumentId(null)
+        setCategorySlug(null)
+      } else if (!flipbookMatch) {
+        setMagazineFlipbookId(null)
+      }
+
+      const newsletterFlipbookMatch = path.match(/^\/newsletter-flipbook\/(.+)$/)
+      if (newsletterFlipbookMatch) {
+        setNewsletterFlipbookId(newsletterFlipbookMatch[1])
+        setMagazineFlipbookId(null)
+        setFlipbookDocumentId(null)
+        setDocumentId(null)
+        setCategorySlug(null)
+      } else if (!magazineFlipbookMatch && !flipbookMatch) {
+        setNewsletterFlipbookId(null)
       }
 
       // Parse category slug from path like /news/evening-chatter
@@ -89,6 +128,21 @@ export default function App(): JSX.Element {
 
   const openArticle = (docId: string) => {
     window.history.pushState(null, '', `/article/${docId}`)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
+
+  const openFlipbook = (docId: string) => {
+    window.history.pushState(null, '', `/flipbook/${docId}`)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
+
+  const openMagazineFlipbook = (magazineId: string) => {
+    window.history.pushState(null, '', `/magazine-flipbook/${magazineId}`)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
+
+  const openNewsletterFlipbook = (newsletterId: string) => {
+    window.history.pushState(null, '', `/newsletter-flipbook/${newsletterId}`)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
@@ -111,6 +165,10 @@ export default function App(): JSX.Element {
 
   // Article detail page
   if (documentId) return renderPage(ArticleDetail, { documentId, onBack: closeArticle })
+
+  if (flipbookDocumentId) return renderPage(OurArticlesFlipbook, { documentId: flipbookDocumentId, onBack: () => window.history.back() })
+  if (magazineFlipbookId) return renderPage(MagazineFlipbook, { magazineId: magazineFlipbookId, onBack: () => window.history.back() })
+  if (newsletterFlipbookId) return renderPage(NewsletterFlipbook, { newsletterId: newsletterFlipbookId, onBack: () => window.history.back() })
 
   // Category news page
   if (categorySlug) return renderPage(CategoryNews, { categorySlug })
@@ -163,7 +221,7 @@ export default function App(): JSX.Element {
         <RegionalIntelligence />
         <EditorsPicks />
         <Newsletter />
-        <OurArticlesSection onArticleClick={openArticle} />
+        <OurArticlesSection onArticleClick={openFlipbook} />
       </main>
 
       <TrustedBrands />

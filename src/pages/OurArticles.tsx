@@ -103,21 +103,31 @@ export default function OurArticles(): JSX.Element {
     return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
   }
 
-  // Click handler to open PDF
+  // Click handler to open the flipbook viewer
   const handleArticleClick = (item: OurArticle) => {
+    if (item.documentId) {
+      navigate(`/flipbook/${item.documentId}`)
+      return
+    }
+
     const pdfUrl = getPdfUrl(item)
     if (pdfUrl) {
       window.open(pdfUrl, '_blank', 'noopener,noreferrer')
-    } else if (item.documentId) {
-      navigate(`/article/${item.documentId}`)
     }
   }
+
+  const visibleArticles = React.useMemo(() => {
+    return articles.filter((item) => {
+      const normalizedTitle = (item.Title || item.title || '').toLowerCase()
+      return !normalizedTitle.includes('u.s. gold') && !normalizedTitle.includes('us gold')
+    })
+  }, [articles])
 
   // Group articles by Month Year, sorted newest first
   const groupedArticles: GroupedArticles[] = React.useMemo(() => {
     const map = new Map<string, { articles: OurArticle[]; sortDate: number }>()
 
-    articles.forEach((item) => {
+    visibleArticles.forEach((item) => {
       const key = getMonthYear(item)
       const rawDate = item.publishDate || item.publishedAt || item.createdAt
       const timestamp = rawDate ? new Date(rawDate).getTime() : 0
@@ -140,7 +150,7 @@ export default function OurArticles(): JSX.Element {
         sortDate,
       }))
       .sort((a, b) => b.sortDate - a.sortDate)
-  }, [articles])
+  }, [visibleArticles])
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
@@ -252,12 +262,10 @@ export default function OurArticles(): JSX.Element {
                               {title}
                             </h4>
 
-                            {/* Download / Open Action Link */}
-                            {pdfUrl && (
-                              <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-[#1E3B6E] dark:text-[#3B82F6] group-hover:underline">
-                                <Download className="w-3 h-3" /> View PDF
-                              </span>
-                            )}
+                            {/* Flipbook / PDF Action Link */}
+                            <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-[#1E3B6E] dark:text-[#3B82F6] group-hover:underline">
+                              <Download className="w-3 h-3" /> {art.documentId ? 'Open flipbook' : pdfUrl ? 'View PDF' : 'Read article'}
+                            </span>
                           </div>
                         )
                       })}

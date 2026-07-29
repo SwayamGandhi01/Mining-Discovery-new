@@ -263,7 +263,7 @@ const NewsSyndication: React.FC = () => {
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">{channel.description}</p>
               <ul className="text-xs space-y-1">
                 {channel.details.map((detail, didx) => (
-                  <li key={didx} className="text-amber-600 dark:text-amber-500">
+                  <li key={didx} className="text-[#1E3B6E] dark:text-[#3B82F6]">
                     • {detail}
                   </li>
                 ))}
@@ -284,7 +284,7 @@ const NewsSyndication: React.FC = () => {
             {whyChoose.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white dark:bg-slate-800 border-l-4 border-amber-600 rounded-lg p-6"
+                className="bg-white dark:bg-slate-800 border-l-4 border-[#1E3B6E] rounded-lg p-6"
               >
                 <div className="text-4xl mb-3">{item.icon}</div>
                 <h3 className="font-bold text-lg mb-2">{item.title}</h3>
@@ -298,7 +298,7 @@ const NewsSyndication: React.FC = () => {
       {/* Amplification Tools */}
       <section className="py-12 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-3">Amplification Tools</h2>
-        <p className="text-center text-amber-600 dark:text-amber-500 text-sm mb-8">
+        <p className="text-center text-[#1E3B6E] dark:text-[#3B82F6] text-sm mb-8">
           Additional services to do extend reach and engagement
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -329,7 +329,7 @@ const NewsSyndication: React.FC = () => {
                 placeholder="Your Name"
                 value={formData.name}
                 onChange={handleFormChange}
-                className="px-4 py-2 rounded bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="px-4 py-2 rounded bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1E3B6E]"
               />
               <input
                 type="email"
@@ -337,7 +337,7 @@ const NewsSyndication: React.FC = () => {
                 placeholder="Your Email"
                 value={formData.email}
                 onChange={handleFormChange}
-                className="px-4 py-2 rounded bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="px-4 py-2 rounded bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1E3B6E]"
               />
               <input
                 type="text"
@@ -345,13 +345,13 @@ const NewsSyndication: React.FC = () => {
                 placeholder="Company"
                 value={formData.company}
                 onChange={handleFormChange}
-                className="px-4 py-2 rounded bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="px-4 py-2 rounded bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1E3B6E]"
               />
             </div>
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded font-semibold transition"
+                className="bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-8 py-3 rounded font-semibold transition"
               >
                 Get Started
               </button>

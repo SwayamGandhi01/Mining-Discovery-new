@@ -100,9 +100,9 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
         </h4>
       </div>
 
-      {renderArticle("GOLD", "text-amber-600 dark:text-amber-400", "bg-amber-500/10", gold)}
+      {renderArticle("GOLD", "text-[#1E3B6E] dark:text-[#3B82F6]", "bg-[#3B82F6]/10", gold)}
       {renderArticle("SILVER", "text-slate-600 dark:text-slate-300", "bg-slate-500/10", silver)}
-      {renderArticle("COPPER", "text-orange-600 dark:text-orange-400", "bg-orange-500/10", copper)}
+      {renderArticle("COPPER", "text-[#1E3B6E] dark:text-[#3B82F6]", "bg-[#3B82F6]/10", copper)}
     </div>
   );
 };

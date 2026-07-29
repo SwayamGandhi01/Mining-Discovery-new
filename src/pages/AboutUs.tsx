@@ -70,22 +70,22 @@ const AboutUs: React.FC = () => {
     {
       title: 'Illustrate the Industry',
       description: 'Shed insight on exploration, developments, and drilling to the industry.',
-      icon: <Eye className="w-6 h-6 text-[#C59B27]" />,
+      icon: <Eye className="w-6 h-6 text-[#3B82F6]" />,
     },
     {
       title: 'Insight Into Action',
       description: 'Empower the tools to feel forward thinking company awareness.',
-      icon: <TrendingUp className="w-6 h-6 text-[#C59B27]" />,
+      icon: <TrendingUp className="w-6 h-6 text-[#3B82F6]" />,
     },
     {
       title: 'Foster Transparency',
       description: 'Provide a clear view of company communications and community impact.',
-      icon: <ShieldCheck className="w-6 h-6 text-[#C59B27]" />,
+      icon: <ShieldCheck className="w-6 h-6 text-[#3B82F6]" />,
     },
     {
       title: 'Build Bridges',
       description: 'Connecting investors, developers, and the global mining ecosystem.',
-      icon: <Globe className="w-6 h-6 text-[#C59B27]" />,
+      icon: <Globe className="w-6 h-6 text-[#3B82F6]" />,
     },
   ]
 
@@ -93,27 +93,27 @@ const AboutUs: React.FC = () => {
     {
       title: 'Integrity',
       description: 'Truthful understanding above all else',
-      icon: <ShieldCheck className="w-5 h-5 text-[#C59B27]" />,
+      icon: <ShieldCheck className="w-5 h-5 text-[#3B82F6]" />,
     },
     {
       title: 'Clarity',
       description: 'Explain complex issues in plain, impactful language.',
-      icon: <Sparkles className="w-5 h-5 text-[#C59B27]" />,
+      icon: <Sparkles className="w-5 h-5 text-[#3B82F6]" />,
     },
     {
       title: 'Innovation',
       description: 'Adapting new tools and formats to keep coverage relevant.',
-      icon: <Compass className="w-5 h-5 text-[#C59B27]" />,
+      icon: <Compass className="w-5 h-5 text-[#3B82F6]" />,
     },
     {
       title: 'Respect',
       description: 'Consideration for communities, experts, and stakeholders.',
-      icon: <HeartHandshake className="w-5 h-5 text-[#C59B27]" />,
+      icon: <HeartHandshake className="w-5 h-5 text-[#3B82F6]" />,
     },
     {
       title: 'Partnership',
       description: 'Collaborating with industry leaders and decision makers.',
-      icon: <Building2 className="w-5 h-5 text-[#C59B27]" />,
+      icon: <Building2 className="w-5 h-5 text-[#3B82F6]" />,
     },
   ]
 
@@ -145,13 +145,13 @@ const AboutUs: React.FC = () => {
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
       {/* Hero Banner Section */}
       <section className="relative bg-gradient-to-br from-[#0B132B] via-[#1C2541] to-[#0B132B] text-white py-12 sm:py-20 overflow-hidden border-b border-slate-800">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#C59B27_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3B82F6_1px,transparent_1px)] [background-size:16px_16px]" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#C59B27]/10 text-[#C59B27] border border-[#C59B27]/30 text-xs font-bold px-4 py-1.5 rounded-full mb-5 sm:mb-6 uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/30 text-xs font-bold px-4 py-1.5 rounded-full mb-5 sm:mb-6 uppercase tracking-wider">
             <Award className="w-4 h-4" /> Global Mining Media & Investor Relations
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight mb-4 sm:mb-6 leading-tight">
-            ABOUT <span className="text-[#C59B27]">LAURA'S LIAISONS</span>
+            ABOUT <span className="text-[#3B82F6]">LAURA'S LIAISONS</span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
             Connecting mining companies, institutional investors, analysts, and industry professionals through unmatched relationships, rigorous communications, and strategic introductions.
@@ -163,17 +163,17 @@ const AboutUs: React.FC = () => {
       <section className="py-16 max-w-5xl mx-auto px-4">
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 sm:p-12 border border-slate-200/80 dark:border-slate-800 shadow-md">
           <div className="text-center max-w-3xl mx-auto">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#C59B27]">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#3B82F6]">
               OUR FOUNDING STORY
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2 mb-6">
               Origin of Laura's Liaisons
             </h2>
-            <div className="w-16 h-1 bg-[#C59B27] mx-auto rounded-full mb-8" />
+            <div className="w-16 h-1 bg-[#3B82F6] mx-auto rounded-full mb-8" />
             <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-normal">
               Laura's Liaisons was founded by <strong>Laura Stein</strong> — a veteran mining industry networking and investor relations professional with more than <strong>30 years of experience</strong> — alongside <strong>Gaurav Sharma</strong>, with a shared vision to bring clarity and depth to a field often clouded by noise and half-truths.
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed italic border-l-4 border-[#C59B27] pl-4 text-left my-6 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-r-lg">
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed italic border-l-4 border-[#3B82F6] pl-4 text-left my-6 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-r-lg">
               "We believed that mining isn't just about rocks and ore mines. It's about people, communities, economies, and the future of our planet. Drawing on Laura's extensive global network and Gaurav's digital media expertise, we set out to build a platform that honors all of that."
             </p>
           </div>
@@ -184,13 +184,13 @@ const AboutUs: React.FC = () => {
       <section className="py-16 bg-slate-100 dark:bg-slate-900/60 border-y border-slate-200/60 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#C59B27]">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#3B82F6]">
               LEADERSHIP
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
               Management Team
             </h2>
-            <div className="w-12 h-1 bg-[#C59B27] mx-auto rounded-full mt-3" />
+            <div className="w-12 h-1 bg-[#3B82F6] mx-auto rounded-full mt-3" />
           </div>
 
           {/* Laura Stein — Featured Leadership Card */}
@@ -198,18 +198,18 @@ const AboutUs: React.FC = () => {
             <div className="flex flex-col md:flex-row">
               {/* Left Column: Avatar & Tag Highlights */}
               <div className="w-full md:w-72 bg-gradient-to-b from-slate-900 to-[#1C2541] text-white flex flex-col items-center justify-start p-6 md:p-8 gap-4 flex-shrink-0 text-center relative">
-                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#C59B27] to-amber-700 p-1 shadow-xl mt-2">
-                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-3xl font-black text-[#C59B27]">
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#1E3B6E] to-[#3B82F6] p-1 shadow-xl mt-2">
+                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-3xl font-black text-[#3B82F6]">
                     LS
                   </div>
                 </div>
                 <div>
                   <h3 className="text-2xl font-black tracking-tight">Laura Stein</h3>
-                  <p className="text-[#C59B27] font-bold text-xs uppercase tracking-wider mt-1">
+                  <p className="text-[#3B82F6] font-bold text-xs uppercase tracking-wider mt-1">
                     Founder &amp; President
                   </p>
                   <p className="text-xs text-slate-300 mt-1 flex items-center justify-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#C59B27]" /> 30+ Years Industry Experience
+                    <Calendar className="w-3.5 h-3.5 text-[#3B82F6]" /> 30+ Years Industry Experience
                   </p>
                 </div>
 
@@ -242,7 +242,7 @@ const AboutUs: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
                   <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800">
                     <h4 className="font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-2 text-xs uppercase tracking-wider">
-                      <Briefcase className="w-4 h-4 text-[#C59B27]" /> Industry Experience
+                      <Briefcase className="w-4 h-4 text-[#3B82F6]" /> Industry Experience
                     </h4>
                     <ul className="text-slate-600 dark:text-slate-400 space-y-1.5 text-xs pl-1">
                       {[
@@ -253,7 +253,7 @@ const AboutUs: React.FC = () => {
                         'Conference organizers',
                       ].map((item) => (
                         <li key={item} className="flex items-start gap-1.5">
-                          <span className="text-[#C59B27] font-bold">▸</span>
+                          <span className="text-[#3B82F6] font-bold">▸</span>
                           {item}
                         </li>
                       ))}
@@ -262,7 +262,7 @@ const AboutUs: React.FC = () => {
 
                   <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800">
                     <h4 className="font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-2 text-xs uppercase tracking-wider">
-                      <Globe className="w-4 h-4 text-[#C59B27]" /> Major Conferences
+                      <Globe className="w-4 h-4 text-[#3B82F6]" /> Major Conferences
                     </h4>
                     <ul className="text-slate-600 dark:text-slate-400 space-y-1.5 text-xs pl-1">
                       {[
@@ -273,7 +273,7 @@ const AboutUs: React.FC = () => {
                         'North American & International Events',
                       ].map((item) => (
                         <li key={item} className="flex items-start gap-1.5">
-                          <span className="text-[#C59B27] font-bold">▸</span>
+                          <span className="text-[#3B82F6] font-bold">▸</span>
                           {item}
                         </li>
                       ))}
@@ -282,7 +282,7 @@ const AboutUs: React.FC = () => {
 
                   <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800">
                     <h4 className="font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-2 text-xs uppercase tracking-wider">
-                      <CheckCircle2 className="w-4 h-4 text-[#C59B27]" /> IR & Outreach Services
+                      <CheckCircle2 className="w-4 h-4 text-[#3B82F6]" /> IR & Outreach Services
                     </h4>
                     <ul className="text-slate-600 dark:text-slate-400 space-y-1.5 text-xs pl-1">
                       {[
@@ -293,7 +293,7 @@ const AboutUs: React.FC = () => {
                         'Corporate visibility programs',
                       ].map((item) => (
                         <li key={item} className="flex items-start gap-1.5">
-                          <span className="text-[#C59B27] font-bold">▸</span>
+                          <span className="text-[#3B82F6] font-bold">▸</span>
                           {item}
                         </li>
                       ))}
@@ -302,7 +302,7 @@ const AboutUs: React.FC = () => {
 
                   <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800">
                     <h4 className="font-bold text-slate-900 dark:text-white mb-2.5 flex items-center gap-2 text-xs uppercase tracking-wider">
-                      <Sparkles className="w-4 h-4 text-[#C59B27]" /> Recent Engagement
+                      <Sparkles className="w-4 h-4 text-[#3B82F6]" /> Recent Engagement
                     </h4>
                     <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
                       In early 2026, <strong>Spanish Mountain Gold Ltd.</strong> engaged Laura Stein to provide shareholder and investor communications — supporting engagement through email, social media, and conference participation.
@@ -320,13 +320,13 @@ const AboutUs: React.FC = () => {
                 key={idx}
                 className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col items-center text-center hover:shadow-md transition-shadow"
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C59B27] to-amber-700 p-1 shadow-md mb-4 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#1E3B6E] to-[#3B82F6] p-1 shadow-md mb-4 flex items-center justify-center">
                   <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-xl font-extrabold text-white">
                     {member.initials}
                   </div>
                 </div>
                 <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">{member.name}</h3>
-                <p className="text-[#C59B27] font-bold text-xs uppercase tracking-wider mt-1 mb-4">
+                <p className="text-[#3B82F6] font-bold text-xs uppercase tracking-wider mt-1 mb-4">
                   {member.title}
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -341,20 +341,20 @@ const AboutUs: React.FC = () => {
       {/* Our Purpose Section */}
       <section className="py-16 max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-[#C59B27]">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-[#3B82F6]">
             MISSION & VISION
           </span>
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Our Purpose</h2>
-          <div className="w-12 h-1 bg-[#C59B27] mx-auto rounded-full mt-3" />
+          <div className="w-12 h-1 bg-[#3B82F6] mx-auto rounded-full mt-3" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {purposes.map((purpose, idx) => (
             <div
               key={idx}
-              className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:border-[#C59B27]/40 hover:shadow-md transition-all flex flex-col items-center text-center"
+              className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:border-[#3B82F6]/40 hover:shadow-md transition-all flex flex-col items-center text-center"
             >
-              <div className="w-12 h-12 bg-[#C59B27]/10 rounded-full flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-[#3B82F6]/10 rounded-full flex items-center justify-center mb-4">
                 {purpose.icon}
               </div>
               <h3 className="font-bold text-base mb-2 text-slate-900 dark:text-white">{purpose.title}</h3>
@@ -370,11 +370,11 @@ const AboutUs: React.FC = () => {
       <section className="py-16 bg-slate-100 dark:bg-slate-900/60 border-y border-slate-200/60 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#C59B27]">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#3B82F6]">
               CORE VALUES
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Our Principles</h2>
-            <div className="w-12 h-1 bg-[#C59B27] mx-auto rounded-full mt-3" />
+            <div className="w-12 h-1 bg-[#3B82F6] mx-auto rounded-full mt-3" />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -383,7 +383,7 @@ const AboutUs: React.FC = () => {
                 key={idx}
                 className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200/80 dark:border-slate-700 shadow-sm text-center flex flex-col items-center justify-between"
               >
-                <div className="w-10 h-10 bg-[#C59B27]/10 rounded-full flex items-center justify-center mb-3">
+                <div className="w-10 h-10 bg-[#3B82F6]/10 rounded-full flex items-center justify-center mb-3">
                   {principle.icon}
                 </div>
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-1">
@@ -401,13 +401,13 @@ const AboutUs: React.FC = () => {
       {/* What Makes Us Unique Section */}
       <section className="py-16 max-w-5xl mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="text-xs font-extrabold uppercase tracking-widest text-[#C59B27]">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-[#3B82F6]">
             OUR DIFFERENCE
           </span>
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
             What Makes Us Unique
           </h2>
-          <div className="w-12 h-1 bg-[#C59B27] mx-auto rounded-full mt-3" />
+          <div className="w-12 h-1 bg-[#3B82F6] mx-auto rounded-full mt-3" />
         </div>
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-md">
@@ -424,7 +424,7 @@ const AboutUs: React.FC = () => {
                 className="flex flex-col md:grid md:grid-cols-12 px-4 sm:px-6 py-4 md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors gap-2 md:gap-0"
               >
                 <div className="md:col-span-5 font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#C59B27] flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#3B82F6] flex-shrink-0" />
                   {item.feature}
                 </div>
                 <div className="md:col-span-7 text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-6 md:pl-0">
@@ -442,7 +442,7 @@ const AboutUs: React.FC = () => {
       {/* Looking Ahead Banner */}
       <section className="py-16 max-w-5xl mx-auto px-4">
         <div className="bg-gradient-to-r from-slate-900 via-[#1C2541] to-slate-900 text-white rounded-2xl p-8 sm:p-12 text-center shadow-xl border border-slate-800 relative overflow-hidden">
-          <div className="w-16 h-1 bg-[#C59B27] mx-auto rounded-full mb-6" />
+          <div className="w-16 h-1 bg-[#3B82F6] mx-auto rounded-full mb-6" />
           <h2 className="text-2xl sm:text-4xl font-extrabold mb-4">Looking Ahead</h2>
           <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
             Laura's Liaisons aims to be the trusted global voice in mining — expanding coverage in Africa, Latin America, and Asia, developing advanced data tools, and building an engaged community that drives today's industry future.

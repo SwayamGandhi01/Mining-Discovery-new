@@ -162,7 +162,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-14 h-14 border-4 border-[#C59B27] border-t-transparent rounded-full animate-spin mx-auto mb-5" />
+          <div className="w-14 h-14 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto mb-5" />
           <p className="text-slate-400 font-medium tracking-wide">Loading articles…</p>
         </div>
       </div>
@@ -181,7 +181,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           <p className="text-slate-400 text-sm mb-6">{error}</p>
           <button
             onClick={() => navigate('/')}
-            className="inline-flex items-center gap-2 bg-[#C59B27] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#d4a83a] transition-colors"
+            className="inline-flex items-center gap-2 bg-[#3B82F6] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#d4a83a] transition-colors"
           >
             <ChevronLeft className="w-4 h-4" /> Back to Home
           </button>
@@ -204,13 +204,13 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}
         />
         {/* Gold accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#C59B27] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#3B82F6] to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           {/* Breadcrumb */}
           <button
             onClick={() => navigate('/')}
-            className="inline-flex items-center gap-1.5 text-slate-400 hover:text-[#C59B27] text-xs font-semibold uppercase tracking-widest transition-colors mb-8 group"
+            className="inline-flex items-center gap-1.5 text-slate-400 hover:text-[#3B82F6] text-xs font-semibold uppercase tracking-widest transition-colors mb-8 group"
           >
             <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
             Home
@@ -220,7 +220,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
 
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 bg-[#C59B27]/15 border border-[#C59B27]/30 text-[#C59B27] text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">
+              <div className="inline-flex items-center gap-2 bg-[#3B82F6]/15 border border-[#3B82F6]/30 text-[#3B82F6] text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">
                 <Tag className="w-3 h-3" />
                 Category
               </div>
@@ -257,7 +257,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                 key={f.key}
                 onClick={() => setActiveFilter(f.key)}
                 className={`shrink-0 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeFilter === f.key
-                    ? 'bg-[#C59B27] text-white shadow'
+                    ? 'bg-[#3B82F6] text-white shadow'
                     : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
               >
@@ -302,7 +302,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     {/* Badges */}
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <span className="bg-[#C59B27] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                      <span className="bg-[#3B82F6] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
                         Featured
                       </span>
                       {featured.pdfUrl && (
@@ -329,13 +329,13 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                         </>
                       )}
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white group-hover:text-[#C59B27] transition-colors duration-200 leading-tight mb-3 line-clamp-3">
+                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors duration-200 leading-tight mb-3 line-clamp-3">
                       {featured.title}
                     </h2>
                     <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed line-clamp-3 mb-4">
                       {featured.short_description}
                     </p>
-                    <span className="inline-flex items-center gap-1.5 text-[#C59B27] text-sm font-bold group-hover:gap-3 transition-all">
+                    <span className="inline-flex items-center gap-1.5 text-[#3B82F6] text-sm font-bold group-hover:gap-3 transition-all">
                       {featured.pdfUrl ? 'View PDF' : 'Read Article'}
                       <ArrowRight className="w-4 h-4" />
                     </span>
@@ -350,7 +350,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                       <article
                         key={article.id}
                         onClick={() => handleArticleClick(article)}
-                        className="group cursor-pointer flex gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 hover:border-[#C59B27]/50 hover:shadow-md transition-all duration-200"
+                        className="group cursor-pointer flex gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 hover:border-[#3B82F6]/50 hover:shadow-md transition-all duration-200"
                       >
                         <div className="relative w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700">
                           {imgUrl ? (
@@ -365,8 +365,8 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                           )}
                         </div>
                         <div className="flex flex-col justify-center min-w-0">
-                          <p className="text-[10px] text-[#C59B27] font-black uppercase tracking-wider mb-1">{formatDateShort(article.publishedAt)}</p>
-                          <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#C59B27] transition-colors line-clamp-2 leading-snug">
+                          <p className="text-[10px] text-[#3B82F6] font-black uppercase tracking-wider mb-1">{formatDateShort(article.publishedAt)}</p>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2 leading-snug">
                             {article.title}
                           </h3>
                           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{article.short_description}</p>
@@ -394,7 +394,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                       <article
                         key={article.id}
                         onClick={() => handleArticleClick(article)}
-                        className="group cursor-pointer bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-[#C59B27]/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                        className="group cursor-pointer bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-[#3B82F6]/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                       >
                         {/* Image */}
                         <div className="relative h-48 bg-slate-200 dark:bg-slate-700 overflow-hidden">
@@ -426,14 +426,14 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                               </>
                             )}
                           </div>
-                          <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-[#C59B27] transition-colors line-clamp-2 leading-snug mb-2">
+                          <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors line-clamp-2 leading-snug mb-2">
                             {article.title}
                           </h3>
                           <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
                             {article.short_description}
                           </p>
                           <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <span className="inline-flex items-center gap-1 text-[#C59B27] text-xs font-bold group-hover:gap-2 transition-all">
+                            <span className="inline-flex items-center gap-1 text-[#3B82F6] text-xs font-bold group-hover:gap-2 transition-all">
                               {article.pdfUrl ? 'View PDF' : 'Read more'}
                               <ArrowRight className="w-3.5 h-3.5" />
                             </span>

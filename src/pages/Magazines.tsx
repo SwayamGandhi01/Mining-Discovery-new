@@ -11,6 +11,12 @@ type Magazine = {
   pdf?: { url?: string; name?: string }
 }
 
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo(0, 0)
+}
+
 const CACHE_KEY = 'md_magazines_cache_v1'
 const API_URL = 'https://admins.miningdiscovery.com/api/magazines?populate=*&sort=publishedAt:desc'
 
@@ -83,6 +89,10 @@ export default function Magazines(): JSX.Element {
     }
   }, [])
 
+  const handleOpenFlipbook = (magazineId: number) => {
+    navigate(`/magazine-flipbook/${magazineId}`)
+  }
+
   async function handleDownloadPdf(url: string | undefined, filename?: string) {
     if (!url) return
     try {
@@ -137,7 +147,8 @@ export default function Magazines(): JSX.Element {
           {items.map((m) => (
             <article
               key={m.id}
-              className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between group"
+              onClick={() => handleOpenFlipbook(m.id)}
+              className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between group cursor-pointer"
             >
               <div>
                 {/* Cover Image */}
@@ -190,17 +201,21 @@ export default function Magazines(): JSX.Element {
                 <div className="flex gap-2.5 justify-center w-full mt-2">
                   {m.pdf?.url && (
                     <>
-                      <a
-                        href={m.pdf.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleOpenFlipbook(m.id)
+                        }}
                         className="flex-1 inline-flex items-center justify-center gap-1.5 bg-[#1E3B6E] hover:bg-[#2563EB] text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
                       >
                         <BookOpen className="w-4 h-4 flex-shrink-0" />
-                        Read PDF
-                      </a>
+                        Open flipbook
+                      </button>
                       <button
-                        onClick={() => handleDownloadPdf(m.pdf?.url, m.pdf?.name)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDownloadPdf(m.pdf?.url, m.pdf?.name)
+                        }}
                         className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-bold border border-slate-200/80 dark:border-slate-700 transition-all duration-200 whitespace-nowrap cursor-pointer"
                       >
                         <Download className="w-4 h-4 text-[#3B82F6] flex-shrink-0" />

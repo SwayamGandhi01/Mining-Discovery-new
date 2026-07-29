@@ -91,17 +91,23 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
   }, [])
 
   const handleArticleClick = (item: OurArticle) => {
+    if (item.documentId) {
+      onArticleClick?.(item.documentId)
+      return
+    }
+
     const pdfUrl = getPdfUrl(item)
     if (pdfUrl) {
       window.open(pdfUrl, '_blank', 'noopener,noreferrer')
-      return
-    }
-    if (item.documentId) {
-      onArticleClick?.(item.documentId)
     }
   }
 
-  const sortedArticles = [...articles].sort((a, b) => {
+  const visibleArticles = [...articles].filter((item) => {
+    const normalizedTitle = (item.Title || item.title || '').toLowerCase()
+    return !normalizedTitle.includes('u.s. gold') && !normalizedTitle.includes('us gold')
+  })
+
+  const sortedArticles = [...visibleArticles].sort((a, b) => {
     const aDate = new Date(a.publishDate || a.publishedAt || a.createdAt || 0).getTime()
     const bDate = new Date(b.publishDate || b.publishedAt || b.createdAt || 0).getTime()
     return bDate - aDate
@@ -175,7 +181,12 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
                         {title}
                       </h3>
                       <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        {pdfUrl ? (
+                        {item.documentId ? (
+                          <>
+                            <Download className="h-4 w-4 text-[#1E3B6E]" />
+                            <span>Open flipbook</span>
+                          </>
+                        ) : pdfUrl ? (
                           <>
                             <Download className="h-4 w-4 text-[#1E3B6E]" />
                             <span>Open PDF</span>

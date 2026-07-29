@@ -93,6 +93,11 @@ export default function CompanyProfiles(): JSX.Element {
     }
   }
 
+  const visibleProfiles = profiles.filter((profile) => {
+    const normalizedTitle = profile.title.toLowerCase()
+    return !normalizedTitle.includes('u.s. gold corp') && !normalizedTitle.includes('us gold corp')
+  })
+
   if (loading) {
     return (
       <main className="max-w-7xl mx-auto px-4 py-12">
@@ -129,7 +134,7 @@ export default function CompanyProfiles(): JSX.Element {
       {error && <div className="text-sm text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {profiles.map((profile) => {
+        {visibleProfiles.map((profile) => {
           const pdfUrl = profile.companyPdf?.[0]?.url
           const pdfName = profile.companyPdf?.[0]?.name
           const coverImageUrl = profile.cover_image?.[0]?.formats?.medium?.url || profile.cover_image?.[0]?.url
