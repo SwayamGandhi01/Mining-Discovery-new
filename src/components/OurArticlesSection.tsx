@@ -23,6 +23,11 @@ type OurArticle = {
 const API_URL = 'https://admins.miningdiscovery.com/api/our-artciles?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
 
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo(0, 0)
+}
 interface OurArticlesSectionProps {
   onArticleClick?: (documentId: string) => void
 }
@@ -112,12 +117,12 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
               Fresh insights and commentary from the Our Articles page, curated for the homepage.
             </p>
           </div>
-          <a
-            href="/our-articles"
+          <button
+            onClick={() => navigate('/our-articles')}
             className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
           >
             View all articles
-          </a>
+          </button>
         </div>
 
         {loading ? (
