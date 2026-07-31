@@ -51,13 +51,6 @@ const AboutUs: React.FC = () => {
         'Laura Stein is an investor relations, business development, and networking professional with more than 30 years of experience in the mining industry. She is best known as the founder and President of Laura\'s Liaisons, a company focused on connecting mining companies, investors, analysts, and industry professionals through conferences, introductions, and strategic relationship building. Her services include shareholder communications, investor introductions, conference networking, social media outreach, and corporate visibility programs. She has attended and networked at many of the industry\'s largest events, including PDAC (Toronto), Mines and Money, Precious Metals Summit, New Orleans Investment Conference, and various North American and international mining conferences. Laura has worked with junior exploration companies, gold, silver, copper, uranium and critical mineral companies, mining executives, investors, fund managers, analysts, mining media, and conference organizers. She is widely recognized for her extensive industry network, strong relationships with mining executives, and her commitment to supporting junior mining companies during financing and promotional campaigns.',
     },
     {
-      name: 'Chris Powell',
-      title: 'Chief Analyst & Advisor',
-      initials: 'CP',
-      description:
-        'Chris Powell has devoted decades as a managing editor, writer, and founding member of GATA. With extensive market expertise, he provides invaluable insights into gold, mineral markets, and global market protection.',
-    },
-    {
       name: 'Gaurav Sharma',
       title: 'Marketing Head',
       initials: 'GS',
@@ -313,7 +306,7 @@ const AboutUs: React.FC = () => {
             </div>
           </div>
 
-          {/* Chris Powell & Gaurav Sharma Grid */}
+        
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {teamMembers.slice(1).map((member, idx) => (
               <div
