@@ -33,6 +33,7 @@ const OurArticles = lazy(() => import('./pages/OurArticles'))
 const OurArticlesFlipbook = lazy(() => import('./pages/OurArticlesFlipbook'))
 const MagazineFlipbook = lazy(() => import('./pages/MagazineFlipbook'))
 const NewsletterFlipbook = lazy(() => import('./pages/NewsletterFlipbook'))
+const CompanyProfileFlipbook = lazy(() => import('./pages/CompanyProfileFlipbook'))
 const SearchResults = lazy(() => import('./pages/SearchResults'))
 
 const PageFallback = () => (
@@ -63,6 +64,7 @@ export default function App(): JSX.Element {
   const [flipbookDocumentId, setFlipbookDocumentId] = useState<string | null>(null)
   const [magazineFlipbookId, setMagazineFlipbookId] = useState<string | null>(null)
   const [newsletterFlipbookId, setNewsletterFlipbookId] = useState<string | null>(null)
+  const [companyFlipbookId, setCompanyFlipbookId] = useState<string | null>(null)
 
   useEffect(() => {
     const onRoute = () => {
@@ -78,55 +80,22 @@ export default function App(): JSX.Element {
       const params = new URLSearchParams(window.location.search)
       setSearchQuery(params.get('q')?.trim() || '')
 
-      // Parse documentId from path like /article/sx6gn6ckwbiljfpq226eqzbz
+      // Each of these prefixes is mutually exclusive, so every route state is derived
+      // from its own match and cleared when the path no longer matches it.
+      // e.g. /article/sx6gn6ckwbiljfpq226eqzbz, /news/evening-chatter
       const articleMatch = path.match(/^\/article\/(.+)$/)
-      if (articleMatch) {
-        setDocumentId(articleMatch[1])
-        setCategorySlug(null)
-        setFlipbookDocumentId(null)
-      } else {
-        setDocumentId(null)
-      }
-
       const flipbookMatch = path.match(/^\/flipbook\/(.+)$/)
-      if (flipbookMatch) {
-        setFlipbookDocumentId(flipbookMatch[1])
-        setMagazineFlipbookId(null)
-        setDocumentId(null)
-        setCategorySlug(null)
-      } else if (!articleMatch) {
-        setFlipbookDocumentId(null)
-      }
-
       const magazineFlipbookMatch = path.match(/^\/magazine-flipbook\/(.+)$/)
-      if (magazineFlipbookMatch) {
-        setMagazineFlipbookId(magazineFlipbookMatch[1])
-        setNewsletterFlipbookId(null)
-        setFlipbookDocumentId(null)
-        setDocumentId(null)
-        setCategorySlug(null)
-      } else if (!flipbookMatch) {
-        setMagazineFlipbookId(null)
-      }
-
       const newsletterFlipbookMatch = path.match(/^\/newsletter-flipbook\/(.+)$/)
-      if (newsletterFlipbookMatch) {
-        setNewsletterFlipbookId(newsletterFlipbookMatch[1])
-        setMagazineFlipbookId(null)
-        setFlipbookDocumentId(null)
-        setDocumentId(null)
-        setCategorySlug(null)
-      } else if (!magazineFlipbookMatch && !flipbookMatch) {
-        setNewsletterFlipbookId(null)
-      }
-
-      // Parse category slug from path like /news/evening-chatter
+      const companyFlipbookMatch = path.match(/^\/company-flipbook\/(.+)$/)
       const categoryMatch = path.match(/^\/news\/([^/]+)$/)
-      if (categoryMatch) {
-        setCategorySlug(categoryMatch[1])
-      } else {
-        setCategorySlug(null)
-      }
+
+      setDocumentId(articleMatch ? articleMatch[1] : null)
+      setFlipbookDocumentId(flipbookMatch ? flipbookMatch[1] : null)
+      setMagazineFlipbookId(magazineFlipbookMatch ? magazineFlipbookMatch[1] : null)
+      setNewsletterFlipbookId(newsletterFlipbookMatch ? newsletterFlipbookMatch[1] : null)
+      setCompanyFlipbookId(companyFlipbookMatch ? companyFlipbookMatch[1] : null)
+      setCategorySlug(categoryMatch ? categoryMatch[1] : null)
     }
     onRoute()
     window.addEventListener('popstate', onRoute)
@@ -176,6 +145,7 @@ export default function App(): JSX.Element {
   if (flipbookDocumentId) return renderPage(OurArticlesFlipbook, { documentId: flipbookDocumentId, onBack: () => window.history.back() })
   if (magazineFlipbookId) return renderPage(MagazineFlipbook, { magazineId: magazineFlipbookId, onBack: () => window.history.back() })
   if (newsletterFlipbookId) return renderPage(NewsletterFlipbook, { newsletterId: newsletterFlipbookId, onBack: () => window.history.back() })
+  if (companyFlipbookId) return renderPage(CompanyProfileFlipbook, { profileId: companyFlipbookId, onBack: () => window.history.back() })
 
   // Category news page
   if (categorySlug) return renderPage(CategoryNews, { categorySlug })

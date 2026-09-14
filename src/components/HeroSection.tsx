@@ -25,7 +25,23 @@ const mapHeroItem = (item: any): HeroNews => ({
   publishedAt: item.publish_on || item.publishedAt,
 });
 
-const HERO_URL = "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=1&populate=*";
+// Order by the editorial news date (`publish_on`) — the date the cover story
+// actually displays — and fall back to the CMS record timestamp to break ties
+// between stories filed on the same day. Sorting by `publishedAt` alone put
+// whichever story was entered last on the cover, even when its news date was
+// older than other stories on the page.
+//
+// `publish_on` nulls sort first on a descending sort, which would hand the
+// cover to an undated story, so they are filtered out (1 of 3245 at time of
+// writing).
+const HERO_URL =
+  "https://admins.miningdiscovery.com/api/news-sections" +
+  "?filters[news_categories][slug][$eq]=latest-news" +
+  "&filters[publish_on][$notNull]=true" +
+  "&sort[0]=publish_on:desc" +
+  "&sort[1]=publishedAt:desc" +
+  "&pagination[limit]=1" +
+  "&populate=*";
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
   const [news, setNews] = useState<HeroNews | null>(null);

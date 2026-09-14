@@ -49,6 +49,8 @@ const getResponsivePageSize = (): PageSize => {
   return { width: Math.max(180, baseWidth), height }
 }
 
+const formatMb = (bytes: number): string => `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+
 const spreadLabel = (rawIdx: number, numPages: number): string => {
   if (numPages <= 0) return 'Loading pages...'
   if (rawIdx === 0) return `Cover · Page 1 of ${numPages}`
@@ -79,6 +81,8 @@ export default function FlipbookViewer({
   const [pageSize, setPageSize] = useState<PageSize>({ width: 420, height: 594 })
   const [visiblePageCount, setVisiblePageCount] = useState(2)
   const [loadProgress, setLoadProgress] = useState(0)
+  const [loadedBytes, setLoadedBytes] = useState(0)
+  const [totalBytes, setTotalBytes] = useState(0)
 
   const goNext = useCallback(() => {
     if (isMobile) {
@@ -197,7 +201,9 @@ export default function FlipbookViewer({
                   setError(false)
                 }}
                 onLoadProgress={({ loaded, total }) => {
+                  setLoadedBytes(loaded)
                   if (total) {
+                    setTotalBytes(total)
                     setLoadProgress(Math.round((loaded / total) * 100))
                   }
                 }}
@@ -208,11 +214,36 @@ export default function FlipbookViewer({
                 className="flex justify-center"
               >
                 {loading ? (
-                  <div className="flex min-h-[320px] items-center justify-center rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8">
-                    <div className="flex flex-col items-center gap-3 text-center">
+                  <div
+                    className="flex min-h-[320px] w-full max-w-md flex-col items-center justify-center gap-5 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {/* Show the cover straight away so there is something to look
+                        at while the (often very large) PDF downloads. */}
+                    {coverImageUrl ? (
+                      <img
+                        src={coverImageUrl}
+                        alt=""
+                        className="max-h-48 w-auto rounded-lg border border-slate-200 object-contain shadow-sm sm:max-h-56"
+                      />
+                    ) : (
                       <Loader2 className="h-5 w-5 animate-spin text-[#1E3B6E]" />
-                      <span>Preparing the flipbook…</span>
-                      {loadProgress > 0 ? <span className="text-sm text-slate-500">{loadProgress}% ready</span> : null}
+                    )}
+
+                    <div className="w-full max-w-xs text-center">
+                      <p className="text-sm font-semibold text-slate-800">{title}</p>
+                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                        <div
+                          className="h-full rounded-full bg-[#1E3B6E] transition-[width] duration-200 ease-out"
+                          style={{ width: `${Math.max(loadProgress, 4)}%` }}
+                        />
+                      </div>
+                      <p className="mt-2 text-xs text-slate-500">
+                        {totalBytes > 0
+                          ? `Downloading ${formatMb(loadedBytes)} of ${formatMb(totalBytes)} · ${loadProgress}%`
+                          : 'Preparing the flipbook…'}
+                      </p>
                     </div>
                   </div>
                 ) : error ? (

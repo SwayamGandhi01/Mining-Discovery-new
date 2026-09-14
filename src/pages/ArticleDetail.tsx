@@ -204,9 +204,9 @@ export default function ArticleDetail({
 
           {/* Article Content */}
           {article.description && (
-            <div className="prose prose-slate dark:prose-invert max-w-none mb-12">
+            <div className="max-w-none mb-12">
               <div
-                className="text-slate-700 dark:text-slate-300 leading-relaxed text-base"
+                className="article-content text-slate-700 dark:text-slate-300"
                 dangerouslySetInnerHTML={{ __html: article.description }}
               />
             </div>

@@ -61,22 +61,19 @@ export default function TrustedBrands(): JSX.Element {
             {marqueeLogos.map((brand, idx) => (
               <div
                 key={`${brand.id}-${idx}`}
-                className="w-44 sm:w-52 flex-shrink-0 flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800/90 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 group"
+                className="w-44 sm:w-52 h-28 sm:h-32 flex-shrink-0 flex items-center justify-center p-4 bg-white dark:bg-slate-800/90 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 group"
               >
-                <div className="h-16 w-full flex items-center justify-center p-2">
+                <div className="h-full w-full flex items-center justify-center">
                   <img
                     src={brand.src}
                     alt={brand.name}
-                    className="max-h-12 max-w-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                     onError={(e) => {
                       const parent = e.currentTarget.parentElement
                       if (parent) parent.style.display = 'none'
                     }}
                   />
                 </div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 text-center line-clamp-1 mt-1">
-                  {brand.name}
-                </span>
               </div>
             ))}
           </div>
