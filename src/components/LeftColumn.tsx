@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { cachedFetch } from "../utils/cachedFetch";
+import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 
 interface NewsItem {
   id: number;
@@ -9,16 +10,41 @@ interface NewsItem {
   slug?: string;
 }
 
+// undefined while loading; null once there is nothing to show for that metal.
+type NewsSlot = NewsItem | null | undefined;
+
 interface LeftColumnProps {
   onArticleClick?: (documentId: string) => void;
 }
 
 const BASE_URL = "https://admins.miningdiscovery.com";
 
+/** Same card shell as a loaded teaser: tag pill, two-line title, three-line summary. */
+const ArticleTeaserSkeleton: React.FC = () => (
+  <SkeletonRegion
+    label="Loading market news"
+    className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm"
+  >
+    <div className="flex items-center justify-between mb-2">
+      <Skeleton className="h-5 w-14 rounded-full" />
+      <Skeleton className="h-3.5 w-3.5 rounded-full" />
+    </div>
+    <div className="space-y-1.5">
+      <Skeleton className="h-5 w-full" />
+      <Skeleton className="h-5 w-3/4" />
+    </div>
+    <div className="mt-2 space-y-2">
+      <Skeleton className="h-3 w-full" />
+      <Skeleton className="h-3 w-full" />
+      <Skeleton className="h-3 w-2/3" />
+    </div>
+  </SkeletonRegion>
+);
+
 const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
-  const [gold, setGold] = useState<NewsItem | null>(null);
-  const [silver, setSilver] = useState<NewsItem | null>(null);
-  const [copper, setCopper] = useState<NewsItem | null>(null);
+  const [gold, setGold] = useState<NewsSlot>(undefined);
+  const [silver, setSilver] = useState<NewsSlot>(undefined);
+  const [copper, setCopper] = useState<NewsSlot>(undefined);
 
   useEffect(() => {
     const fetchCategoryNews = async (slug: string, setter: any) => {
@@ -35,7 +61,10 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
         });
 
         const item = data.data?.[0];
-        if (!item) return;
+        if (!item) {
+          setter(null);
+          return;
+        }
 
         setter({
           id: item.id,
@@ -46,6 +75,7 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
         });
       } catch (error) {
         console.error(`Error fetching ${slug} news:`, error);
+        setter(null);
       }
     };
 
@@ -58,8 +88,9 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
     tag: string,
     colorClass: string,
     bgClass: string,
-    newsItem: NewsItem | null
+    newsItem: NewsSlot
   ) => {
+    if (newsItem === undefined) return <ArticleTeaserSkeleton />;
     if (!newsItem) return null;
 
     return (

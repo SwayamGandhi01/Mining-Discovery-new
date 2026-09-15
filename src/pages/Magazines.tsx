@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { BookOpen, Download, Calendar, AlertCircle } from 'lucide-react'
+import { SkeletonRegion } from '../components/ui/Skeleton'
+import LazyImage from '../components/ui/LazyImage'
+import CardSkeleton from '../components/skeletons/CardSkeleton'
 
 type Magazine = {
   id: number
@@ -131,10 +134,26 @@ export default function Magazines(): JSX.Element {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         {loading && items.length === 0 && (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-4 border-[#1E3B6E] border-t-transparent rounded-full animate-spin" />
-            <span className="ml-3 text-slate-500 text-sm font-medium">Loading magazines...</span>
-          </div>
+          <SkeletonRegion
+            label="Loading magazines"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-items-center"
+          >
+            {Array.from({ length: 6 }, (_, i) => (
+              <CardSkeleton
+                key={i}
+                className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden"
+                mediaClassName="h-64 sm:h-72 rounded-none"
+                bodyClassName="p-5 sm:p-6"
+                align="center"
+                titleLines={1}
+                titleLineClassName="h-6"
+                textLines={4}
+                textLineClassName="h-3 sm:h-3.5"
+                actions={2}
+                actionsClassName="mt-7 flex gap-2.5"
+              />
+            ))}
+          </SkeletonRegion>
         )}
         {error && items.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -161,11 +180,12 @@ export default function Magazines(): JSX.Element {
                       m.coverImage?.url
                     if (url) {
                       return (
-                        <img
+                        <LazyImage
                           src={url}
                           alt={m.Title || 'cover'}
                           loading="lazy"
                           className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 rounded-lg drop-shadow-md"
+                          skeletonClassName="inset-3 rounded-lg"
                         />
                       )
                     }

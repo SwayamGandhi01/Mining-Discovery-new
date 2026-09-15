@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { Skeleton, SkeletonRegion } from './ui/Skeleton'
+import LazyImage from './ui/LazyImage'
 
 interface AdvertisementItem {
   id: number
@@ -28,8 +30,18 @@ interface AdvertisementItem {
   file?: any
 }
 
+type ImageSource = { url: string; width?: number; height?: number }
+
 const BASE_URL = 'https://admins.miningdiscovery.com'
 const ADS_URL = 'https://admins.miningdiscovery.com/api/advertisements?populate=*'
+
+const asImage = (candidate: any): ImageSource | null =>
+  candidate?.url ? { url: candidate.url, width: candidate.width, height: candidate.height } : null
+
+// Largest available format first. Its dimensions travel with the URL so the
+// banner can reserve its height before the file arrives.
+const pickFormat = (img: any): ImageSource | null =>
+  asImage([img?.formats?.large, img?.formats?.medium, img?.formats?.small, img].find((c) => c?.url))
 
 export default function RegionalIntelligence(): JSX.Element {
   const [ads, setAds] = useState<AdvertisementItem[]>([])
@@ -64,40 +76,29 @@ export default function RegionalIntelligence(): JSX.Element {
     }
   }, [])
 
-  const getImageUrl = (item: AdvertisementItem): string | null => {
-    const adsImg = item.ads_image
-    let rawUrl =
-      adsImg?.formats?.large?.url ||
-      adsImg?.formats?.medium?.url ||
-      adsImg?.formats?.small?.url ||
-      adsImg?.url ||
-      ''
+  const getImage = (item: AdvertisementItem): ImageSource | null => {
+    let image = pickFormat(item.ads_image)
 
-    if (!rawUrl) {
+    if (!image) {
       const candidate =
         item.image || item.banner || item.cover || item.media || item.file
       if (Array.isArray(item.home_image) && item.home_image.length > 0) {
-        rawUrl = item.home_image[0]?.url || ''
+        image = asImage(item.home_image[0])
       } else if (Array.isArray(candidate) && candidate.length > 0) {
-        rawUrl = candidate[0]?.url || ''
+        image = asImage(candidate[0])
       } else if (candidate) {
-        rawUrl =
-          candidate.formats?.large?.url ||
-          candidate.formats?.medium?.url ||
-          candidate.formats?.small?.url ||
-          candidate.url ||
-          ''
+        image = pickFormat(candidate)
       }
     }
 
-    if (!rawUrl) return null
-    return rawUrl.startsWith('http') ? rawUrl : `${BASE_URL}${rawUrl}`
+    if (!image) return null
+    return image.url.startsWith('http') ? image : { ...image, url: `${BASE_URL}${image.url}` }
   }
 
   // Filter strictly for horizontal banners (vertical_banner !== true) with valid image URLs
   const horizontalAds = ads
     .filter((ad) => ad.vertical_banner !== true)
-    .filter((ad) => Boolean(getImageUrl(ad)))
+    .filter((ad) => Boolean(getImage(ad)))
 
   // Auto-scroll effect: advances every 3.5 seconds unless user hovers
   useEffect(() => {
@@ -147,7 +148,17 @@ export default function RegionalIntelligence(): JSX.Element {
           )}
         </div>
 
-        {loading && <div className="text-sm text-slate-500 py-6">Loading advertisements...</div>}
+        {loading && (
+          <SkeletonRegion
+            label="Loading advertisements"
+            className="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-lg bg-white dark:bg-slate-900"
+          >
+            <div className="bg-slate-100 dark:bg-slate-800 p-1 sm:p-2">
+              {/* The horizontal banners are wide ~8:1 strips. */}
+              <Skeleton className="w-full aspect-[8/1] rounded-xl" />
+            </div>
+          </SkeletonRegion>
+        )}
         {error && <div className="text-sm text-red-500 py-6">Error loading advertisements</div>}
 
         {!loading && horizontalAds.length > 0 && (
@@ -162,7 +173,7 @@ export default function RegionalIntelligence(): JSX.Element {
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
               {horizontalAds.map((ad) => {
-                const imgUrl = getImageUrl(ad)
+                const image = getImage(ad)!
                 const alt = ad.alt_text || ad.title || 'Advertisement'
                 const href = ad.ad_url || '#'
 
@@ -174,11 +185,14 @@ export default function RegionalIntelligence(): JSX.Element {
                     rel="noopener noreferrer"
                     className="w-full flex-shrink-0 block"
                   >
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center p-1 sm:p-2">
-                      <img
-                        src={imgUrl!}
+                    <div className="relative w-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center p-1 sm:p-2">
+                      <LazyImage
+                        src={image.url}
+                        width={image.width}
+                        height={image.height}
                         alt={alt}
                         className="w-full h-auto max-h-48 sm:max-h-60 md:max-h-72 object-contain hover:scale-[1.01] transition-transform duration-300 rounded-xl"
+                        skeletonClassName="inset-1 sm:inset-2 rounded-xl"
                       />
                     </div>
                   </a>

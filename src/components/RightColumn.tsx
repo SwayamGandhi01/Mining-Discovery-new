@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { cachedFetch } from "../utils/cachedFetch";
+import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 
 interface NewsItem {
   id: number;
@@ -59,11 +60,20 @@ const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
       </div>
 
       {loading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-            <div key={i} className="h-10 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+        <SkeletonRegion label="Loading trending stories" className="flex flex-col gap-3">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div
+              key={i}
+              className={`flex items-start gap-3.5 px-2.5 py-3 ${i < 7 ? "border-b border-slate-100 dark:border-slate-800/60" : ""}`}
+            >
+              <Skeleton className="h-6 w-[30px] mt-0.5 shrink-0" />
+              <div className="flex-1 space-y-2 pt-0.5">
+                <Skeleton className="h-3.5 w-full" />
+                <Skeleton className="h-3.5 w-2/3" />
+              </div>
+            </div>
           ))}
-        </div>
+        </SkeletonRegion>
       ) : (
         <div className="flex flex-col gap-3">
           {news.map((item, index) => (

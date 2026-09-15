@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileText } from 'lucide-react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
+import LazyImage from '../components/ui/LazyImage'
 
 const navigate = (path: string) => {
   window.history.pushState(null, '', path)
@@ -174,10 +176,30 @@ export default function OurArticles(): JSX.Element {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         {/* Loading state */}
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-4 border-[#1E3B6E] border-t-transparent rounded-full animate-spin" />
-            <span className="ml-3 text-slate-500 text-sm">Loading articles...</span>
-          </div>
+          // Two month groups of cover tiles, in the same grid as the real ones.
+          <SkeletonRegion label="Loading articles" className="space-y-14">
+            {[0, 1].map((group) => (
+              <div key={group} className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-5 w-5 rounded-full" />
+                  <Skeleton className="h-6 w-40" />
+                  <div className="flex-1 h-px bg-gradient-to-r from-slate-300 dark:from-slate-700 to-transparent" />
+                </div>
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 sm:p-8 shadow-sm">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 sm:gap-6 justify-items-center">
+                    {Array.from({ length: 6 }, (_, i) => (
+                      <div key={i} className="flex w-full flex-col items-center">
+                        <Skeleton className="w-full aspect-[3/4] rounded-xl" />
+                        <Skeleton className="mt-3 h-3.5 w-11/12" />
+                        <Skeleton className="mt-1.5 h-3.5 w-2/3" />
+                        <Skeleton className="mt-2 h-3 w-20" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </SkeletonRegion>
         )}
 
         {/* Error state */}
@@ -226,10 +248,11 @@ export default function OurArticles(): JSX.Element {
                             {/* Card Cover Preview */}
                             <div className="w-full aspect-[3/4] bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md group-hover:shadow-xl group-hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative flex flex-col justify-between p-3">
                               {coverUrl ? (
-                                <img
+                                <LazyImage
                                   src={coverUrl}
                                   alt={title}
                                   className="w-full h-full object-cover rounded-md transition-transform duration-500 group-hover:scale-105"
+                                  skeletonClassName="inset-3 rounded-md"
                                 />
                               ) : (
                                 /* Fallback Styled Magazine Cover */

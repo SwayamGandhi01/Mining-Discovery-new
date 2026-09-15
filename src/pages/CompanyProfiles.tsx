@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import { BookOpen, Download } from 'lucide-react'
 import { cachedFetch } from '../utils/cachedFetch'
 import { prefetchPdf, warmFlipbookRuntime } from '../utils/flipbookPrefetch'
+import { SkeletonRegion } from '../components/ui/Skeleton'
+import LazyImage from '../components/ui/LazyImage'
+import CardSkeleton from '../components/skeletons/CardSkeleton'
 
 // Company profile PDFs are large (10–22 MB), so we start fetching on intent
 // rather than on click. This much sustained hover counts as intent.
@@ -140,7 +143,23 @@ export default function CompanyProfiles(): JSX.Element {
     return (
       <main className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Company Profiles</h2>
-        <div className="text-sm text-slate-500">Loading company profiles...</div>
+        <SkeletonRegion
+          label="Loading company profiles"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {Array.from({ length: 6 }, (_, i) => (
+            <CardSkeleton
+              key={i}
+              className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-100 dark:border-slate-800"
+              mediaClassName="h-56 rounded mb-3"
+              titleLines={1}
+              subtitle
+              textLines={4}
+              actions={2}
+              actionsClassName="mt-4 flex gap-2.5"
+            />
+          ))}
+        </SkeletonRegion>
       </main>
     )
   }
@@ -189,9 +208,9 @@ export default function CompanyProfiles(): JSX.Element {
             >
               <div className="flex flex-col h-full">
                 {/* Cover Image */}
-                <div className="w-full h-56 overflow-hidden rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <div className="relative w-full h-56 overflow-hidden rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                   {coverImageUrl ? (
-                    <img
+                    <LazyImage
                       src={coverImageUrl}
                       alt={profile.title}
                       className="w-full h-full object-contain"

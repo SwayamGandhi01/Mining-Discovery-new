@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { SkeletonRegion } from './ui/Skeleton'
+import LazyImage from './ui/LazyImage'
+import CardSkeleton from './skeletons/CardSkeleton'
 
 type SectionItem = any
 
@@ -101,14 +104,23 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
         </div>
 
         {loading ? (
-          <div className="grid gap-5 sm:grid-cols-2">
-            {[1, 2].map((item) => (
-              <div
-                key={item}
-                className="animate-pulse rounded-[1.75rem] border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900"
+          <SkeletonRegion
+            label={`Loading ${section.label.toLowerCase()}`}
+            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+          >
+            {Array.from({ length: 4 }, (_, i) => (
+              <CardSkeleton
+                key={i}
+                className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                mediaClassName="aspect-[4/3] rounded-none border-b border-slate-200 dark:border-slate-800"
+                bodyClassName="p-4 sm:p-5"
+                titleLineClassName="h-4"
+                textLineClassName="h-3"
+                footer
+                footerClassName="mt-4 flex items-center justify-between"
               />
             ))}
-          </div>
+          </SkeletonRegion>
         ) : sectionPosts.length ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {sectionPosts.map((item: SectionItem, idx: number) => {
@@ -132,9 +144,9 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
                     <div className="absolute left-3 top-3 rounded-full bg-slate-900 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-white">
                       {section.label.split(' ')[0]}
                     </div>
-                    <div className="aspect-[4/3] bg-slate-200 dark:bg-slate-800">
+                    <div className="relative aspect-[4/3] bg-slate-200 dark:bg-slate-800">
                       {imageUrl ? (
-                        <img
+                        <LazyImage
                           src={imageUrl}
                           alt={title}
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"

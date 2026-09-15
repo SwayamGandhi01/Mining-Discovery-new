@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
 import { cachedFetch } from "../utils/cachedFetch";
+import { SkeletonRegion } from "../components/ui/Skeleton";
+import LazyImage from "../components/ui/LazyImage";
+import CardSkeleton from "../components/skeletons/CardSkeleton";
 
 interface CEOImage {
   url: string;
@@ -111,9 +114,25 @@ const CEOProfiles: React.FC = () => {
       </div>
 
       {loading && (
-        <div className="text-center py-12">
-          <p className="text-sm text-slate-500">Loading CEO profiles...</p>
-        </div>
+        <SkeletonRegion
+          label="Loading CEO profiles"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"
+        >
+          {Array.from({ length: itemsPerView }, (_, i) => (
+            <CardSkeleton
+              key={i}
+              className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden shadow-md border border-slate-100 dark:border-slate-800"
+              mediaClassName="h-64 rounded-none"
+              bodyClassName="p-5"
+              titleLines={1}
+              subtitle
+              textLines={3}
+              actions={2}
+              actionsClassName="flex gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-slate-700"
+              actionClassName="h-9 flex-1 rounded"
+            />
+          ))}
+        </SkeletonRegion>
       )}
       {error && (
         <div className="text-center py-12">
@@ -133,7 +152,7 @@ const CEOProfiles: React.FC = () => {
                 {/* Profile Image Container */}
                 <div className="relative w-full h-64 bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
                   {profile.ceo_image ? (
-                    <img
+                    <LazyImage
                       src={profile.ceo_image.url}
                       alt={profile.name}
                       className="w-full h-full object-contain p-4"

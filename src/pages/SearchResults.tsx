@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
 
 interface SearchResultsProps {
   query: string
@@ -8,7 +9,9 @@ interface SearchResultsProps {
 
 const SearchResults: React.FC<SearchResultsProps> = ({ query, onArticleClick }) => {
   const [results, setResults] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  // Start in the loading state when there is a query, so the first render
+  // (before the effect kicks off the request) doesn't flash "No articles found".
+  const [loading, setLoading] = useState(() => Boolean(query.trim()))
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -77,12 +80,33 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onArticleClick }) 
       )}
 
       {loading && (
-        <div className="py-20 flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <SkeletonRegion label="Searching articles" announce className="grid grid-cols-1 gap-6">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div
+              key={i}
+              className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6"
+            >
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-3 space-y-2.5">
+                    <Skeleton className="h-5 sm:h-6 w-11/12" />
+                    <Skeleton className="h-5 sm:h-6 w-2/3" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3.5 w-3/4" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-36 shrink-0" />
+              </div>
+            </div>
+          ))}
+        </SkeletonRegion>
       )}
 
-      {!loading && trimmedQuery && results.length === 0 && (
+      {/* A failed search already shows its error above — don't also call it "no results". */}
+      {!loading && !error && trimmedQuery && results.length === 0 && (
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-8 text-center">
           <p className="text-xl font-semibold text-slate-900 dark:text-white">No articles found</p>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">

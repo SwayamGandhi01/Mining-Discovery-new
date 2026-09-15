@@ -1,4 +1,5 @@
 import React from 'react'
+import LazyImage from './ui/LazyImage'
 
 interface ClientLogo {
   id: number
@@ -63,11 +64,12 @@ export default function TrustedBrands(): JSX.Element {
                 key={`${brand.id}-${idx}`}
                 className="w-44 sm:w-52 h-28 sm:h-32 flex-shrink-0 flex items-center justify-center p-4 bg-white dark:bg-slate-800/90 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 group"
               >
-                <div className="h-full w-full flex items-center justify-center">
-                  <img
+                <div className="relative h-full w-full flex items-center justify-center">
+                  <LazyImage
                     src={brand.src}
                     alt={brand.name}
                     className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                    skeletonClassName="rounded-lg"
                     onError={(e) => {
                       const parent = e.currentTarget.parentElement
                       if (parent) parent.style.display = 'none'

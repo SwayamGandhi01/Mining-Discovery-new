@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
 import FlipbookViewer from '../components/FlipbookViewer'
+import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
 const API_URL = 'https://admins.miningdiscovery.com/api/our-artciles?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
@@ -101,16 +102,7 @@ export default function OurArticlesFlipbook({ documentId, onBack }: OurArticlesF
     }
   }, [documentId])
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-        <div className="flex items-center gap-3 rounded-[1.5rem] border border-slate-800 bg-slate-900 px-6 py-4 shadow-xl">
-          <div className="h-5 w-5 animate-spin rounded-full border-4 border-[#1E3B6E] border-t-transparent" />
-          <span className="text-sm text-slate-300">Opening flipbook…</span>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <FlipbookSkeleton />
 
   if (error || !article) {
     return (

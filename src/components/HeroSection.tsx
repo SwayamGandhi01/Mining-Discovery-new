@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { cachedFetch } from "../utils/cachedFetch";
+import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
+import LazyImage from "./ui/LazyImage";
 
 interface HeroNews {
   id: number;
@@ -72,12 +74,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
   if (loading) {
     return (
       <section className="lg:col-span-6 order-1 lg:order-2">
-        <div className="animate-pulse">
-          <div className="aspect-[16/9] bg-slate-200 dark:bg-slate-800 rounded-2xl mb-4" />
-          <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded mx-auto mb-3" />
-          <div className="h-8 w-3/4 bg-slate-200 dark:bg-slate-800 rounded mx-auto mb-2" />
-          <div className="h-4 w-1/2 bg-slate-200 dark:bg-slate-800 rounded mx-auto" />
-        </div>
+        <SkeletonRegion label="Loading cover story">
+          <Skeleton className="aspect-[16/9] rounded-2xl mb-5" />
+          <div className="flex flex-col items-center px-4">
+            <Skeleton className="h-6 w-32 rounded-full mb-3" />
+            <div className="flex w-full flex-col items-center gap-2 mb-3">
+              <Skeleton className="h-7 sm:h-8 md:h-10 lg:h-12 w-full" />
+              <Skeleton className="h-7 sm:h-8 md:h-10 lg:h-12 w-3/4" />
+            </div>
+            <div className="flex w-full max-w-2xl flex-col items-center gap-2.5">
+              <Skeleton className="h-4 sm:h-5 w-full" />
+              <Skeleton className="h-4 sm:h-5 w-2/3" />
+            </div>
+            <Skeleton className="mt-4 h-4 w-36" />
+          </div>
+        </SkeletonRegion>
       </section>
     );
   }
@@ -91,7 +102,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
         onClick={() => onArticleClick?.(news.documentId)}
       >
         <div className="aspect-[16/9] bg-slate-900 rounded-2xl overflow-hidden mb-5 shadow-lg group-hover:shadow-2xl transition-all duration-500 relative">
-          <img
+          <LazyImage
             src={news.image}
             alt={news.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95 group-hover:opacity-100"

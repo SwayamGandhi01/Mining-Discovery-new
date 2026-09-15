@@ -13,6 +13,10 @@ import MetalNewsSections from './components/MetalNewsSections'
 import Footer from './components/Footer'
 import BreakingNews from './components/BreakingNews'
 import TrustedBrands from './components/TrustedBrands'
+import ArticleDetailSkeleton from './components/skeletons/ArticleDetailSkeleton'
+import CategoryNewsSkeleton from './components/skeletons/CategoryNewsSkeleton'
+import FlipbookSkeleton from './components/skeletons/FlipbookSkeleton'
+import PageSkeleton from './components/skeletons/PageSkeleton'
 
 // Lazy-loaded page components for optimal bundle splitting
 const Magazines = lazy(() => import('./pages/Magazines'))
@@ -36,12 +40,6 @@ const NewsletterFlipbook = lazy(() => import('./pages/NewsletterFlipbook'))
 const CompanyProfileFlipbook = lazy(() => import('./pages/CompanyProfileFlipbook'))
 const SearchResults = lazy(() => import('./pages/SearchResults'))
 
-const PageFallback = () => (
-  <div className="min-h-[60vh] flex items-center justify-center">
-    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-  </div>
-)
-
 // Placeholder components for magazine dropdown pages
 
 
@@ -51,6 +49,20 @@ const NewsletterPage = () => (
   </div>
 )
 
+// Routes that carry an id, e.g. /article/sx6gn6ckwbiljfpq226eqzbz, /news/evening-chatter
+const ROUTE_PATTERNS = {
+  article: /^\/article\/(.+)$/,
+  flipbook: /^\/flipbook\/(.+)$/,
+  magazineFlipbook: /^\/magazine-flipbook\/(.+)$/,
+  newsletterFlipbook: /^\/newsletter-flipbook\/(.+)$/,
+  companyFlipbook: /^\/company-flipbook\/(.+)$/,
+  category: /^\/news\/([^/]+)$/,
+}
+
+// The id captured by `pattern`, or null when the path doesn't match it.
+const routeParam = (path: string, pattern: RegExp): string | null => path.match(pattern)?.[1] ?? null
+
+const initialPath = () => window.location.pathname || '/'
 
 
 export default function App(): JSX.Element {
@@ -59,12 +71,14 @@ export default function App(): JSX.Element {
     const params = new URLSearchParams(window.location.search)
     return params.get('q')?.trim() || ''
   })
-  const [documentId, setDocumentId] = useState<string | null>(null)
-  const [categorySlug, setCategorySlug] = useState<string | null>(null)
-  const [flipbookDocumentId, setFlipbookDocumentId] = useState<string | null>(null)
-  const [magazineFlipbookId, setMagazineFlipbookId] = useState<string | null>(null)
-  const [newsletterFlipbookId, setNewsletterFlipbookId] = useState<string | null>(null)
-  const [companyFlipbookId, setCompanyFlipbookId] = useState<string | null>(null)
+  // Parsed from the URL up front: starting these at null rendered the home page
+  // (and fired its API requests) for a moment before every deep-linked page.
+  const [documentId, setDocumentId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.article))
+  const [categorySlug, setCategorySlug] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.category))
+  const [flipbookDocumentId, setFlipbookDocumentId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.flipbook))
+  const [magazineFlipbookId, setMagazineFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.magazineFlipbook))
+  const [newsletterFlipbookId, setNewsletterFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.newsletterFlipbook))
+  const [companyFlipbookId, setCompanyFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.companyFlipbook))
 
   useEffect(() => {
     const onRoute = () => {
@@ -82,20 +96,12 @@ export default function App(): JSX.Element {
 
       // Each of these prefixes is mutually exclusive, so every route state is derived
       // from its own match and cleared when the path no longer matches it.
-      // e.g. /article/sx6gn6ckwbiljfpq226eqzbz, /news/evening-chatter
-      const articleMatch = path.match(/^\/article\/(.+)$/)
-      const flipbookMatch = path.match(/^\/flipbook\/(.+)$/)
-      const magazineFlipbookMatch = path.match(/^\/magazine-flipbook\/(.+)$/)
-      const newsletterFlipbookMatch = path.match(/^\/newsletter-flipbook\/(.+)$/)
-      const companyFlipbookMatch = path.match(/^\/company-flipbook\/(.+)$/)
-      const categoryMatch = path.match(/^\/news\/([^/]+)$/)
-
-      setDocumentId(articleMatch ? articleMatch[1] : null)
-      setFlipbookDocumentId(flipbookMatch ? flipbookMatch[1] : null)
-      setMagazineFlipbookId(magazineFlipbookMatch ? magazineFlipbookMatch[1] : null)
-      setNewsletterFlipbookId(newsletterFlipbookMatch ? newsletterFlipbookMatch[1] : null)
-      setCompanyFlipbookId(companyFlipbookMatch ? companyFlipbookMatch[1] : null)
-      setCategorySlug(categoryMatch ? categoryMatch[1] : null)
+      setDocumentId(routeParam(path, ROUTE_PATTERNS.article))
+      setFlipbookDocumentId(routeParam(path, ROUTE_PATTERNS.flipbook))
+      setMagazineFlipbookId(routeParam(path, ROUTE_PATTERNS.magazineFlipbook))
+      setNewsletterFlipbookId(routeParam(path, ROUTE_PATTERNS.newsletterFlipbook))
+      setCompanyFlipbookId(routeParam(path, ROUTE_PATTERNS.companyFlipbook))
+      setCategorySlug(routeParam(path, ROUTE_PATTERNS.category))
     }
     onRoute()
     window.addEventListener('popstate', onRoute)
@@ -127,12 +133,19 @@ export default function App(): JSX.Element {
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
-  const renderPage = (Component: React.ComponentType<any>, props = {}) => (
+  // Header, tickers and footer render straight away; only the page body waits.
+  // While its code downloads, the page shows its own skeleton where it has one,
+  // which then hands over seamlessly to the page's data-loading skeleton.
+  const renderPage = (
+    Component: React.ComponentType<any>,
+    props = {},
+    fallback: React.ReactNode = <PageSkeleton />
+  ) => (
     <div>
       <AnnouncementBar />
       <Header initialSearchQuery={searchQuery} />
       <BreakingNews />
-      <Suspense fallback={<PageFallback />}>
+      <Suspense fallback={fallback}>
         <Component {...props} />
       </Suspense>
       <Footer />
@@ -140,15 +153,15 @@ export default function App(): JSX.Element {
   )
 
   // Article detail page
-  if (documentId) return renderPage(ArticleDetail, { documentId, onBack: closeArticle })
+  if (documentId) return renderPage(ArticleDetail, { documentId, onBack: closeArticle }, <ArticleDetailSkeleton />)
 
-  if (flipbookDocumentId) return renderPage(OurArticlesFlipbook, { documentId: flipbookDocumentId, onBack: () => window.history.back() })
-  if (magazineFlipbookId) return renderPage(MagazineFlipbook, { magazineId: magazineFlipbookId, onBack: () => window.history.back() })
-  if (newsletterFlipbookId) return renderPage(NewsletterFlipbook, { newsletterId: newsletterFlipbookId, onBack: () => window.history.back() })
-  if (companyFlipbookId) return renderPage(CompanyProfileFlipbook, { profileId: companyFlipbookId, onBack: () => window.history.back() })
+  if (flipbookDocumentId) return renderPage(OurArticlesFlipbook, { documentId: flipbookDocumentId, onBack: () => window.history.back() }, <FlipbookSkeleton />)
+  if (magazineFlipbookId) return renderPage(MagazineFlipbook, { magazineId: magazineFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening magazine" />)
+  if (newsletterFlipbookId) return renderPage(NewsletterFlipbook, { newsletterId: newsletterFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening newsletter" />)
+  if (companyFlipbookId) return renderPage(CompanyProfileFlipbook, { profileId: companyFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening company profile" />)
 
   // Category news page
-  if (categorySlug) return renderPage(CategoryNews, { categorySlug })
+  if (categorySlug) return renderPage(CategoryNews, { categorySlug }, <CategoryNewsSkeleton />)
 
   const isSearchPage = route === '/search'
   if (isSearchPage) return renderPage(SearchResults, { query: searchQuery, onArticleClick: openArticle })

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { cachedFetch } from "../utils/cachedFetch";
+import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
+import LazyImage from "./ui/LazyImage";
+import CardSkeleton from "./skeletons/CardSkeleton";
 
 type SectionItem = any;
 
@@ -21,26 +24,33 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   const [posts, setPosts] = useState<SectionItem[]>([]);
   const [latestMag, setLatestMag] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [magLoading, setMagLoading] = useState(true);
 
-  const fetchPosts = async (slug: string) => {
-    setLoading(true);
-    try {
-      const url = `https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=2&populate=*`;
-      const json = await cachedFetch(url, {
-        onUpdate: (fresh: any) => {
-          setPosts(fresh?.data || []);
-        },
-      });
-      setPosts(json?.data || []);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Refetch on every tab change. `active` drops responses for a tab the user
+  // has already left, so a slower earlier request can't land on the new tab.
   useEffect(() => {
-    fetchPosts(activeCategory);
+    let active = true;
+    setLoading(true);
+
+    const url = `https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=${activeCategory}&sort=publishedAt:desc&pagination[limit]=2&populate=*`;
+    cachedFetch(url, {
+      onUpdate: (fresh: any) => {
+        if (active) setPosts(fresh?.data || []);
+      },
+    })
+      .then((json) => {
+        if (active) setPosts(json?.data || []);
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [activeCategory]);
 
   useEffect(() => {
@@ -72,6 +82,8 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
         }
       } catch (e) {
         console.error("Magazine fetch error");
+      } finally {
+        setMagLoading(false);
       }
     }
 
@@ -83,6 +95,8 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
     const wordCount = text.split(/\s+/).length;
     return Math.ceil(wordCount / wordsPerMinute);
   };
+
+  const magCover = latestMag?.coverImage?.formats?.medium || latestMag?.coverImage;
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 my-10 sm:my-14">
@@ -106,16 +120,18 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
 
         {/* POSTS */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[1, 2].map((i) => (
-              <div key={i} className="animate-pulse bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
-                <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-xl mb-4" />
-                <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded mb-2 w-3/4" />
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full mb-2" />
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
-              </div>
+          <SkeletonRegion label="Loading posts" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[0, 1].map((i) => (
+              <CardSkeleton
+                key={i}
+                className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm"
+                mediaClassName="aspect-video rounded-xl mb-4"
+                textLines={3}
+                textLineClassName="h-3 sm:h-3.5"
+                footer
+              />
             ))}
-          </div>
+          </SkeletonRegion>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {posts.map((item, idx) => {
@@ -149,7 +165,7 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                   <div>
                     <div className="aspect-video bg-slate-100 dark:bg-slate-800 overflow-hidden mb-4 rounded-xl relative shadow-inner">
                       {imageUrl ? (
-                        <img
+                        <LazyImage
                           src={imageUrl}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -193,16 +209,18 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
             LATEST ISSUE
           </span>
 
-          {latestMag && (
+          {latestMag ? (
             <>
               <div className="my-4 relative group">
-                <img
-                  src={
-                    latestMag?.coverImage?.formats?.medium?.url ||
-                    latestMag?.coverImage?.url
-                  }
+                {/* width/height let the browser size the cover before it downloads. */}
+                <LazyImage
+                  src={magCover?.url}
+                  width={magCover?.width}
+                  height={magCover?.height}
                   alt={latestMag.Title}
                   className="w-auto h-52 mx-auto object-contain rounded-lg shadow-2xl transition-transform duration-300 group-hover:scale-105"
+                  skeletonTone="inverse"
+                  skeletonClassName="left-1/2 right-auto w-40 -translate-x-1/2 rounded-lg"
                 />
               </div>
 
@@ -222,7 +240,13 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                 </a>
               )}
             </>
-          )}
+          ) : magLoading ? (
+            <SkeletonRegion label="Loading latest issue" className="flex flex-col items-center">
+              <Skeleton tone="inverse" className="my-4 h-52 w-40 rounded-lg" />
+              <Skeleton tone="inverse" className="mb-2 h-6 w-40" />
+              <Skeleton tone="inverse" className="mt-4 h-10 w-full rounded-xl" />
+            </SkeletonRegion>
+          ) : null}
         </div>
       </div>
     </section>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Clock, Calendar, ArrowRight, FileText, TrendingUp, ChevronLeft, Tag } from 'lucide-react'
 import { cachedFetch } from '../utils/cachedFetch'
+import LazyImage from '../components/ui/LazyImage'
+import CategoryNewsSkeleton from '../components/skeletons/CategoryNewsSkeleton'
 
 interface NewsArticle {
   id: number
@@ -158,16 +160,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
   })
 
   // ── Loading ───────────────────────────────────────────────
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-14 h-14 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto mb-5" />
-          <p className="text-slate-400 font-medium tracking-wide">Loading articles…</p>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <CategoryNewsSkeleton />
 
   // ── Error ─────────────────────────────────────────────────
   if (error) {
@@ -288,7 +281,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                 >
                   <div className="relative overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 aspect-video shadow-lg">
                     {getImageUrl(featured) ? (
-                      <img
+                      <LazyImage
                         src={getImageUrl(featured)!}
                         alt={featured.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -354,7 +347,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                       >
                         <div className="relative w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700">
                           {imgUrl ? (
-                            <img src={imgUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                            <LazyImage src={imgUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">
                               <FileText className="w-6 h-6 text-slate-500" />
@@ -399,7 +392,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                         {/* Image */}
                         <div className="relative h-48 bg-slate-200 dark:bg-slate-700 overflow-hidden">
                           {imgUrl ? (
-                            <img src={imgUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <LazyImage src={imgUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
                               <FileText className="w-10 h-10 text-slate-600" />

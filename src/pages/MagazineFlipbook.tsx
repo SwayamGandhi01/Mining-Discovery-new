@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
 import FlipbookViewer from '../components/FlipbookViewer'
+import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
 const API_URL = 'https://admins.miningdiscovery.com/api/magazines?populate=*&sort=publishedAt:desc'
 const BASE_URL = 'https://admins.miningdiscovery.com'
@@ -95,16 +96,7 @@ export default function MagazineFlipbook({ magazineId, onBack }: MagazineFlipboo
     }
   }, [magazineId])
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white text-slate-700">
-        <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-5 py-3 shadow-sm">
-          <div className="h-5 w-5 animate-spin rounded-full border-4 border-[#1E3B6E] border-t-transparent" />
-          <span className="text-sm">Opening magazine…</span>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <FlipbookSkeleton label="Opening magazine" />
 
   if (error || !magazine) {
     return (

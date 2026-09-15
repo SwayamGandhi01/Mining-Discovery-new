@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 
 interface NewsCategory {
   id: number
@@ -10,6 +11,9 @@ interface NewsCategory {
 interface HeaderProps {
   initialSearchQuery?: string
 }
+
+// Varied widths so the placeholder menu reads as a list of category names.
+const CATEGORY_SKELETON_WIDTHS = ['w-28', 'w-36', 'w-24', 'w-32', 'w-28']
 
 const navigate = (path: string) => {
   window.history.pushState(null, '', path)
@@ -23,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
   const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
   const [categories, setCategories] = useState<NewsCategory[]>([])
+  const [categoriesStatus, setCategoriesStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [searchInput, setSearchInput] = useState(initialSearchQuery)
 
   useEffect(() => {
@@ -60,17 +65,35 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
         const res = await fetch(
           'https://admins.miningdiscovery.com/api/news-categories?pagination[limit]=100'
         )
-        if (res.ok) {
-          const data = await res.json()
-          setCategories(data?.data || [])
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        setCategories(data?.data || [])
+        setCategoriesStatus('ready')
       } catch (err) {
         console.error('Error fetching categories:', err)
+        setCategoriesStatus('error')
       }
     }
 
     fetchCategories()
   }, [])
+
+  // Dropdown body while the category list is loading, or once it has come back empty or failed.
+  const renderCategoriesFallback = (rowClassName: string, listClassName = '') =>
+    categoriesStatus === 'loading' ? (
+      <SkeletonRegion label="Loading categories" className={listClassName}>
+        {CATEGORY_SKELETON_WIDTHS.map((width, i) => (
+          <div key={i} className={rowClassName}>
+            <Skeleton className={`h-3.5 ${width}`} />
+          </div>
+        ))}
+      </SkeletonRegion>
+    ) : (
+      <div className={`${rowClassName} text-sm text-slate-500`}>
+        {categoriesStatus === 'error' ? 'Categories unavailable' : 'No categories available'}
+      </div>
+    )
+
   return (
     <header className="border-b border-primary/20 bg-white dark:bg-background-dark/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 flex items-center justify-between gap-2">
@@ -118,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
                     </a>
                   ))
                 ) : (
-                  <div className="px-4 py-2 text-sm text-slate-500">Loading categories...</div>
+                  renderCategoriesFallback('px-4 py-2.5')
                 )}
               </div>
             )}
@@ -271,7 +294,7 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
                       </a>
                     ))
                   ) : (
-                    <div className="text-sm text-slate-500">Loading categories...</div>
+                    renderCategoriesFallback('py-[3px]', 'space-y-2')
                   )}
                 </div>
               )}

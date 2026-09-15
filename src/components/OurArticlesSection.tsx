@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowRight, Clock3, Download, ExternalLink, Sparkles } from 'lucide-react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { SkeletonRegion } from './ui/Skeleton'
+import LazyImage from './ui/LazyImage'
+import CardSkeleton from './skeletons/CardSkeleton'
 
 type OurArticle = {
   id: number
@@ -143,16 +146,25 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-6">
-            {[1, 2, 3].map((s) => (
-              <div key={s} className="animate-pulse rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-                <div className="h-40 bg-slate-200 dark:bg-slate-800 rounded-3xl mb-5" />
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded mb-3 w-3/4" />
-                <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded mb-2 w-1/2" />
-                <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/4" />
-              </div>
-            ))}
-          </div>
+          // Same horizontal row as the loaded cards, clipped rather than scrollable.
+          <SkeletonRegion label="Loading latest articles" className="overflow-hidden pb-2">
+            <div className="flex gap-5 min-w-max pb-2">
+              {Array.from({ length: 4 }, (_, i) => (
+                <CardSkeleton
+                  key={i}
+                  className="min-w-[22rem] max-w-[22rem] shrink-0 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:border-slate-800 dark:bg-slate-950"
+                  mediaClassName="h-44 rounded-none"
+                  bodyClassName="p-5 sm:p-6"
+                  meta
+                  titleLines={3}
+                  textLines={0}
+                  actions={1}
+                  actionsClassName="mt-5 flex"
+                  actionClassName="h-11 flex-1 rounded-2xl"
+                />
+              ))}
+            </div>
+          </SkeletonRegion>
         ) : error ? (
           <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-700 dark:border-red-700/40 dark:bg-red-950/30 dark:text-red-200">
             {error}
@@ -175,7 +187,7 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
                   >
                     <div className="relative h-44 overflow-hidden bg-slate-100 dark:bg-slate-900">
                       {imageUrl ? (
-                        <img
+                        <LazyImage
                           src={imageUrl}
                           alt={title}
                           className="mx-auto h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"

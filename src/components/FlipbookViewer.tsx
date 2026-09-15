@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import HTMLFlipBook from 'react-pageflip'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
+import { Skeleton } from './ui/Skeleton'
+import LazyImage from './ui/LazyImage'
+import { getReaderStageHeight, getResponsivePageSize, type PageSize } from '../utils/flipbookLayout'
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
@@ -15,38 +18,6 @@ type FlipbookViewerProps = {
   description?: string
   onBack?: () => void
   onClose?: () => void
-}
-
-type PageSize = {
-  width: number
-  height: number
-}
-
-const getResponsivePageSize = (): PageSize => {
-  if (typeof window === 'undefined') return { width: 280, height: 396 }
-
-  const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
-
-  // Mobile: small single page, Tablet: medium, Desktop: larger
-  let baseWidth: number
-  if (viewportWidth < 480) {
-    baseWidth = Math.min(280, viewportWidth - 32)
-  } else if (viewportWidth < 768) {
-    baseWidth = Math.min(360, viewportWidth - 48)
-  } else {
-    baseWidth = Math.min(420, (viewportWidth - 60) / 2)
-  }
-
-  const availableHeight = Math.max(300, viewportHeight - 280)
-  let height = Math.round(baseWidth * 1.414)
-
-  if (height > availableHeight) {
-    height = Math.max(300, Math.floor(availableHeight * 0.9))
-    baseWidth = Math.max(180, Math.floor(height / 1.414))
-  }
-
-  return { width: Math.max(180, baseWidth), height }
 }
 
 const formatMb = (bytes: number): string => `${(bytes / (1024 * 1024)).toFixed(1)} MB`
@@ -75,8 +46,6 @@ export default function FlipbookViewer({
   const [numPages, setNumPages] = useState(0)
   const [rawIdx, setRawIdx] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [pageSize, setPageSize] = useState<PageSize>({ width: 420, height: 594 })
   const [visiblePageCount, setVisiblePageCount] = useState(2)
@@ -149,6 +118,61 @@ export default function FlipbookViewer({
     )
   }
 
+  // react-pdf renders `loading` / `error` in place of the document's children
+  // until the PDF has downloaded and parsed, so the download card lives here.
+  // The cover shows straight away so there is something to look at while the
+  // (often very large) PDF downloads.
+  const downloadCard = (
+    <div
+      className="flex min-h-[320px] w-full max-w-md flex-col items-center justify-center gap-5 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8"
+      role="status"
+      aria-live="polite"
+      style={{ minHeight: getReaderStageHeight() }}
+    >
+      {coverImageUrl ? (
+        <div className="relative flex min-h-48 min-w-36 items-center justify-center sm:min-h-56 sm:min-w-40">
+          <LazyImage
+            src={coverImageUrl}
+            alt=""
+            className="max-h-48 w-auto rounded-lg border border-slate-200 object-contain shadow-sm sm:max-h-56"
+            skeletonClassName="rounded-lg"
+          />
+        </div>
+      ) : (
+        <Skeleton className="h-48 w-36 rounded-lg sm:h-56 sm:w-40" />
+      )}
+
+      <div className="w-full max-w-xs text-center">
+        <p className="text-sm font-semibold text-slate-800">{title}</p>
+        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+          <div
+            className="h-full rounded-full bg-[#1E3B6E] transition-[width] duration-200 ease-out"
+            style={{ width: `${Math.max(loadProgress, 4)}%` }}
+          />
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          {totalBytes > 0
+            ? `Downloading ${formatMb(loadedBytes)} of ${formatMb(totalBytes)} · ${loadProgress}%`
+            : 'Preparing the flipbook…'}
+        </p>
+      </div>
+    </div>
+  )
+
+  const errorCard = (
+    <div className="flex min-h-[320px] items-center justify-center rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-center text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8">
+      <p>The article could not be loaded right now.</p>
+    </div>
+  )
+
+  const mobilePageWidth =
+    typeof window !== 'undefined' ? Math.min(pageSize.width, window.innerWidth - 28) : pageSize.width
+
+  // Shown in a page's place until its canvas has rendered.
+  const pagePlaceholder = (width: number, height: number) => (
+    <Skeleton className="rounded-none" style={{ width, height }} />
+  )
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-2 py-2 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
@@ -197,8 +221,6 @@ export default function FlipbookViewer({
                   setCurrentPage(1)
                   setRawIdx(0)
                   setLoadProgress(100)
-                  setLoading(false)
-                  setError(false)
                 }}
                 onLoadProgress={({ loaded, total }) => {
                   setLoadedBytes(loaded)
@@ -207,96 +229,57 @@ export default function FlipbookViewer({
                     setLoadProgress(Math.round((loaded / total) * 100))
                   }
                 }}
-                onLoadError={() => {
-                  setLoading(false)
-                  setError(true)
-                }}
+                loading={downloadCard}
+                error={errorCard}
                 className="flex justify-center"
               >
-                {loading ? (
-                  <div
-                    className="flex min-h-[320px] w-full max-w-md flex-col items-center justify-center gap-5 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8"
-                    role="status"
-                    aria-live="polite"
-                  >
-                    {/* Show the cover straight away so there is something to look
-                        at while the (often very large) PDF downloads. */}
-                    {coverImageUrl ? (
-                      <img
-                        src={coverImageUrl}
-                        alt=""
-                        className="max-h-48 w-auto rounded-lg border border-slate-200 object-contain shadow-sm sm:max-h-56"
-                      />
-                    ) : (
-                      <Loader2 className="h-5 w-5 animate-spin text-[#1E3B6E]" />
-                    )}
-
-                    <div className="w-full max-w-xs text-center">
-                      <p className="text-sm font-semibold text-slate-800">{title}</p>
-                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
-                        <div
-                          className="h-full rounded-full bg-[#1E3B6E] transition-[width] duration-200 ease-out"
-                          style={{ width: `${Math.max(loadProgress, 4)}%` }}
+                <div className="flex w-full flex-col items-center justify-center">
+                  {isMobile ? (
+                    <div className="flex w-full justify-center overflow-x-auto px-1 py-2 sm:px-2">
+                      <div className="rounded-[1.25rem] border border-slate-200 bg-white p-2 shadow-sm">
+                        <Page
+                          pageNumber={currentPage}
+                          width={mobilePageWidth}
+                          loading={pagePlaceholder(mobilePageWidth, Math.round(mobilePageWidth * 1.414))}
+                          renderTextLayer={false}
+                          renderAnnotationLayer={false}
+                          renderMode="canvas"
                         />
                       </div>
-                      <p className="mt-2 text-xs text-slate-500">
-                        {totalBytes > 0
-                          ? `Downloading ${formatMb(loadedBytes)} of ${formatMb(totalBytes)} · ${loadProgress}%`
-                          : 'Preparing the flipbook…'}
-                      </p>
                     </div>
-                  </div>
-                ) : error ? (
-                  <div className="flex min-h-[320px] items-center justify-center rounded-[1.5rem] border border-slate-200 bg-white px-4 py-6 text-center text-slate-600 shadow-inner sm:min-h-[420px] sm:px-6 sm:py-8">
-                    <p>The article could not be loaded right now.</p>
-                  </div>
-                ) : (
-                  <div className="flex w-full flex-col items-center justify-center">
-                    {isMobile ? (
-                      <div className="flex w-full justify-center overflow-x-auto px-1 py-2 sm:px-2">
-                        <div className="rounded-[1.25rem] border border-slate-200 bg-white p-2 shadow-sm">
+                  ) : (
+                    <FlipBookComponent
+                      ref={bookRef}
+                      width={pageSize.width}
+                      height={pageSize.height}
+                      size="fixed"
+                      usePortrait={false}
+                      showCover={true}
+                      drawShadow={true}
+                      flippingTime={700}
+                      mobileScrollSupport={false}
+                      startZIndex={0}
+                      onFlip={(event: { data: number }) => setRawIdx(event.data)}
+                    >
+                      {Array.from({ length: visiblePageCount }, (_, index) => (
+                        <div
+                          key={index}
+                          className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm"
+                          style={{ width: pageSize.width, height: pageSize.height }}
+                        >
                           <Page
-                            pageNumber={currentPage}
-                            width={typeof window !== 'undefined' ? Math.min(pageSize.width, window.innerWidth - 28) : pageSize.width}
+                            pageNumber={index + 1}
+                            width={pageSize.width}
+                            loading={pagePlaceholder(pageSize.width, pageSize.height)}
                             renderTextLayer={false}
                             renderAnnotationLayer={false}
                             renderMode="canvas"
                           />
                         </div>
-                      </div>
-                    ) : (
-                      <FlipBookComponent
-                        ref={bookRef}
-                        width={pageSize.width}
-                        height={pageSize.height}
-                        size="fixed"
-                        usePortrait={false}
-                        showCover={true}
-                        drawShadow={true}
-                        flippingTime={700}
-                        mobileScrollSupport={false}
-                        startZIndex={0}
-                        onFlip={(event: { data: number }) => setRawIdx(event.data)}
-                      >
-                        {Array.from({ length: visiblePageCount }, (_, index) => (
-                          <div
-                            key={index}
-                            className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm"
-                            style={{ width: pageSize.width, height: pageSize.height }}
-                          >
-                            <Page
-                              pageNumber={index + 1}
-                              width={pageSize.width}
-                              renderTextLayer={false}
-                              renderAnnotationLayer={false}
-                              renderMode="canvas"
-                            />
-                          </div>
-                        ))}
-                      </FlipBookComponent>
-                    )}
-                  </div>
-                )}
+                      ))}
+                    </FlipBookComponent>
+                  )}
+                </div>
               </Document>
             </div>
           </div>

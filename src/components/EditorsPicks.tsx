@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { SkeletonRegion } from './ui/Skeleton'
+import LazyImage from './ui/LazyImage'
+import CardSkeleton from './skeletons/CardSkeleton'
 
 interface Pick {
   id: number
@@ -73,15 +76,19 @@ export default function EditorsPicks(): JSX.Element {
       </div>
 
       {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
-              <div className="h-44 bg-slate-200 dark:bg-slate-800 rounded-xl mb-4" />
-              <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded mb-2 w-3/4" />
-              <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full" />
-            </div>
+        <SkeletonRegion label="Loading announcements" className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {[0, 1, 2].map((i) => (
+            <CardSkeleton
+              key={i}
+              className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm"
+              mediaClassName="h-44 rounded-xl mb-4"
+              titleLineClassName="h-4"
+              textLines={3}
+              textLineClassName="h-3 sm:h-3.5"
+              footer
+            />
           ))}
-        </div>
+        </SkeletonRegion>
       )}
 
       {error && (
@@ -102,8 +109,8 @@ export default function EditorsPicks(): JSX.Element {
               >
                 <div>
                   {imageUrl ? (
-                    <div className="h-44 w-full overflow-hidden rounded-xl mb-4 bg-slate-100 dark:bg-slate-800 shadow-inner">
-                      <img
+                    <div className="relative h-44 w-full overflow-hidden rounded-xl mb-4 bg-slate-100 dark:bg-slate-800 shadow-inner">
+                      <LazyImage
                         src={imageUrl}
                         alt={p.title}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"

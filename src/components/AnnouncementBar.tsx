@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react'
+import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 
 interface SocialLinks {
   facebook?: string
@@ -24,6 +25,7 @@ const defaultSocialLinks: SocialLinks = {
 
 export default function AnnouncementBar({ socialLinks = defaultSocialLinks }: AnnouncementBarProps): JSX.Element {
   const [titles, setTitles] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadTitles = async () => {
@@ -39,6 +41,8 @@ export default function AnnouncementBar({ socialLinks = defaultSocialLinks }: An
         setTitles(fetchedTitles)
       } catch (error) {
         console.error('AnnouncementBar load error:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -68,9 +72,13 @@ export default function AnnouncementBar({ socialLinks = defaultSocialLinks }: An
                   </span>
                 ))}
               </div>
-            ) : (
-              <div className="text-slate-400 text-sm sm:text-base">Loading popular titles...</div>
-            )}
+            ) : loading ? (
+              <SkeletonRegion label="Loading popular titles" className="flex h-5 sm:h-6 items-center gap-6">
+                <Skeleton tone="inverse" className="h-3.5 w-56 shrink-0" />
+                <Skeleton tone="inverse" className="h-3.5 w-44 shrink-0 hidden sm:block" />
+                <Skeleton tone="inverse" className="h-3.5 w-64 shrink-0 hidden lg:block" />
+              </SkeletonRegion>
+            ) : null}
           </div>
         </div>
 

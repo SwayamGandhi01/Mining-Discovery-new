@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Clock, Calendar, User, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
 import { cachedFetch } from "../utils/cachedFetch";
+import LazyImage from "../components/ui/LazyImage";
+import ArticleDetailSkeleton, { RelatedArticlesSkeleton } from "../components/skeletons/ArticleDetailSkeleton";
 
 interface ArticleDetailProps {
   documentId: string;
@@ -38,21 +40,30 @@ export default function ArticleDetail({
   const [article, setArticle] = useState<Article | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [relatedLoading, setRelatedLoading] = useState(true);
 
   useEffect(() => {
+    // Moving to another article restarts loading, and responses for the
+    // article the reader has just left are ignored.
+    let active = true;
+    setLoading(true);
+    setRelatedLoading(true);
+
     const fetchArticle = async () => {
       try {
         const url = `https://admins.miningdiscovery.com/api/news-sections/${documentId}?populate=*`;
         const data = await cachedFetch(url, {
           onUpdate: (fresh: any) => {
             const item = fresh?.data;
-            if (item) setArticle(mapArticleItem(item));
+            if (active && item) setArticle(mapArticleItem(item));
           },
         });
+        if (!active) return;
 
         const item = data?.data;
         if (!item) {
           setArticle(null);
+          setRelatedLoading(false);
           return;
         }
 
@@ -60,57 +71,50 @@ export default function ArticleDetail({
         fetchRelatedArticles();
       } catch (error) {
         console.error("Error fetching article:", error);
+        if (!active) return;
         setArticle(null);
+        setRelatedLoading(false);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
+
+    const mapRelated = (raw: any): Article[] =>
+      (raw?.data || [])
+        .filter((item: any) => item.documentId !== documentId)
+        .slice(0, 15)
+        .map((item: any) => ({
+          id: item.id,
+          documentId: item.documentId,
+          title: item.title,
+          image: item.image?.formats?.medium?.url || item.image?.url || "",
+          slug: item.slug,
+        }));
 
     const fetchRelatedArticles = async () => {
       try {
         const url = "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=15&populate=image";
         const data = await cachedFetch(url, {
           onUpdate: (fresh: any) => {
-            const articles = (fresh?.data || [])
-              .filter((item: any) => item.documentId !== documentId)
-              .slice(0, 15)
-              .map((item: any) => ({
-                id: item.id,
-                documentId: item.documentId,
-                title: item.title,
-                image: item.image?.formats?.medium?.url || item.image?.url || "",
-                slug: item.slug,
-              }));
-            setRelatedArticles(articles);
+            if (active) setRelatedArticles(mapRelated(fresh));
           },
         });
 
-        const articles = (data?.data || [])
-          .filter((item: any) => item.documentId !== documentId)
-          .slice(0, 15)
-          .map((item: any) => ({
-            id: item.id,
-            documentId: item.documentId,
-            title: item.title,
-            image: item.image?.formats?.medium?.url || item.image?.url || "",
-            slug: item.slug,
-          }));
-        setRelatedArticles(articles);
+        if (active) setRelatedArticles(mapRelated(data));
       } catch (error) {
         console.error("Error fetching related articles:", error);
+      } finally {
+        if (active) setRelatedLoading(false);
       }
     };
 
     fetchArticle();
+    return () => {
+      active = false;
+    };
   }, [documentId]);
 
-  if (loading) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center py-20">Loading article...</div>
-      </div>
-    );
-  }
+  if (loading) return <ArticleDetailSkeleton />;
 
   if (!article) {
     return (
@@ -192,8 +196,8 @@ export default function ArticleDetail({
           {/* Featured Image */}
           {article.image && (
             <div className="mb-8">
-              <div className="aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-lg">
-                <img
+              <div className="relative aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-lg">
+                <LazyImage
                   src={article.image}
                   alt={article.title}
                   className="w-full h-full object-cover"
@@ -290,7 +294,9 @@ export default function ArticleDetail({
           </button>
 
           {/* Related Articles */}
-          {relatedArticles.length > 0 && (
+          {relatedLoading ? (
+            <RelatedArticlesSkeleton />
+          ) : relatedArticles.length > 0 && (
             <div>
               <h3 className="font-bold text-xs uppercase tracking-widest border-b-2 border-primary w-fit pb-2 mb-6 text-slate-900 dark:text-slate-100">
                 Continue Reading
@@ -305,8 +311,8 @@ export default function ArticleDetail({
                     className="group cursor-pointer"
                   >
                     {item.image && (
-                      <div className="aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-lg mb-3">
-                        <img
+                      <div className="relative aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-lg mb-3">
+                        <LazyImage
                           src={item.image}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
