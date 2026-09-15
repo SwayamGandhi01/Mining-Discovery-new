@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, pickImage } from '../api/cms'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-const API_URL = 'https://admins.miningdiscovery.com/api/post-newsletters?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
-
-const getNewsletterDetailUrl = (id: string) => `${API_URL}&filters[id][$eq]=${encodeURIComponent(id)}`
 
 type NewsletterItem = {
   id: number
@@ -24,7 +21,8 @@ type NewsletterFlipbookProps = {
 }
 
 const getCoverImageUrl = (item: NewsletterItem): string | null => {
-  const url = item.coverImage?.formats?.small?.url || item.coverImage?.formats?.medium?.url || item.coverImage?.url
+  // The download card shows the cover ~170px wide.
+  const url = pickImage(item.coverImage, 300)?.url
   if (!url) return null
   return url.startsWith('http') ? url : `${BASE_URL}${url}`
 }
@@ -33,6 +31,20 @@ const getPdfUrl = (item: NewsletterItem): string | null => {
   const candidate = item.pdfFile?.url
   if (!candidate) return null
   return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
+}
+
+const findNewsletter = (json: any, newsletterId: string): NewsletterItem | null => {
+  const rawItem = (json?.data || []).find((item: any) => String(item.id) === String(newsletterId))
+  if (!rawItem) return null
+  return {
+    id: rawItem.id,
+    title: rawItem.title,
+    publishedAt: rawItem.publishedAt,
+    coverImage: rawItem.coverImage,
+    pdfFile: rawItem.pdfFile,
+    Description: rawItem.Description,
+    description: rawItem.description,
+  }
 }
 
 export default function NewsletterFlipbook({ newsletterId, onBack }: NewsletterFlipbookProps): JSX.Element {
@@ -44,34 +56,39 @@ export default function NewsletterFlipbook({ newsletterId, onBack }: NewsletterF
     let mounted = true
 
     const fetchNewsletter = async () => {
+      // Opened from the Newsletters section, the newsletter is already in the
+      // cached list; otherwise fetch just this one.
+      const listed = findNewsletter(cms.newsletters.peek(), newsletterId)
+      if (listed) {
+        setItem(listed)
+        setError(null)
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError(null)
 
       try {
-        const data = await cachedFetch(getNewsletterDetailUrl(newsletterId))
+        const data = await cms.newsletter(newsletterId).fetch((fresh: any) => {
+          if (!mounted) return
+          const found = findNewsletter(fresh, newsletterId)
+          if (found) setItem(found)
+        })
         if (!mounted) return
 
-        const rawItem = Array.isArray(data?.data) ? data.data[0] : data?.data || data
-        if (!rawItem || !rawItem.id) {
+        const found = findNewsletter(data, newsletterId)
+        if (!found) {
           setError('Newsletter not found.')
           return
         }
 
-        setItem({
-          id: rawItem.id,
-          title: rawItem.title,
-          publishedAt: rawItem.publishedAt,
-          coverImage: rawItem.coverImage,
-          pdfFile: rawItem.pdfFile,
-          Description: rawItem.Description,
-          description: rawItem.description,
-        })
+        setItem(found)
       } catch (err: any) {
         if (!mounted) return
         setError('Unable to load newsletter at the moment.')
       } finally {
-        if (!mounted) return
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, pickImage } from '../api/cms'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-// Same endpoint the Company Profiles listing uses, so the SWR cache is usually already warm.
-const API_URL = 'https://admins.miningdiscovery.com/api/company-profiles?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
 
 type CompanyProfile = {
@@ -27,12 +25,8 @@ const absoluteUrl = (url?: string | null): string | null => {
   return url.startsWith('http') ? url : `${BASE_URL}${url}`
 }
 
-const getCoverImageUrl = (item: CompanyProfile): string | null => {
-  const cover = item.cover_image?.[0]
-  return absoluteUrl(
-    cover?.formats?.medium?.url || cover?.formats?.small?.url || cover?.formats?.large?.url || cover?.url
-  )
-}
+// The download card shows the cover ~170px wide.
+const getCoverImageUrl = (item: CompanyProfile): string | null => absoluteUrl(pickImage(item.cover_image?.[0], 300)?.url)
 
 const getPdfUrl = (item: CompanyProfile): string | null => absoluteUrl(item.companyPdf?.[0]?.url)
 
@@ -66,16 +60,24 @@ export default function CompanyProfileFlipbook({
     let mounted = true
 
     const fetchProfile = async () => {
+      // Opened from the Company Profiles page, the profile is already in the
+      // cached list; otherwise fetch just this one.
+      const listed = findProfile(cms.companyProfiles.peek(), profileId)
+      if (listed) {
+        setProfile(listed)
+        setError(null)
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError(null)
 
       try {
-        const data = await cachedFetch(API_URL, {
-          onUpdate: (fresh: any) => {
-            if (!mounted) return
-            const refreshed = findProfile(fresh, profileId)
-            if (refreshed) setProfile(refreshed)
-          },
+        const data = await cms.companyProfile(profileId).fetch((fresh: any) => {
+          if (!mounted) return
+          const refreshed = findProfile(fresh, profileId)
+          if (refreshed) setProfile(refreshed)
         })
 
         if (!mounted) return

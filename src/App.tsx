@@ -38,6 +38,7 @@ const OurArticlesFlipbook = lazy(() => import('./pages/OurArticlesFlipbook'))
 const MagazineFlipbook = lazy(() => import('./pages/MagazineFlipbook'))
 const NewsletterFlipbook = lazy(() => import('./pages/NewsletterFlipbook'))
 const CompanyProfileFlipbook = lazy(() => import('./pages/CompanyProfileFlipbook'))
+const NewsPdfFlipbook = lazy(() => import('./pages/NewsPdfFlipbook'))
 const SearchResults = lazy(() => import('./pages/SearchResults'))
 
 // Placeholder components for magazine dropdown pages
@@ -56,6 +57,8 @@ const ROUTE_PATTERNS = {
   magazineFlipbook: /^\/magazine-flipbook\/(.+)$/,
   newsletterFlipbook: /^\/newsletter-flipbook\/(.+)$/,
   companyFlipbook: /^\/company-flipbook\/(.+)$/,
+  // PDF stories from the news categories (Research Reports)
+  newsFlipbook: /^\/news-flipbook\/(.+)$/,
   category: /^\/news\/([^/]+)$/,
 }
 
@@ -79,6 +82,7 @@ export default function App(): JSX.Element {
   const [magazineFlipbookId, setMagazineFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.magazineFlipbook))
   const [newsletterFlipbookId, setNewsletterFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.newsletterFlipbook))
   const [companyFlipbookId, setCompanyFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.companyFlipbook))
+  const [newsFlipbookId, setNewsFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.newsFlipbook))
 
   useEffect(() => {
     const onRoute = () => {
@@ -101,6 +105,7 @@ export default function App(): JSX.Element {
       setMagazineFlipbookId(routeParam(path, ROUTE_PATTERNS.magazineFlipbook))
       setNewsletterFlipbookId(routeParam(path, ROUTE_PATTERNS.newsletterFlipbook))
       setCompanyFlipbookId(routeParam(path, ROUTE_PATTERNS.companyFlipbook))
+      setNewsFlipbookId(routeParam(path, ROUTE_PATTERNS.newsFlipbook))
       setCategorySlug(routeParam(path, ROUTE_PATTERNS.category))
     }
     onRoute()
@@ -159,6 +164,7 @@ export default function App(): JSX.Element {
   if (magazineFlipbookId) return renderPage(MagazineFlipbook, { magazineId: magazineFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening magazine" />)
   if (newsletterFlipbookId) return renderPage(NewsletterFlipbook, { newsletterId: newsletterFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening newsletter" />)
   if (companyFlipbookId) return renderPage(CompanyProfileFlipbook, { profileId: companyFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening company profile" />)
+  if (newsFlipbookId) return renderPage(NewsPdfFlipbook, { documentId: newsFlipbookId, onBack: () => window.history.back() }, <FlipbookSkeleton label="Opening report" />)
 
   // Category news page
   if (categorySlug) return renderPage(CategoryNews, { categorySlug }, <CategoryNewsSkeleton />)

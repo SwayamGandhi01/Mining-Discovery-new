@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 import LazyImage from "./ui/LazyImage";
 
@@ -27,24 +27,6 @@ const mapHeroItem = (item: any): HeroNews => ({
   publishedAt: item.publish_on || item.publishedAt,
 });
 
-// Order by the editorial news date (`publish_on`) — the date the cover story
-// actually displays — and fall back to the CMS record timestamp to break ties
-// between stories filed on the same day. Sorting by `publishedAt` alone put
-// whichever story was entered last on the cover, even when its news date was
-// older than other stories on the page.
-//
-// `publish_on` nulls sort first on a descending sort, which would hand the
-// cover to an undated story, so they are filtered out (1 of 3245 at time of
-// writing).
-const HERO_URL =
-  "https://admins.miningdiscovery.com/api/news-sections" +
-  "?filters[news_categories][slug][$eq]=latest-news" +
-  "&filters[publish_on][$notNull]=true" +
-  "&sort[0]=publish_on:desc" +
-  "&sort[1]=publishedAt:desc" +
-  "&pagination[limit]=1" +
-  "&populate=*";
-
 const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
   const [news, setNews] = useState<HeroNews | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,11 +34,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
-        const data = await cachedFetch(HERO_URL, {
-          onUpdate: (fresh: any) => {
-            const item = fresh.data?.[0];
-            if (item) setNews(mapHeroItem(item));
-          },
+        // Which story counts as the cover is explained on cms.coverStory.
+        const data = await cms.coverStory.fetch((fresh: any) => {
+          const item = fresh.data?.[0];
+          if (item) setNews(mapHeroItem(item));
         });
 
         const item = data.data?.[0];
@@ -102,7 +83,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
         onClick={() => onArticleClick?.(news.documentId)}
       >
         <div className="aspect-[16/9] bg-slate-900 rounded-2xl overflow-hidden mb-5 shadow-lg group-hover:shadow-2xl transition-all duration-500 relative">
+          {/* The page's main image: fetched ahead of everything else. */}
           <LazyImage
+            priority
             src={news.image}
             alt={news.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95 group-hover:opacity-100"

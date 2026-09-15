@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, pickImage } from '../api/cms'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-const API_URL = 'https://admins.miningdiscovery.com/api/magazines?populate=*&sort=publishedAt:desc'
 const BASE_URL = 'https://admins.miningdiscovery.com'
 
 type Magazine = {
@@ -21,12 +20,8 @@ type MagazineFlipbookProps = {
 }
 
 const getCoverImageUrl = (item: Magazine): string | null => {
-  const url =
-    item.coverImage?.formats?.medium?.url ||
-    item.coverImage?.formats?.small?.url ||
-    item.coverImage?.formats?.large?.url ||
-    item.coverImage?.url
-
+  // The download card shows the cover ~170px wide.
+  const url = pickImage(item.coverImage, 300)?.url
   if (!url) return null
   return url.startsWith('http') ? url : `${BASE_URL}${url}`
 }
@@ -35,6 +30,20 @@ const getPdfUrl = (item: Magazine): string | null => {
   const candidate = item.pdf?.url
   if (!candidate) return null
   return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
+}
+
+const toMagazine = (found: any): Magazine => ({
+  id: found.id,
+  Title: found.Title,
+  Description: found.Description,
+  publishDate: found.publishDate || found.publishedAt,
+  coverImage: found.coverImage,
+  pdf: found.pdf,
+})
+
+const findMagazine = (json: any, magazineId: string): Magazine | null => {
+  const found = (json?.data || []).find((item: any) => String(item.id) === String(magazineId))
+  return found ? toMagazine(found) : null
 }
 
 export default function MagazineFlipbook({ magazineId, onBack }: MagazineFlipbookProps): JSX.Element {
@@ -46,38 +55,37 @@ export default function MagazineFlipbook({ magazineId, onBack }: MagazineFlipboo
     let mounted = true
 
     const fetchMagazine = async () => {
+      // Opened from the Magazines page, the magazine is already in the cached
+      // list; otherwise fetch just this one.
+      const listed = findMagazine(cms.magazines.peek(), magazineId)
+      if (listed) {
+        setMagazine(listed)
+        setError(null)
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError(null)
 
+      // Magazine links use the numeric id; anything else can't match one.
+      if (!/^\d+$/.test(magazineId)) {
+        setError('Magazine not found.')
+        setLoading(false)
+        return
+      }
+
       try {
-        const data = await cachedFetch(API_URL, {
-          onUpdate: (fresh: any) => {
-            if (!mounted) return
-            const found = (fresh?.data || []).find((item: any) => String(item.id) === String(magazineId))
-            if (found) {
-              setMagazine({
-                id: found.id,
-                Title: found.Title,
-                Description: found.Description,
-                publishDate: found.publishDate || found.publishedAt,
-                coverImage: found.coverImage,
-                pdf: found.pdf,
-              })
-            }
-          },
+        const data = await cms.magazine(magazineId).fetch((fresh: any) => {
+          if (!mounted) return
+          const found = findMagazine(fresh, magazineId)
+          if (found) setMagazine(found)
         })
 
         if (!mounted) return
-        const found = (data?.data || []).find((item: any) => String(item.id) === String(magazineId))
+        const found = findMagazine(data, magazineId)
         if (found) {
-          setMagazine({
-            id: found.id,
-            Title: found.Title,
-            Description: found.Description,
-            publishDate: found.publishDate || found.publishedAt,
-            coverImage: found.coverImage,
-            pdf: found.pdf,
-          })
+          setMagazine(found)
         } else {
           setError('Magazine not found.')
         }
@@ -85,8 +93,7 @@ export default function MagazineFlipbook({ magazineId, onBack }: MagazineFlipboo
         if (!mounted) return
         setError('Unable to load magazine at the moment.')
       } finally {
-        if (!mounted) return
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 

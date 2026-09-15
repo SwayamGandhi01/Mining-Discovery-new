@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { BookOpen, Download, Calendar, AlertCircle } from 'lucide-react'
+import { cms, pickImage } from '../api/cms'
 import { SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
 import CardSkeleton from '../components/skeletons/CardSkeleton'
@@ -20,26 +21,29 @@ const navigate = (path: string) => {
   window.scrollTo(0, 0)
 }
 
-const CACHE_KEY = 'md_magazines_cache_v1'
-const API_URL = 'https://admins.miningdiscovery.com/api/magazines?populate=*&sort=publishedAt:desc'
+const toMagazines = (data: any): Magazine[] => {
+  const list: Magazine[] = (data?.data || []).map((it: any) => ({
+    id: it.id,
+    Title: it.Title,
+    Description: it.Description,
+    publishDate: it.publishDate || it.publishedAt,
+    features: it.features,
+    coverImage: it.coverImage,
+    pdf: it.pdf,
+  }))
+
+  // Sort newest first by publishDate
+  list.sort((a, b) => {
+    const ta = a.publishDate ? new Date(a.publishDate).getTime() : 0
+    const tb = b.publishDate ? new Date(b.publishDate).getTime() : 0
+    return tb - ta
+  })
+  return list
+}
 
 export default function Magazines(): JSX.Element {
-  const [items, setItems] = useState<Magazine[]>(() => {
-    try {
-      const cached = sessionStorage.getItem(CACHE_KEY)
-      if (cached) return JSON.parse(cached)
-    } catch (e) {
-      // Ignore cache parse error
-    }
-    return []
-  })
-  const [loading, setLoading] = useState<boolean>(() => {
-    try {
-      return !sessionStorage.getItem(CACHE_KEY)
-    } catch (e) {
-      return true
-    }
-  })
+  const [items, setItems] = useState<Magazine[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -47,40 +51,17 @@ export default function Magazines(): JSX.Element {
 
     async function loadMagazines() {
       try {
-        const res = await fetch(API_URL)
-        if (!res.ok) throw new Error(`Server returned status ${res.status}`)
-        const data = await res.json()
+        // Shared cache: a later flipbook visit finds its magazine here without a request.
+        const data = await cms.magazines.fetch((fresh: any) => {
+          if (mounted) setItems(toMagazines(fresh))
+        })
         if (!mounted) return
 
-        const list = (data?.data || []).map((it: any) => ({
-          id: it.id,
-          Title: it.Title,
-          Description: it.Description,
-          publishDate: it.publishDate || it.publishedAt,
-          features: it.features,
-          coverImage: it.coverImage,
-          pdf: it.pdf,
-        }))
-
-        // Sort newest first by publishDate
-        list.sort((a: any, b: any) => {
-          const ta = a.publishDate ? new Date(a.publishDate).getTime() : 0
-          const tb = b.publishDate ? new Date(b.publishDate).getTime() : 0
-          return tb - ta
-        })
-
-        setItems(list)
+        setItems(toMagazines(data))
         setError(null)
-        try {
-          sessionStorage.setItem(CACHE_KEY, JSON.stringify(list))
-        } catch (e) {
-          // Ignore cache write error
-        }
       } catch (e: any) {
         if (!mounted) return
-        if (items.length === 0) {
-          setError(e.message || 'Failed to load magazines')
-        }
+        setError(e.message || 'Failed to load magazines')
       } finally {
         if (mounted) setLoading(false)
       }
@@ -173,11 +154,10 @@ export default function Magazines(): JSX.Element {
                 {/* Cover Image */}
                 <div className="w-full h-64 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative p-3">
                   {(() => {
-                    const url =
-                      m.coverImage?.formats?.medium?.url ||
-                      m.coverImage?.formats?.small?.url ||
-                      m.coverImage?.formats?.large?.url ||
-                      m.coverImage?.url
+                    // The cover shows ~200px wide; most uploads are PNGs whose
+                    // "medium" variant weighs up to ~900 KB, so take the lightest
+                    // variant that is still sharp at this size.
+                    const url = pickImage(m.coverImage, 300)?.url
                     if (url) {
                       return (
                         <LazyImage

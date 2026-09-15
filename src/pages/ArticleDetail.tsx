@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Clock, Calendar, User, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms, pickImage } from "../api/cms";
 import LazyImage from "../components/ui/LazyImage";
 import ArticleDetailSkeleton, { RelatedArticlesSkeleton } from "../components/skeletons/ArticleDetailSkeleton";
 
@@ -33,6 +33,18 @@ const mapArticleItem = (item: any): Article => ({
   slug: item.slug,
 });
 
+const navigate = (path: string) => {
+  window.history.pushState(null, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  window.scrollTo(0, 0);
+};
+
+// Article HTML comes straight from the CMS. Its images load lazily so a long
+// article doesn't download every picture up front; images that already set
+// `loading` keep it, and their width/height attributes are left untouched.
+const withLazyImages = (html: string): string =>
+  html.replace(/<img\b(?![^>]*\sloading=)/gi, '<img loading="lazy" decoding="async"');
+
 export default function ArticleDetail({
   documentId,
   onBack,
@@ -49,36 +61,6 @@ export default function ArticleDetail({
     setLoading(true);
     setRelatedLoading(true);
 
-    const fetchArticle = async () => {
-      try {
-        const url = `https://admins.miningdiscovery.com/api/news-sections/${documentId}?populate=*`;
-        const data = await cachedFetch(url, {
-          onUpdate: (fresh: any) => {
-            const item = fresh?.data;
-            if (active && item) setArticle(mapArticleItem(item));
-          },
-        });
-        if (!active) return;
-
-        const item = data?.data;
-        if (!item) {
-          setArticle(null);
-          setRelatedLoading(false);
-          return;
-        }
-
-        setArticle(mapArticleItem(item));
-        fetchRelatedArticles();
-      } catch (error) {
-        console.error("Error fetching article:", error);
-        if (!active) return;
-        setArticle(null);
-        setRelatedLoading(false);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
     const mapRelated = (raw: any): Article[] =>
       (raw?.data || [])
         .filter((item: any) => item.documentId !== documentId)
@@ -87,32 +69,54 @@ export default function ArticleDetail({
           id: item.id,
           documentId: item.documentId,
           title: item.title,
-          image: item.image?.formats?.medium?.url || item.image?.url || "",
+          // Sidebar thumbnails are ~170px wide.
+          image: pickImage(item.image, 250)?.url || "",
           slug: item.slug,
         }));
 
-    const fetchRelatedArticles = async () => {
-      try {
-        const url = "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=15&populate=image";
-        const data = await cachedFetch(url, {
-          onUpdate: (fresh: any) => {
-            if (active) setRelatedArticles(mapRelated(fresh));
-          },
-        });
+    // The related list doesn't depend on the article, so both requests start together.
+    cms
+      .article(documentId)
+      .fetch((fresh: any) => {
+        const item = fresh?.data;
+        if (active && item) setArticle(mapArticleItem(item));
+      })
+      .then((data: any) => {
+        if (!active) return;
+        const item = data?.data;
+        setArticle(item ? mapArticleItem(item) : null);
+      })
+      .catch((error) => {
+        console.error("Error fetching article:", error);
+        if (active) setArticle(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
+    cms.relatedArticles
+      .fetch((fresh: any) => {
+        if (active) setRelatedArticles(mapRelated(fresh));
+      })
+      .then((data: any) => {
         if (active) setRelatedArticles(mapRelated(data));
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Error fetching related articles:", error);
-      } finally {
+      })
+      .finally(() => {
         if (active) setRelatedLoading(false);
-      }
-    };
+      });
 
-    fetchArticle();
     return () => {
       active = false;
     };
   }, [documentId]);
+
+  const articleHtml = useMemo(
+    () => (article?.description ? withLazyImages(article.description) : ""),
+    [article?.description]
+  );
 
   if (loading) return <ArticleDetailSkeleton />;
 
@@ -211,7 +215,7 @@ export default function ArticleDetail({
             <div className="max-w-none mb-12">
               <div
                 className="article-content text-slate-700 dark:text-slate-300"
-                dangerouslySetInnerHTML={{ __html: article.description }}
+                dangerouslySetInnerHTML={{ __html: articleHtml }}
               />
             </div>
           )}
@@ -305,9 +309,7 @@ export default function ArticleDetail({
                 {relatedArticles.map((item) => (
                   <div
                     key={item.id}
-                    onClick={() => {
-                      window.location.hash = `#/article/${item.documentId || item.id}`;
-                    }}
+                    onClick={() => navigate(`/article/${item.documentId || item.id}`)}
                     className="group cursor-pointer"
                   >
                     {item.image && (

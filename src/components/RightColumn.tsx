@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 
 interface NewsItem {
@@ -13,7 +13,13 @@ interface RightColumnProps {
   onArticleClick?: (documentId: string) => void;
 }
 
-const TRENDING_URL = "https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&sort=publishedAt:desc&pagination[limit]=8";
+const toNewsItems = (data: any): NewsItem[] =>
+  (data?.data || []).map((item: any) => ({
+    id: item.id,
+    documentId: item.documentId,
+    title: item.title,
+    slug: item.slug,
+  }));
 
 const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -22,23 +28,8 @@ const RightColumn: React.FC<RightColumnProps> = ({ onArticleClick }) => {
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
-        const data = await cachedFetch(TRENDING_URL, {
-          onUpdate: (fresh: any) => {
-            const formattedNews = (fresh.data || []).map((item: any) => ({
-              id: item.id, documentId: item.documentId, title: item.title, slug: item.slug,
-            }));
-            setNews(formattedNews);
-          },
-        });
-
-        const formattedNews = (data.data || []).map((item: any) => ({
-          id: item.id,
-          documentId: item.documentId,
-          title: item.title,
-          slug: item.slug,
-        }));
-
-        setNews(formattedNews);
+        const data = await cms.trending.fetch((fresh: any) => setNews(toNewsItems(fresh)));
+        setNews(toNewsItems(data));
       } catch (error) {
         console.error("Error fetching latest news:", error);
       } finally {

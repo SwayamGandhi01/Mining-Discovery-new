@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, withDescriptionFallback } from '../api/cms'
 import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
 
 interface SearchResultsProps {
@@ -30,13 +30,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onArticleClick }) 
       setError(null)
 
       try {
-        const encodedQuery = encodeURIComponent(normalizedQuery)
-        const url = `https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=24&populate=*&filters[$or][0][title][$containsi]=${encodedQuery}&filters[$or][1][short_description][$containsi]=${encodedQuery}&filters[$or][2][description][$containsi]=${encodedQuery}`
-        const data = await cachedFetch(url, {
-          onUpdate: (fresh: any) => {
-            if (active) setResults(fresh?.data || [])
-          },
+        // Results are cached in memory for the session only (see cms.search).
+        const json = await cms.search(normalizedQuery).fetch((fresh: any) => {
+          withDescriptionFallback(fresh).then((withText: any) => {
+            if (active) setResults(withText?.data || [])
+          })
         })
+        const data = await withDescriptionFallback(json)
 
         if (!active) return
         setResults(data?.data || [])

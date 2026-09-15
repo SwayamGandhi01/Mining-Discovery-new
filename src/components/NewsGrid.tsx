@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Download } from "lucide-react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms, pickImage } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 import LazyImage from "./ui/LazyImage";
 import CardSkeleton from "./skeletons/CardSkeleton";
@@ -26,18 +26,17 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   const [loading, setLoading] = useState(true);
   const [magLoading, setMagLoading] = useState(true);
 
-  // Refetch on every tab change. `active` drops responses for a tab the user
-  // has already left, so a slower earlier request can't land on the new tab.
+  // Refetch on every tab change (tabs already visited come from the cache).
+  // `active` drops responses for a tab the user has already left, so a slower
+  // earlier request can't land on the new tab.
   useEffect(() => {
     let active = true;
     setLoading(true);
 
-    const url = `https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=${activeCategory}&sort=publishedAt:desc&pagination[limit]=2&populate=*`;
-    cachedFetch(url, {
-      onUpdate: (fresh: any) => {
+    cms.tabPosts(activeCategory)
+      .fetch((fresh: any) => {
         if (active) setPosts(fresh?.data || []);
-      },
-    })
+      })
       .then((json) => {
         if (active) setPosts(json?.data || []);
       })
@@ -56,30 +55,13 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   useEffect(() => {
     async function fetchMagazine() {
       try {
-        const url = "https://admins.miningdiscovery.com/api/magazines?populate=*";
-        const json = await cachedFetch(url, {
-          onUpdate: (fresh: any) => {
-            const mags = fresh?.data || [];
-            if (mags.length) {
-              const sorted = mags.sort(
-                (a: any, b: any) =>
-                  new Date(b.publishedAt).getTime() -
-                  new Date(a.publishedAt).getTime()
-              );
-              setLatestMag(sorted[0]);
-            }
-          },
+        // Only the newest issue, which is all this card shows.
+        const json = await cms.latestMagazine.fetch((fresh: any) => {
+          const mag = fresh?.data?.[0];
+          if (mag) setLatestMag(mag);
         });
-        const mags = json?.data || [];
-
-        if (mags.length) {
-          const sorted = mags.sort(
-            (a: any, b: any) =>
-              new Date(b.publishedAt).getTime() -
-              new Date(a.publishedAt).getTime()
-          );
-          setLatestMag(sorted[0]);
-        }
+        const mag = json?.data?.[0];
+        if (mag) setLatestMag(mag);
       } catch (e) {
         console.error("Magazine fetch error");
       } finally {
@@ -96,7 +78,8 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
     return Math.ceil(wordCount / wordsPerMinute);
   };
 
-  const magCover = latestMag?.coverImage?.formats?.medium || latestMag?.coverImage;
+  // The cover shows 208px tall (~160px wide); the lightest variant that is sharp at that size.
+  const magCover = pickImage(latestMag?.coverImage, 240);
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 my-10 sm:my-14">

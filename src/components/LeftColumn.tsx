@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 
 interface NewsItem {
@@ -17,7 +17,13 @@ interface LeftColumnProps {
   onArticleClick?: (documentId: string) => void;
 }
 
-const BASE_URL = "https://admins.miningdiscovery.com";
+const toNewsItem = (item: any): NewsItem => ({
+  id: item.id,
+  documentId: item.documentId,
+  title: item.title,
+  shortDescription: item.short_description,
+  slug: item.slug,
+});
 
 /** Same card shell as a loaded teaser: tag pill, two-line title, three-line summary. */
 const ArticleTeaserSkeleton: React.FC = () => (
@@ -47,32 +53,17 @@ const LeftColumn: React.FC<LeftColumnProps> = ({ onArticleClick }) => {
   const [copper, setCopper] = useState<NewsSlot>(undefined);
 
   useEffect(() => {
+    // Each card is the newest story of its metal — the first of the four that
+    // MetalNewsSections shows further down, so the two share one request.
     const fetchCategoryNews = async (slug: string, setter: any) => {
       try {
-        const url = `${BASE_URL}/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=1&populate=*`;
-        const data = await cachedFetch(url, {
-          onUpdate: (fresh: any) => {
-            const item = fresh.data?.[0];
-            if (item) setter({
-              id: item.id, documentId: item.documentId, title: item.title,
-              shortDescription: item.short_description, slug: item.slug,
-            });
-          },
+        const data = await cms.metalNews(slug).fetch((fresh: any) => {
+          const item = fresh.data?.[0];
+          if (item) setter(toNewsItem(item));
         });
 
         const item = data.data?.[0];
-        if (!item) {
-          setter(null);
-          return;
-        }
-
-        setter({
-          id: item.id,
-          documentId: item.documentId,
-          title: item.title,
-          shortDescription: item.short_description,
-          slug: item.slug,
-        });
+        setter(item ? toNewsItem(item) : null);
       } catch (error) {
         console.error(`Error fetching ${slug} news:`, error);
         setter(null);

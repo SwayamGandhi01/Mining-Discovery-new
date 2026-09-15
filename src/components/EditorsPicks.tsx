@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -20,7 +20,11 @@ interface Pick {
   publishedAt?: string
 }
 
-const EDITORS_PICKS_URL = 'https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=announcement&sort=publishedAt:desc&populate=*'
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo(0, 0)
+}
 
 export default function EditorsPicks(): JSX.Element {
   const [picks, setPicks] = useState<Pick[]>([])
@@ -31,11 +35,9 @@ export default function EditorsPicks(): JSX.Element {
     const fetchPicks = async () => {
       try {
         setLoading(true)
-        const data = await cachedFetch(EDITORS_PICKS_URL, {
-          onUpdate: (fresh: any) => {
-            const latestPicks = (fresh.data || []).slice(0, 3)
-            setPicks(latestPicks)
-          },
+        // Requests exactly the three announcements the section displays.
+        const data = await cms.announcements.fetch((fresh: any) => {
+          setPicks((fresh.data || []).slice(0, 3))
         })
 
         const latestPicks = (data.data || []).slice(0, 3)
@@ -54,7 +56,7 @@ export default function EditorsPicks(): JSX.Element {
   }, [])
 
   const openArticle = (documentId: string) => {
-    window.location.hash = `#/article/${documentId}`
+    navigate(`/article/${documentId}`)
   }
 
   const getImageUrl = (pick: Pick): string => {

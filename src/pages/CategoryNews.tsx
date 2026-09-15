@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Clock, Calendar, ArrowRight, FileText, TrendingUp, ChevronLeft, Tag } from 'lucide-react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, pickImage, withDescriptionFallback } from '../api/cms'
+import { warmFlipbookRuntime } from '../utils/flipbookPrefetch'
 import LazyImage from '../components/ui/LazyImage'
 import CategoryNewsSkeleton from '../components/skeletons/CategoryNewsSkeleton'
 
@@ -35,15 +36,12 @@ const navigate = (path: string) => {
   window.scrollTo(0, 0)
 }
 
-const getImageUrl = (article: NewsArticle): string | null => {
-  return (
-    article.image?.formats?.large?.url ||
-    article.image?.formats?.medium?.url ||
-    article.image?.formats?.small?.url ||
-    article.image?.url ||
-    null
-  )
-}
+// The lightest image variant that still fills the slot: the featured story is
+// ~720px wide, grid cards ~380px, sidebar thumbnails 96px.
+const IMAGE_WIDTH = { featured: 700, card: 400, thumbnail: 160 }
+
+const getImageUrl = (article: NewsArticle, minWidth: number): string | null =>
+  pickImage(article.image, minWidth)?.url ?? null
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString('en-US', {
@@ -89,10 +87,6 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
         setLoading(true)
         setError(null)
 
-        const url =
-          `https://admins.miningdiscovery.com/api/news-sections` +
-          `?filters[news_categories][slug][$eq]=${encodeURIComponent(slug)}&sort=publishedAt:desc&populate=*`
-
         const processData = (data: any) => {
           if (!mounted) return
           const mapped: NewsArticle[] = (data?.data || []).map((item: any) => {
@@ -128,11 +122,11 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           }
         }
 
-        const data = await cachedFetch(url, {
-          onUpdate: (fresh: any) => processData(fresh),
+        const data = await cms.categoryNews(slug).fetch((fresh: any) => {
+          withDescriptionFallback(fresh).then(processData)
         })
 
-        processData(data)
+        processData(await withDescriptionFallback(data))
       } catch (e) {
         if (mounted) setError(e instanceof Error ? e.message : 'Error loading articles')
       } finally {
@@ -144,13 +138,19 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
     return () => { mounted = false }
   }, [categorySlug])
 
+  // PDF stories (the Research Reports category) open in the flipbook reader,
+  // like magazines and newsletters; the reader links to the PDF itself too.
   const handleArticleClick = (article: NewsArticle) => {
     if (article.pdfUrl?.trim()) {
-      const w = window.open(article.pdfUrl, '_blank')
-      if (!w || w.closed) window.location.href = article.pdfUrl
+      navigate(`/news-flipbook/${article.documentId}`)
     } else {
       navigate(`/article/${article.documentId}`)
     }
+  }
+
+  // Hovering a PDF story fetches the reader's code ahead of the click.
+  const warmReader = (article: NewsArticle) => {
+    if (article.pdfUrl?.trim()) warmFlipbookRuntime()
   }
 
   const filtered = articles.filter(a => {
@@ -277,12 +277,14 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                 {/* Featured */}
                 <article
                   onClick={() => handleArticleClick(featured)}
+                  onPointerEnter={() => warmReader(featured)}
                   className="lg:col-span-7 group cursor-pointer"
                 >
                   <div className="relative overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 aspect-video shadow-lg">
-                    {getImageUrl(featured) ? (
+                    {getImageUrl(featured, IMAGE_WIDTH.featured) ? (
                       <LazyImage
-                        src={getImageUrl(featured)!}
+                        priority
+                        src={getImageUrl(featured, IMAGE_WIDTH.featured)!}
                         alt={featured.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
@@ -329,7 +331,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                       {featured.short_description}
                     </p>
                     <span className="inline-flex items-center gap-1.5 text-[#3B82F6] text-sm font-bold group-hover:gap-3 transition-all">
-                      {featured.pdfUrl ? 'View PDF' : 'Read Article'}
+                      {featured.pdfUrl ? 'Open flipbook' : 'Read Article'}
                       <ArrowRight className="w-4 h-4" />
                     </span>
                   </div>
@@ -338,11 +340,12 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                 {/* Sidebar articles */}
                 <div className="lg:col-span-5 flex flex-col gap-4">
                   {secondary.map((article) => {
-                    const imgUrl = getImageUrl(article)
+                    const imgUrl = getImageUrl(article, IMAGE_WIDTH.thumbnail)
                     return (
                       <article
                         key={article.id}
                         onClick={() => handleArticleClick(article)}
+                        onPointerEnter={() => warmReader(article)}
                         className="group cursor-pointer flex gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 hover:border-[#3B82F6]/50 hover:shadow-md transition-all duration-200"
                       >
                         <div className="relative w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700">
@@ -381,12 +384,13 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {rest.map((article) => {
-                    const imgUrl = getImageUrl(article)
+                    const imgUrl = getImageUrl(article, IMAGE_WIDTH.card)
                     const readTime = calcReadTime(article.short_description || article.description)
                     return (
                       <article
                         key={article.id}
                         onClick={() => handleArticleClick(article)}
+                        onPointerEnter={() => warmReader(article)}
                         className="group cursor-pointer bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-[#3B82F6]/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                       >
                         {/* Image */}
@@ -427,7 +431,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                           </p>
                           <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
                             <span className="inline-flex items-center gap-1 text-[#3B82F6] text-xs font-bold group-hover:gap-2 transition-all">
-                              {article.pdfUrl ? 'View PDF' : 'Read more'}
+                              {article.pdfUrl ? 'Open flipbook' : 'Read more'}
                               <ArrowRight className="w-3.5 h-3.5" />
                             </span>
                             {article.author && (

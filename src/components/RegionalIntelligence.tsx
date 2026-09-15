@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 
@@ -33,7 +33,6 @@ interface AdvertisementItem {
 type ImageSource = { url: string; width?: number; height?: number }
 
 const BASE_URL = 'https://admins.miningdiscovery.com'
-const ADS_URL = 'https://admins.miningdiscovery.com/api/advertisements?populate=*'
 
 const asImage = (candidate: any): ImageSource | null =>
   candidate?.url ? { url: candidate.url, width: candidate.width, height: candidate.height } : null
@@ -54,12 +53,12 @@ export default function RegionalIntelligence(): JSX.Element {
     let mounted = true
     setLoading(true)
 
-    cachedFetch(ADS_URL, {
-      onUpdate: (fresh: any) => {
+    // The request already excludes vertical banners; the filter below stays as a guard.
+    cms.advertisements
+      .fetch((fresh: any) => {
         if (!mounted) return
         setAds(fresh?.data || [])
-      },
-    })
+      })
       .then((data) => {
         if (!mounted) return
         setAds(data?.data || [])
@@ -186,7 +185,10 @@ export default function RegionalIntelligence(): JSX.Element {
                     className="w-full flex-shrink-0 block"
                   >
                     <div className="relative w-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center p-1 sm:p-2">
+                      {/* Eager: slides sit off to the side in a clipped track, where
+                          lazy loading would hold each one back until it slides in. */}
                       <LazyImage
+                        loading="eager"
                         src={image.url}
                         width={image.width}
                         height={image.height}

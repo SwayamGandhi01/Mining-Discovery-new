@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
+
+const toTitles = (data: any): string[] => (data?.data || []).map((item: any) => item.title).filter(Boolean);
 
 export default function BreakingNews(): JSX.Element {
   const [headlines, setHeadlines] = useState<string[]>([]);
@@ -9,19 +11,14 @@ export default function BreakingNews(): JSX.Element {
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
-        const data = await cachedFetch(
-          "https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=8",
-          {
-            onUpdate: (fresh: any) => {
-              const titles = (fresh.data || []).map((item: any) => item.title).filter(Boolean);
-              if (titles.length > 0) setHeadlines(titles);
-            }
-          }
-        );
+        // Shared with AnnouncementBar: one request feeds both bars.
+        const data = await cms.latestHeadlines.fetch((fresh) => {
+          const titles = toTitles(fresh);
+          if (titles.length > 0) setHeadlines(titles);
+        });
 
-        if (!data.data || data.data.length === 0) return;
-
-        const titles = data.data.map((item: any) => item.title).filter(Boolean);
+        const titles = toTitles(data);
+        if (titles.length === 0) return;
         setHeadlines(titles);
       } catch (error) {
         console.error("Error fetching breaking news:", error);

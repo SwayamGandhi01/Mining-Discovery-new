@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react'
+import { cms } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 
 interface SocialLinks {
@@ -23,6 +23,11 @@ const defaultSocialLinks: SocialLinks = {
   youtube: 'https://www.youtube.com/@miningdiscovery',
 }
 
+const toTitles = (data: any): string[] =>
+  (data?.data || [])
+    .map((item: any) => String(item.title || '').trim())
+    .filter(Boolean)
+
 export default function AnnouncementBar({ socialLinks = defaultSocialLinks }: AnnouncementBarProps): JSX.Element {
   const [titles, setTitles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -30,15 +35,9 @@ export default function AnnouncementBar({ socialLinks = defaultSocialLinks }: An
   useEffect(() => {
     const loadTitles = async () => {
       try {
-        const data = await cachedFetch(
-          'https://admins.miningdiscovery.com/api/news-sections?sort=publishedAt:desc&pagination[limit]=8&populate=*'
-        )
-
-        const fetchedTitles = (data?.data || [])
-          .map((item: any) => String(item.title || '').trim())
-          .filter(Boolean)
-
-        setTitles(fetchedTitles)
+        // Shared with BreakingNews: one request feeds both bars.
+        const data = await cms.latestHeadlines.fetch((fresh) => setTitles(toTitles(fresh)))
+        setTitles(toTitles(data))
       } catch (error) {
         console.error('AnnouncementBar load error:', error)
       } finally {

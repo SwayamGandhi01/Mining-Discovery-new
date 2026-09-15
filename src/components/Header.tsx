@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { cms } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 
 interface NewsCategory {
@@ -26,8 +27,12 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
   const [magazineDropdownOpen, setMagazineDropdownOpen] = useState(false)
   const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false)
-  const [categories, setCategories] = useState<NewsCategory[]>([])
-  const [categoriesStatus, setCategoriesStatus] = useState<'loading' | 'ready' | 'error'>('loading')
+  // A cached list (from an earlier page) is used straight away, without a request.
+  const [categories, setCategories] = useState<NewsCategory[]>(() => cms.newsCategories.peek()?.data || [])
+  const [categoriesStatus, setCategoriesStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>(() =>
+    cms.newsCategories.peek() ? 'ready' : 'idle'
+  )
+  const categoriesRequested = useRef(false)
   const [searchInput, setSearchInput] = useState(initialSearchQuery)
 
   useEffect(() => {
@@ -59,28 +64,30 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
     { label: 'Company Profile', href: '/company-profile' },
   ]
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(
-          'https://admins.miningdiscovery.com/api/news-categories?pagination[limit]=100'
-        )
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const data = await res.json()
+  // The News menu's categories load the first time someone heads for the
+  // navigation (pointer, keyboard focus, or opening the mobile menu) rather
+  // than on every page load. A cached list costs no request at all.
+  const loadCategories = () => {
+    if (categoriesRequested.current) return
+    categoriesRequested.current = true
+    if (categoriesStatus !== 'ready') setCategoriesStatus('loading')
+
+    cms.newsCategories
+      .fetch((fresh) => setCategories(fresh?.data || []))
+      .then((data) => {
         setCategories(data?.data || [])
         setCategoriesStatus('ready')
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error('Error fetching categories:', err)
         setCategoriesStatus('error')
-      }
-    }
-
-    fetchCategories()
-  }, [])
+        categoriesRequested.current = false // try again on the next visit to the menu
+      })
+  }
 
   // Dropdown body while the category list is loading, or once it has come back empty or failed.
   const renderCategoriesFallback = (rowClassName: string, listClassName = '') =>
-    categoriesStatus === 'loading' ? (
+    categoriesStatus === 'idle' || categoriesStatus === 'loading' ? (
       <SkeletonRegion label="Loading categories" className={listClassName}>
         {CATEGORY_SKELETON_WIDTHS.map((width, i) => (
           <div key={i} className={rowClassName}>
@@ -113,7 +120,11 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
         </div>
 
         {/* Navigation - Centered, desktop only */}
-        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 text-sm font-bold flex-1 justify-center">
+        <nav
+          className="hidden md:flex items-center space-x-6 lg:space-x-8 text-sm font-bold flex-1 justify-center"
+          onPointerEnter={loadCategories}
+          onFocus={loadCategories}
+        >
           {/* News Dropdown */}
           <div
             className="relative group"
@@ -241,7 +252,7 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
 
         {/* Mobile menu button - always on right side on mobile */}
         <div className="flex-shrink-0 flex items-center justify-end md:hidden">
-          <button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
+          <button onClick={() => { loadCategories(); setMobileOpen(!mobileOpen) }} aria-expanded={mobileOpen} aria-controls="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
             <span className="material-icons">{mobileOpen ? 'close' : 'menu'}</span>
           </button>
         </div>

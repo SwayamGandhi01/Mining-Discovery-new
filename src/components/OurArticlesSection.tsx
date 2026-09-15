@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowRight, Clock3, Download, ExternalLink, Sparkles } from 'lucide-react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -23,7 +23,6 @@ type OurArticle = {
   buttonLink?: string
 }
 
-const API_URL = 'https://admins.miningdiscovery.com/api/our-artciles?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
 
 const navigate = (path: string) => {
@@ -74,12 +73,10 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
       setError(null)
 
       try {
-        const data = await cachedFetch(API_URL, {
-          onUpdate: (fresh: any) => {
-            if (!mounted) return
-            const fetched = (fresh?.data || []).map((item: any) => item)
-            setArticles(fetched)
-          },
+        // Same cached collection as the Our Articles page and its flipbook.
+        const data = await cms.ourArticles.fetch((fresh: any) => {
+          if (!mounted) return
+          setArticles(fresh?.data || [])
         })
 
         if (!mounted) return

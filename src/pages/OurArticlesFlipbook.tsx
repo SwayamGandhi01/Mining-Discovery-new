@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms } from '../api/cms'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-const API_URL = 'https://admins.miningdiscovery.com/api/our-artciles?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
 
 type OurArticle = {
@@ -57,6 +56,9 @@ const getPdfUrl = (item: OurArticle): string | null => {
   return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
 }
 
+const findArticle = (json: any, documentId: string): OurArticle | null =>
+  (json?.data || []).find((item: any) => item.documentId === documentId) || null
+
 export default function OurArticlesFlipbook({ documentId, onBack }: OurArticlesFlipbookProps): JSX.Element {
   const [article, setArticle] = useState<OurArticle | null>(null)
   const [loading, setLoading] = useState(true)
@@ -66,22 +68,28 @@ export default function OurArticlesFlipbook({ documentId, onBack }: OurArticlesF
     let mounted = true
 
     const fetchArticle = async () => {
+      // Opened from the Our Articles page or the homepage, the article is
+      // already in the cached collection; otherwise fetch just this record.
+      const listed = findArticle(cms.ourArticles.peek(), documentId)
+      if (listed) {
+        setArticle(listed)
+        setError(null)
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError(null)
 
       try {
-        const data = await cachedFetch(API_URL, {
-          onUpdate: (fresh: any) => {
-            if (!mounted) return
-            const found = (fresh?.data || []).find((item: any) => item.documentId === documentId)
-            if (found) {
-              setArticle(found)
-            }
-          },
+        const data = await cms.ourArticle(documentId).fetch((fresh: any) => {
+          if (!mounted) return
+          const found = findArticle(fresh, documentId)
+          if (found) setArticle(found)
         })
 
         if (!mounted) return
-        const found = (data?.data || []).find((item: any) => item.documentId === documentId)
+        const found = findArticle(data, documentId)
         if (found) {
           setArticle(found)
         } else {
@@ -91,8 +99,7 @@ export default function OurArticlesFlipbook({ documentId, onBack }: OurArticlesF
         if (!mounted) return
         setError('Unable to load article at the moment.')
       } finally {
-        if (!mounted) return
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 

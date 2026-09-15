@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import HTMLFlipBook from 'react-pageflip'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
@@ -16,6 +16,8 @@ type FlipbookViewerProps = {
   pdfUrl?: string | null
   coverImageUrl?: string | null
   description?: string
+  /** When set, the top bar links to the PDF itself (opens in a new tab). */
+  downloadUrl?: string | null
   onBack?: () => void
   onClose?: () => void
 }
@@ -39,6 +41,7 @@ export default function FlipbookViewer({
   pdfUrl,
   coverImageUrl,
   description,
+  downloadUrl,
   onBack,
   onClose,
 }: FlipbookViewerProps): JSX.Element {
@@ -188,7 +191,19 @@ export default function FlipbookViewer({
               </button>
             ) : null}
           </div>
-          <div className="text-xs font-medium text-slate-500 sm:text-sm">{currentSpread}</div>
+          <div className="flex items-center gap-3">
+            <div className="text-xs font-medium text-slate-500 sm:text-sm">{currentSpread}</div>
+            {downloadUrl ? (
+              <a
+                href={downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50 sm:text-sm"
+              >
+                <ExternalLink className="h-4 w-4" /> Open PDF
+              </a>
+            ) : null}
+          </div>
         </div>
 
         <div className="flex flex-1 items-center justify-center overflow-hidden rounded-[2rem] border border-slate-200 bg-[#f8f8f7] p-2 shadow-[0_20px_70px_rgba(15,23,42,0.08)] sm:p-4 lg:p-6">

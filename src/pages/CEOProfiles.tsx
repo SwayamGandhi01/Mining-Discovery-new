@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Download, ExternalLink } from "lucide-react";
-import { cachedFetch } from "../utils/cachedFetch";
+import { cms } from "../api/cms";
 import { SkeletonRegion } from "../components/ui/Skeleton";
 import LazyImage from "../components/ui/LazyImage";
 import CardSkeleton from "../components/skeletons/CardSkeleton";
@@ -31,7 +31,6 @@ interface CEOProfile {
   ceo_pdf?: CEOPdf[];
 }
 
-const CEO_URL = "https://admins.miningdiscovery.com/api/ceo-profiles?populate=*&pagination[limit]=100&sort=publishedAt:desc";
 
 const mapProfile = (item: any): CEOProfile => ({
   id: item.id,
@@ -53,11 +52,8 @@ const CEOProfiles: React.FC = () => {
   useEffect(() => {
     const fetchCEOProfiles = async () => {
       try {
-        const data = await cachedFetch(CEO_URL, {
-          onUpdate: (fresh: any) => {
-            const formattedProfiles = (fresh.data || []).map(mapProfile);
-            setProfiles(formattedProfiles);
-          },
+        const data = await cms.ceoProfiles.fetch((fresh: any) => {
+          setProfiles((fresh.data || []).map(mapProfile));
         });
 
         const formattedProfiles = (data.data || []).map(mapProfile);

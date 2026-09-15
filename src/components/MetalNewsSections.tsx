@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, withDescriptionFallback } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -16,6 +16,12 @@ interface MetalNewsSectionsProps {
   onArticleClick?: (docId: string) => void
 }
 
+const navigate = (path: string) => {
+  window.history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+  window.scrollTo(0, 0)
+}
+
 const FILTER_OPTIONS = [
   { label: 'Gold', value: 'gold-news' },
   { label: 'Silver', value: 'silver-news' },
@@ -27,14 +33,19 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
   const [loading, setLoading] = useState(true)
   const [selectedFilter, setSelectedFilter] = useState('all')
 
-  const fetchSectionPosts = async (slug: string) => {
-    const url = `https://admins.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=${slug}&sort=publishedAt:desc&pagination[limit]=4&populate=*`
-    const json = await cachedFetch(url)
-    return json?.data || []
-  }
-
   useEffect(() => {
     let mounted = true
+
+    // The same request LeftColumn makes for its first story, so the two share
+    // it. A background refresh updates just that metal's cards.
+    const fetchSectionPosts = async (slug: string) => {
+      const json = await cms.metalNews(slug).fetch((fresh: any) => {
+        withDescriptionFallback(fresh).then((withText: any) => {
+          if (mounted) setPostsBySection((prev) => ({ ...prev, [slug]: withText?.data || [] }))
+        })
+      })
+      return (await withDescriptionFallback(json))?.data || []
+    }
 
     const loadSections = async () => {
       setLoading(true)
@@ -97,6 +108,7 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
           </div>
           <a
             href={`/news/${section.slug}`}
+            onClick={(e) => { e.preventDefault(); navigate(`/news/${section.slug}`) }}
             className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
           >
             View all {section.label.split(' ')[0].toLowerCase()} news

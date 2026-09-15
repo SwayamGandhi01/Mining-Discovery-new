@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { BookOpen, Download } from 'lucide-react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms, pickImage } from '../api/cms'
 import { prefetchPdf, warmFlipbookRuntime } from '../utils/flipbookPrefetch'
 import { SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
@@ -42,7 +42,6 @@ interface CompanyProfile {
   cover_image: CoverImage[]
 }
 
-const COMPANY_PROFILES_URL = 'https://admins.miningdiscovery.com/api/company-profiles?populate=*'
 
 const mapCompanyItem = (item: any): CompanyProfile => ({
   id: item.id,
@@ -66,11 +65,10 @@ export default function CompanyProfiles(): JSX.Element {
     async function loadProfiles() {
       try {
         setLoading(true)
-        const json = await cachedFetch(COMPANY_PROFILES_URL, {
-          onUpdate: (fresh: any) => {
-            if (!mounted) return
-            setProfiles((fresh?.data || []).map(mapCompanyItem))
-          },
+        // Shared cache: the flipbook finds its profile here without another request.
+        const json = await cms.companyProfiles.fetch((fresh: any) => {
+          if (!mounted) return
+          setProfiles((fresh?.data || []).map(mapCompanyItem))
         })
         if (!mounted) return
 
@@ -194,7 +192,9 @@ export default function CompanyProfiles(): JSX.Element {
         {visibleProfiles.map((profile) => {
           const pdfUrl = profile.companyPdf?.[0]?.url
           const pdfName = profile.companyPdf?.[0]?.name
-          const coverImageUrl = profile.cover_image?.[0]?.formats?.medium?.url || profile.cover_image?.[0]?.url
+          // Covers show ~160px wide; their PNG "medium" variants outweigh the
+          // originals, so take the lightest variant that is still sharp.
+          const coverImageUrl = pickImage(profile.cover_image?.[0], 300)?.url
 
           return (
             <article

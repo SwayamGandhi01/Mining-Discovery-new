@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileText } from 'lucide-react'
-import { cachedFetch } from '../utils/cachedFetch'
+import { cms } from '../api/cms'
 import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
 
@@ -37,7 +37,6 @@ type GroupedArticles = {
   articles: OurArticle[]
 }
 
-const API_URL = 'https://admins.miningdiscovery.com/api/our-artciles?populate=*'
 const BASE_URL = 'https://admins.miningdiscovery.com'
 
 export default function OurArticles(): JSX.Element {
@@ -49,12 +48,11 @@ export default function OurArticles(): JSX.Element {
     let mounted = true
     setLoading(true)
 
-    cachedFetch(API_URL, {
-      onUpdate: (fresh: any) => {
+    cms.ourArticles
+      .fetch((fresh: any) => {
         if (!mounted) return
         setArticles(fresh?.data || [])
-      },
-    })
+      })
       .then((data) => {
         if (!mounted) return
         setArticles(data?.data || [])
@@ -86,7 +84,8 @@ export default function OurArticles(): JSX.Element {
   const getImageUrl = (item: OurArticle): string | null => {
     const imgObj = item.image || item.coverImage || item.media
     if (!imgObj) return null
-    const url = imgObj?.formats?.medium?.url || imgObj?.formats?.small?.url || imgObj?.url
+    // Tiles are ~150px wide, so the small variant is plenty.
+    const url = imgObj?.formats?.small?.url || imgObj?.formats?.medium?.url || imgObj?.url
     if (!url) return null
     return url.startsWith('http') ? url : `${BASE_URL}${url}`
   }
