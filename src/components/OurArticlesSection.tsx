@@ -4,6 +4,7 @@ import { cms, imageSources } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
+import { whenIdle } from '../utils/whenIdle'
 
 type OurArticle = {
   id: number
@@ -86,9 +87,11 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
       }
     }
 
-    fetchArticles()
+    // Below the fold: started once the first screen has painted.
+    const cancel = whenIdle(fetchArticles)
     return () => {
       mounted = false
+      cancel()
     }
   }, [retryCount])
 

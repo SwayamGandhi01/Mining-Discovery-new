@@ -3,6 +3,7 @@ import { cms, imageSources } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
+import { whenIdle } from '../utils/whenIdle'
 
 interface Pick {
   id: number
@@ -54,7 +55,8 @@ export default function EditorsPicks(): JSX.Element {
       }
     }
 
-    fetchPicks()
+    // Below the fold: started once the first screen has painted.
+    return whenIdle(fetchPicks)
   }, [retryCount])
 
   const openArticle = (documentId: string) => {

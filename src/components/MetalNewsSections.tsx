@@ -3,6 +3,7 @@ import { cms, imageSources, withDescriptionFallback } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
+import { whenIdle } from '../utils/whenIdle'
 
 type SectionItem = any
 
@@ -72,10 +73,12 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
       }
     }
 
-    loadSections()
+    // Below the fold: started once the first screen has painted.
+    const cancel = whenIdle(loadSections)
 
     return () => {
       mounted = false
+      cancel()
     }
   }, [])
 

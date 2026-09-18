@@ -4,6 +4,7 @@ import { cms, imageSources } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 import LazyImage from "./ui/LazyImage";
 import CardSkeleton from "./skeletons/CardSkeleton";
+import { whenIdle } from '../utils/whenIdle'
 
 type SectionItem = any;
 
@@ -33,22 +34,26 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
     let active = true;
     setLoading(true);
 
-    cms.tabPosts(activeCategory)
-      .fetch((fresh: any) => {
-        if (active) setPosts(fresh?.data || []);
-      })
-      .then((json) => {
-        if (active) setPosts(json?.data || []);
-      })
-      .catch((error) => {
-        console.error("Error fetching posts:", error);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+    // Below the fold: started once the first screen has painted.
+    const cancel = whenIdle(() => {
+      cms.tabPosts(activeCategory)
+        .fetch((fresh: any) => {
+          if (active) setPosts(fresh?.data || []);
+        })
+        .then((json) => {
+          if (active) setPosts(json?.data || []);
+        })
+        .catch((error) => {
+          console.error("Error fetching posts:", error);
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    });
 
     return () => {
       active = false;
+      cancel();
     };
   }, [activeCategory]);
 
@@ -69,7 +74,8 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
       }
     }
 
-    fetchMagazine();
+    // Below the fold: started once the first screen has painted.
+    return whenIdle(fetchMagazine);
   }, []);
 
   const calculateReadTime = (text: string): number => {

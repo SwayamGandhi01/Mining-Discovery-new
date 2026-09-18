@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cms } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
+import { whenIdle } from '../utils/whenIdle'
 
 interface AdvertisementItem {
   id: number
@@ -54,24 +55,28 @@ export default function RegionalIntelligence(): JSX.Element {
     setLoading(true)
 
     // The request already excludes vertical banners; the filter below stays as a guard.
-    cms.advertisements
-      .fetch((fresh: any) => {
-        if (!mounted) return
-        setAds(fresh?.data || [])
-      })
-      .then((data) => {
-        if (!mounted) return
-        setAds(data?.data || [])
-        setLoading(false)
-      })
-      .catch((e) => {
-        if (!mounted) return
-        setError(String(e))
-        setLoading(false)
-      })
+    // Below the fold: started once the first screen has painted.
+    const cancel = whenIdle(() => {
+      cms.advertisements
+        .fetch((fresh: any) => {
+          if (!mounted) return
+          setAds(fresh?.data || [])
+        })
+        .then((data) => {
+          if (!mounted) return
+          setAds(data?.data || [])
+          setLoading(false)
+        })
+        .catch((e) => {
+          if (!mounted) return
+          setError(String(e))
+          setLoading(false)
+        })
+    })
 
     return () => {
       mounted = false
+      cancel()
     }
   }, [])
 

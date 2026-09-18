@@ -4,6 +4,7 @@ import SubscribeFormCard from './SubscribeFormCard'
 import { cms, imageSources } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
+import { whenIdle } from '../utils/whenIdle'
 
 type Category = { id: number; name: string; publishedAt?: string }
 type NewsletterItem = any
@@ -80,8 +81,9 @@ const Newsletter: React.FC = () => {
         if (mounted) setLoading(false)
       }
     }
-    loadAll()
-    return () => { mounted = false }
+    // Below the fold: started once the first screen has painted.
+    const cancel = whenIdle(loadAll)
+    return () => { mounted = false; cancel() }
   }, [retryCount])
 
   function newslettersForCategory(catId: number | null) {
