@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { BookOpen, Download } from 'lucide-react'
-import { cms, pickImage } from '../api/cms'
+import { cms, imageSources } from '../api/cms'
 import { prefetchPdf, warmFlipbookRuntime } from '../utils/flipbookPrefetch'
 import { SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
@@ -58,6 +58,8 @@ export default function CompanyProfiles(): JSX.Element {
   const [profiles, setProfiles] = useState<CompanyProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by the "Try again" button so the request runs once more.
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     let mounted = true
@@ -86,7 +88,7 @@ export default function CompanyProfiles(): JSX.Element {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [retryCount])
 
   const intentTimer = useRef<number | null>(null)
 
@@ -167,6 +169,12 @@ export default function CompanyProfiles(): JSX.Element {
       <main className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Company Profiles</h2>
         <div className="text-sm text-red-500">{error}</div>
+        <button
+          onClick={() => setRetryCount((n) => n + 1)}
+          className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#1E3B6E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2563EB]"
+        >
+          Try again
+        </button>
       </main>
     )
   }
@@ -194,7 +202,7 @@ export default function CompanyProfiles(): JSX.Element {
           const pdfName = profile.companyPdf?.[0]?.name
           // Covers show ~160px wide; their PNG "medium" variants outweigh the
           // originals, so take the lightest variant that is still sharp.
-          const coverImageUrl = pickImage(profile.cover_image?.[0], 300)?.url
+          const cover = imageSources(profile.cover_image?.[0], 300)
 
           return (
             <article
@@ -209,9 +217,11 @@ export default function CompanyProfiles(): JSX.Element {
               <div className="flex flex-col h-full">
                 {/* Cover Image */}
                 <div className="relative w-full h-56 overflow-hidden rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                  {coverImageUrl ? (
+                  {cover ? (
                     <LazyImage
-                      src={coverImageUrl}
+                      src={cover.url}
+                      srcSet={cover.srcSet}
+                      sizes="(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw"
                       alt={profile.title}
                       className="w-full h-full object-contain"
                     />

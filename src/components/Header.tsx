@@ -114,6 +114,8 @@ const Header: React.FC<HeaderProps> = ({ initialSearchQuery = '' }) => {
             <img
               src="/Laura's Liaisons LLC.webp"
               alt="Laura's Liaisons LLC"
+              width={320}
+              height={166}
               className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all"
             />
           </a>

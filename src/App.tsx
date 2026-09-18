@@ -1,4 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react'
+import { isHiddenCategory } from './api/cms'
 import Header from './components/Header'
 import AnnouncementBar from './components/AnnouncementBar'
 import LeftColumn from './components/LeftColumn'
@@ -21,7 +22,6 @@ import PageSkeleton from './components/skeletons/PageSkeleton'
 // Lazy-loaded page components for optimal bundle splitting
 const Magazines = lazy(() => import('./pages/Magazines'))
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'))
-const CEOProfiles = lazy(() => import('./pages/CEOProfiles'))
 const CompanyProfiles = lazy(() => import('./pages/CompanyProfiles'))
 const CategoryNews = lazy(() => import('./pages/CategoryNews'))
 const Services = lazy(() => import('./pages/Services'))
@@ -65,6 +65,13 @@ const ROUTE_PATTERNS = {
 // The id captured by `pattern`, or null when the path doesn't match it.
 const routeParam = (path: string, pattern: RegExp): string | null => path.match(pattern)?.[1] ?? null
 
+// A category the site doesn't publish is not a route: the path falls through to
+// the home page the same way any unknown path does.
+const categoryParam = (path: string): string | null => {
+  const slug = routeParam(path, ROUTE_PATTERNS.category)
+  return isHiddenCategory(slug) ? null : slug
+}
+
 const initialPath = () => window.location.pathname || '/'
 
 
@@ -77,7 +84,7 @@ export default function App(): JSX.Element {
   // Parsed from the URL up front: starting these at null rendered the home page
   // (and fired its API requests) for a moment before every deep-linked page.
   const [documentId, setDocumentId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.article))
-  const [categorySlug, setCategorySlug] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.category))
+  const [categorySlug, setCategorySlug] = useState(() => categoryParam(initialPath()))
   const [flipbookDocumentId, setFlipbookDocumentId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.flipbook))
   const [magazineFlipbookId, setMagazineFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.magazineFlipbook))
   const [newsletterFlipbookId, setNewsletterFlipbookId] = useState(() => routeParam(initialPath(), ROUTE_PATTERNS.newsletterFlipbook))
@@ -86,7 +93,13 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     const onRoute = () => {
-      const path = window.location.pathname || '/'
+      let path = window.location.pathname || '/'
+      // A hidden category's URL is rewritten rather than left pointing at a
+      // listing the site no longer shows.
+      if (isHiddenCategory(routeParam(path, ROUTE_PATTERNS.category))) {
+        window.history.replaceState(null, '', '/')
+        path = '/'
+      }
       setRoute(path)
 
       window.requestAnimationFrame(() => {
@@ -106,7 +119,7 @@ export default function App(): JSX.Element {
       setNewsletterFlipbookId(routeParam(path, ROUTE_PATTERNS.newsletterFlipbook))
       setCompanyFlipbookId(routeParam(path, ROUTE_PATTERNS.companyFlipbook))
       setNewsFlipbookId(routeParam(path, ROUTE_PATTERNS.newsFlipbook))
-      setCategorySlug(routeParam(path, ROUTE_PATTERNS.category))
+      setCategorySlug(categoryParam(path))
     }
     onRoute()
     window.addEventListener('popstate', onRoute)
@@ -174,7 +187,6 @@ export default function App(): JSX.Element {
 
   const isMagPage = route === '/magazines'
   const isOurArticlesPage = route === '/our-articles'
-  const isCEOProfile = route === '/ceo-profile'
   const isNewsletterPage = route === '/newsletter-page'
   const isCompanyProfile = route === '/company-profile'
   const isServicesPage = route === '/services'
@@ -189,7 +201,6 @@ export default function App(): JSX.Element {
 
   if (isOurArticlesPage) return renderPage(OurArticles)
   if (isMagPage) return renderPage(Magazines)
-  if (isCEOProfile) return renderPage(CEOProfiles)
   if (isNewsletterPage) return renderPage(NewsletterPage)
   if (isCompanyProfile) return renderPage(CompanyProfiles)
   if (isServicesPage) return renderPage(Services)

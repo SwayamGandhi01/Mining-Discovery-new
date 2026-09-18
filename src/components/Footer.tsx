@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
           {/* Left Column: Brand Info & Navigation Links */}
           <div className="lg:col-span-7 xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
             <div className="sm:col-span-2">
-              <img src="/Footer logo.webp" alt="Laura's Liaisons" className="h-14 sm:h-16 w-auto mb-4" />
+              <img src="/Footer logo.webp" alt="Laura's Liaisons" width={320} height={159} loading="lazy" decoding="async" className="h-14 sm:h-16 w-auto mb-4" />
               <h3 className="serif-title text-2xl sm:text-3xl font-bold mb-4 sm:mb-6"><span className="text-primary italic"></span></h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-4">
                 The leading independent news source for the global mining industry, delivering actionable intelligence and deep-dive analysis since 2008.
@@ -63,7 +63,6 @@ const Footer: React.FC = () => {
                 <li><a className="hover:text-white" href="/about-us" onClick={(e) => { e.preventDefault(); navigate('/about-us') }}>About Us</a></li>
                 <li><a className="hover:text-white" href="/company-profile" onClick={(e) => { e.preventDefault(); navigate('/company-profile') }}>Company Profile</a></li>
                 <li><a className="hover:text-white" href="/contact-us" onClick={(e) => { e.preventDefault(); navigate('/contact-us') }}>Contact</a></li>
-                <li><a className="hover:text-white" href="/ceo-profile" onClick={(e) => { e.preventDefault(); navigate('/ceo-profile') }}>CEO Profile</a></li>
               </ul>
             </div>
           </div>

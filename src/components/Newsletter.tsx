@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, Calendar } from 'lucide-react'
 import SubscribeFormCard from './SubscribeFormCard'
-import { cms, pickImage } from '../api/cms'
+import { cms, imageSources } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 
@@ -44,6 +44,8 @@ const Newsletter: React.FC = () => {
   const [newsletters, setNewsletters] = useState<NewsletterItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by the "Try again" button so the request runs once more.
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     let mounted = true
@@ -80,7 +82,7 @@ const Newsletter: React.FC = () => {
     }
     loadAll()
     return () => { mounted = false }
-  }, [])
+  }, [retryCount])
 
   function newslettersForCategory(catId: number | null) {
     if (!catId) return []
@@ -121,7 +123,17 @@ const Newsletter: React.FC = () => {
           </div>
         </div>
 
-        {error && <div className="py-8 text-red-500">{error}</div>}
+        {error && (
+          <div className="py-8">
+            <p className="text-red-500">{error}</p>
+            <button
+              onClick={() => setRetryCount((n) => n + 1)}
+              className="mt-3 inline-flex items-center justify-center rounded-xl bg-[#1E3B6E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2563EB]"
+            >
+              Try again
+            </button>
+          </div>
+        )}
 
         {!error && (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-stretch">
@@ -156,13 +168,15 @@ const Newsletter: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6">
                     {visibleNewsletters.slice(0, 6).map((n: any) => {
                       // The cover shows 128–144px wide: take the lightest variant that stays sharp.
-                      const cover = pickImage(n.coverImage, 220)
+                      const cover = imageSources(n.coverImage, 220)
                       return (
                         <div key={n.id} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row gap-4 sm:gap-5 items-center sm:items-start shadow-sm hover:shadow-xl hover:border-[#1E3B6E]/40 transition-all duration-300 group overflow-hidden">
                           <div className="relative w-32 sm:w-36 flex-shrink-0 mx-auto sm:mx-0">
                             {/* width/height let the browser reserve the cover's height before it downloads. */}
                             <LazyImage
                               src={cover?.url}
+                              srcSet={cover?.srcSet}
+                              sizes="144px"
                               width={cover?.width}
                               height={cover?.height}
                               alt={n.title}

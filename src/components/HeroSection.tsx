@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { cms } from "../api/cms";
+import { cms, imageSources } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 import LazyImage from "./ui/LazyImage";
 
@@ -8,7 +8,7 @@ interface HeroNews {
   documentId: string;
   title: string;
   shortDescription?: string;
-  image?: string;
+  image?: any;
   author?: string;
   publishedAt?: string;
 }
@@ -22,7 +22,7 @@ const mapHeroItem = (item: any): HeroNews => ({
   documentId: item.documentId,
   title: item.title,
   shortDescription: item.short_description,
-  image: item.image?.formats?.large?.url || item.image?.url || "",
+  image: item.image,
   author: item.author,
   publishedAt: item.publish_on || item.publishedAt,
 });
@@ -76,6 +76,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
 
   if (!news) return null;
 
+  // The cover fills six of twelve columns on desktop (~600px) and the full
+  // width on phones, so the browser picks a file to match.
+  const cover = imageSources(news.image, 700);
+
   return (
     <section className="lg:col-span-6 order-1 lg:order-2">
       <article
@@ -86,7 +90,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onArticleClick }) => {
           {/* The page's main image: fetched ahead of everything else. */}
           <LazyImage
             priority
-            src={news.image}
+            src={cover?.url}
+            srcSet={cover?.srcSet}
+            sizes="(min-width: 1024px) 600px, 100vw"
+            width={cover?.width}
+            height={cover?.height}
             alt={news.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95 group-hover:opacity-100"
           />

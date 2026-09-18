@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Download } from "lucide-react";
-import { cms, pickImage } from "../api/cms";
+import { cms, imageSources } from "../api/cms";
 import { Skeleton, SkeletonRegion } from "./ui/Skeleton";
 import LazyImage from "./ui/LazyImage";
 import CardSkeleton from "./skeletons/CardSkeleton";
@@ -79,7 +79,7 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
   };
 
   // The cover shows 208px tall (~160px wide); the lightest variant that is sharp at that size.
-  const magCover = pickImage(latestMag?.coverImage, 240);
+  const magCover = imageSources(latestMag?.coverImage, 240);
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-4 gap-8 my-10 sm:my-14">
@@ -122,10 +122,8 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                 item.description || item.short_description || ""
               );
 
-              const imageUrl =
-                item.image?.formats?.medium?.url ||
-                item.image?.url ||
-                "";
+              // Two cards across the three-quarter column (~430px), one on phones.
+              const image = imageSources(item.image, 430);
 
               const publishDate = new Date(
                 item.publish_on || item.publishedAt
@@ -147,9 +145,13 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                 >
                   <div>
                     <div className="aspect-video bg-slate-100 dark:bg-slate-800 overflow-hidden mb-4 rounded-xl relative shadow-inner">
-                      {imageUrl ? (
+                      {image ? (
                         <LazyImage
-                          src={imageUrl}
+                          src={image.url}
+                          srcSet={image.srcSet}
+                          sizes="(min-width: 768px) 430px, 100vw"
+                          width={image.width}
+                          height={image.height}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
@@ -198,6 +200,8 @@ const NewsGrid: React.FC<NewsGridProps> = ({ onArticleClick }) => {
                 {/* width/height let the browser size the cover before it downloads. */}
                 <LazyImage
                   src={magCover?.url}
+                  srcSet={magCover?.srcSet}
+                  sizes="160px"
                   width={magCover?.width}
                   height={magCover?.height}
                   alt={latestMag.Title}

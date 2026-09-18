@@ -51,6 +51,20 @@ export default function CategoryNewsSkeleton(): JSX.Element {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <CategoryListSkeleton />
+      </div>
+    </SkeletonRegion>
+  )
+}
+
+/**
+ * Just the story list — featured story, its sidebar, and the "More Articles"
+ * grid. Used on its own while a different page of a category loads, so the
+ * hero, tabs and pagination stay put.
+ */
+export function CategoryListSkeleton(): JSX.Element {
+  return (
+    <>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
           {/* Featured */}
           <div className="lg:col-span-7">
@@ -106,7 +120,6 @@ export default function CategoryNewsSkeleton(): JSX.Element {
             />
           ))}
         </div>
-      </div>
-    </SkeletonRegion>
+    </>
   )
 }

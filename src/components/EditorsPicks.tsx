@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { cms } from '../api/cms'
+import { cms, imageSources } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -30,6 +30,8 @@ export default function EditorsPicks(): JSX.Element {
   const [picks, setPicks] = useState<Pick[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by the "Try again" button so the request runs once more.
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     const fetchPicks = async () => {
@@ -53,15 +55,14 @@ export default function EditorsPicks(): JSX.Element {
     }
 
     fetchPicks()
-  }, [])
+  }, [retryCount])
 
   const openArticle = (documentId: string) => {
     navigate(`/article/${documentId}`)
   }
 
-  const getImageUrl = (pick: Pick): string => {
-    return pick.image?.formats?.medium?.url || pick.image?.url || ''
-  }
+  // Cards are a third of the row on desktop (~380px) and full width on phones.
+  const getImage = (pick: Pick) => imageSources(pick.image, 380)
 
   return (
     <section className="my-12 sm:my-16">
@@ -96,13 +97,19 @@ export default function EditorsPicks(): JSX.Element {
       {error && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 text-red-700 dark:text-red-300 text-center">
           {error}
+          <button
+            onClick={() => setRetryCount((n) => n + 1)}
+            className="mt-3 block mx-auto rounded-full bg-[#1E3B6E] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#2563EB]"
+          >
+            Try again
+          </button>
         </div>
       )}
 
       {!loading && !error && picks.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {picks.map((p) => {
-            const imageUrl = getImageUrl(p)
+            const image = getImage(p)
             return (
               <article
                 key={p.documentId}
@@ -110,10 +117,14 @@ export default function EditorsPicks(): JSX.Element {
                 onClick={() => openArticle(p.documentId)}
               >
                 <div>
-                  {imageUrl ? (
+                  {image ? (
                     <div className="relative h-44 w-full overflow-hidden rounded-xl mb-4 bg-slate-100 dark:bg-slate-800 shadow-inner">
                       <LazyImage
-                        src={imageUrl}
+                        src={image.url}
+                        srcSet={image.srcSet}
+                        sizes="(min-width: 768px) 380px, 100vw"
+                        width={image.width}
+                        height={image.height}
                         alt={p.title}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />

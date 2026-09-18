@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowRight, Clock3, Download, ExternalLink, Sparkles } from 'lucide-react'
-import { cms } from '../api/cms'
+import { cms, imageSources } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -34,18 +34,12 @@ interface OurArticlesSectionProps {
   onArticleClick?: (documentId: string) => void
 }
 
-const getImageUrl = (item: OurArticle): string | null => {
+// Cards are a fixed 22rem (352px) wide in the scrolling row.
+const getImage = (item: OurArticle) => {
   const rawImg = item.coverImage || item.image || item.media
   if (!rawImg) return null
   const imgObj = rawImg?.data?.attributes || rawImg?.attributes || rawImg
-  const url =
-    imgObj?.formats?.medium?.url ||
-    imgObj?.formats?.small?.url ||
-    imgObj?.formats?.thumbnail?.url ||
-    imgObj?.formats?.large?.url ||
-    imgObj?.url
-  if (!url) return null
-  return url.startsWith('http') ? url : `${BASE_URL}${url}`
+  return imageSources(imgObj, 352, BASE_URL)
 }
 
 const getPdfUrl = (item: OurArticle): string | null => {
@@ -64,6 +58,8 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
   const [articles, setArticles] = useState<OurArticle[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by the "Try again" button so the request runs once more.
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     let mounted = true
@@ -94,7 +90,7 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
     return () => {
       mounted = false
     }
-  }, [])
+  }, [retryCount])
 
   const handleArticleClick = (item: OurArticle) => {
     if (item.documentId) {
@@ -165,13 +161,19 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
         ) : error ? (
           <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-700 dark:border-red-700/40 dark:bg-red-950/30 dark:text-red-200">
             {error}
+            <button
+              onClick={() => setRetryCount((n) => n + 1)}
+              className="mt-4 block mx-auto rounded-full bg-[#1E3B6E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2563EB]"
+            >
+              Try again
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto pb-2 no-scrollbar">
             <div className="flex gap-5 min-w-max pb-2">
               {sortedArticles.map((item) => {
                 const title = item.Title || item.title || 'Untitled article'
-                const imageUrl = getImageUrl(item)
+                const image = getImage(item)
                 const pdfUrl = getPdfUrl(item)
                 const date = item.publishDate || item.publishedAt || item.createdAt
                 const formattedDate = date ? new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''
@@ -183,9 +185,13 @@ export default function OurArticlesSection({ onArticleClick }: OurArticlesSectio
                     onClick={() => handleArticleClick(item)}
                   >
                     <div className="relative h-44 overflow-hidden bg-slate-100 dark:bg-slate-900">
-                      {imageUrl ? (
+                      {image ? (
                         <LazyImage
-                          src={imageUrl}
+                          src={image.url}
+                          srcSet={image.srcSet}
+                          sizes="352px"
+                          width={image.width}
+                          height={image.height}
                           alt={title}
                           className="mx-auto h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                         />

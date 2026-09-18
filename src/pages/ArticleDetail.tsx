@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Clock, Calendar, User, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
-import { cms, pickImage } from "../api/cms";
+import { cms, imageSources } from "../api/cms";
 import LazyImage from "../components/ui/LazyImage";
 import ArticleDetailSkeleton, { RelatedArticlesSkeleton } from "../components/skeletons/ArticleDetailSkeleton";
 
@@ -15,7 +15,7 @@ interface Article {
   title: string;
   shortDescription?: string;
   description?: string;
-  image?: string;
+  image?: any;
   author?: string;
   publishedAt?: string;
   slug?: string;
@@ -27,7 +27,8 @@ const mapArticleItem = (item: any): Article => ({
   title: item.title,
   shortDescription: item.short_description,
   description: item.description,
-  image: item.image?.formats?.large?.url || item.image?.url || "",
+  // Kept as the CMS object so the sizes can be picked at render time.
+  image: item.image,
   author: item.author,
   publishedAt: item.publish_on || item.publishedAt,
   slug: item.slug,
@@ -70,7 +71,7 @@ export default function ArticleDetail({
           documentId: item.documentId,
           title: item.title,
           // Sidebar thumbnails are ~170px wide.
-          image: pickImage(item.image, 250)?.url || "",
+          image: imageSources(item.image, 250),
           slug: item.slug,
         }));
 
@@ -202,7 +203,10 @@ export default function ArticleDetail({
             <div className="mb-8">
               <div className="relative aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-lg">
                 <LazyImage
-                  src={article.image}
+                  priority
+                  src={imageSources(article.image, 740)?.url}
+                  srcSet={imageSources(article.image, 740)?.srcSet}
+                  sizes="(min-width: 1024px) 740px, 100vw"
                   alt={article.title}
                   className="w-full h-full object-cover"
                 />
@@ -315,7 +319,9 @@ export default function ArticleDetail({
                     {item.image && (
                       <div className="relative aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-lg mb-3">
                         <LazyImage
-                          src={item.image}
+                          src={item.image?.url}
+                          srcSet={item.image?.srcSet}
+                          sizes="170px"
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />

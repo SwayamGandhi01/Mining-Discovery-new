@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { BookOpen, Download, Calendar, AlertCircle } from 'lucide-react'
-import { cms, pickImage } from '../api/cms'
+import { cms, imageSources } from '../api/cms'
 import { SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
 import CardSkeleton from '../components/skeletons/CardSkeleton'
@@ -45,6 +45,8 @@ export default function Magazines(): JSX.Element {
   const [items, setItems] = useState<Magazine[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by the "Try again" button so the request runs once more.
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     let mounted = true
@@ -71,7 +73,7 @@ export default function Magazines(): JSX.Element {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [retryCount])
 
   const handleOpenFlipbook = (magazineId: number) => {
     navigate(`/magazine-flipbook/${magazineId}`)
@@ -140,6 +142,12 @@ export default function Magazines(): JSX.Element {
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <AlertCircle className="w-10 h-10 text-red-500 mb-2" />
             <p className="text-sm text-red-500 font-semibold">{error}</p>
+            <button
+              onClick={() => setRetryCount((n) => n + 1)}
+              className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#1E3B6E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2563EB]"
+            >
+              Try again
+            </button>
           </div>
         )}
 
@@ -157,11 +165,13 @@ export default function Magazines(): JSX.Element {
                     // The cover shows ~200px wide; most uploads are PNGs whose
                     // "medium" variant weighs up to ~900 KB, so take the lightest
                     // variant that is still sharp at this size.
-                    const url = pickImage(m.coverImage, 300)?.url
-                    if (url) {
+                    const cover = imageSources(m.coverImage, 300)
+                    if (cover) {
                       return (
                         <LazyImage
-                          src={url}
+                          src={cover.url}
+                          srcSet={cover.srcSet}
+                          sizes="(min-width: 640px) 220px, 45vw"
                           alt={m.Title || 'cover'}
                           loading="lazy"
                           className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 rounded-lg drop-shadow-md"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { cms, withDescriptionFallback } from '../api/cms'
+import { cms, imageSources, withDescriptionFallback } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -139,7 +139,8 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
               const title = item.title || item.Title || 'Untitled article'
               const excerpt = item.short_description || item.description || 'Read the latest market update and insights.'
               const readTime = calculateReadTime(excerpt)
-              const imageUrl = item.image?.formats?.small?.url || item.image?.formats?.thumbnail?.url || item.image?.url || ''
+              // Four across on wide screens (~280px), two on tablets, one on phones.
+              const image = imageSources(item.image, 340)
               const publishDate = new Date(item.publish_on || item.publishedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
@@ -157,9 +158,13 @@ const MetalNewsSections: React.FC<MetalNewsSectionsProps> = ({ onArticleClick })
                       {section.label.split(' ')[0]}
                     </div>
                     <div className="relative aspect-[4/3] bg-slate-200 dark:bg-slate-800">
-                      {imageUrl ? (
+                      {image ? (
                         <LazyImage
-                          src={imageUrl}
+                          src={image.url}
+                          srcSet={image.srcSet}
+                          sizes="(min-width: 1280px) 280px, (min-width: 640px) 340px, 100vw"
+                          width={image.width}
+                          height={image.height}
                           alt={title}
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                         />

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Clock, Calendar, ArrowRight, FileText, TrendingUp, ChevronLeft, Tag } from 'lucide-react'
-import { cms, pickImage, withDescriptionFallback } from '../api/cms'
+import { cms, imageSources, withDescriptionFallback, NewsFilter } from '../api/cms'
 import { warmFlipbookRuntime } from '../utils/flipbookPrefetch'
 import LazyImage from '../components/ui/LazyImage'
-import CategoryNewsSkeleton from '../components/skeletons/CategoryNewsSkeleton'
+import NewsPagination from '../components/NewsPagination'
+import { SkeletonRegion } from '../components/ui/Skeleton'
+import CategoryNewsSkeleton, { CategoryListSkeleton } from '../components/skeletons/CategoryNewsSkeleton'
 
 interface NewsArticle {
   id: number
@@ -40,8 +42,14 @@ const navigate = (path: string) => {
 // ~720px wide, grid cards ~380px, sidebar thumbnails 96px.
 const IMAGE_WIDTH = { featured: 700, card: 400, thumbnail: 160 }
 
-const getImageUrl = (article: NewsArticle, minWidth: number): string | null =>
-  pickImage(article.image, minWidth)?.url ?? null
+const getImage = (article: NewsArticle, minWidth: number) => imageSources(article.image, minWidth)
+
+// What each slot is drawn at, for the browser to choose a file by.
+const SIZES = {
+  featured: '(min-width: 1024px) 700px, 100vw',
+  card: '(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw',
+  thumbnail: '96px',
+}
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString('en-US', {
@@ -65,26 +73,45 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [categoryName, setCategoryName] = useState<string>('')
-  const [activeFilter, setActiveFilter] = useState<'all' | 'pdf' | 'article'>('all')
+  const [activeFilter, setActiveFilter] = useState<NewsFilter>('all')
+  const [page, setPage] = useState(1)
+  const [pageCount, setPageCount] = useState(1)
+  // Totals straight from the CMS, for the header figures and the tab labels.
+  const [totals, setTotals] = useState<{ all: number; pdf: number } | null>(null)
+  // A page or tab change swaps just the list, keeping the header and tabs put.
+  const [listLoading, setListLoading] = useState(false)
+  // Bumped by the "Try again" button so the request runs once more.
+  const [retryCount, setRetryCount] = useState(0)
+  const listTop = useRef<HTMLDivElement | null>(null)
+  const firstLoad = useRef(true)
+
+  // Opening a different category starts again at page one.
+  const [lastSlug, setLastSlug] = useState(categorySlug)
+  if (categorySlug !== lastSlug) {
+    setLastSlug(categorySlug)
+    setPage(1)
+    firstLoad.current = true
+  }
 
   useEffect(() => {
     let mounted = true
 
+    const slug = categorySlug || (() => {
+      const path = window.location.pathname
+      const match = path.match(/^\/news\/([^/]+)$/)
+      return match ? match[1] : ''
+    })()
+
+    if (!slug) {
+      setError('Category not found')
+      setLoading(false)
+      return
+    }
+
     const fetchArticles = async () => {
       try {
-        const slug = categorySlug || (() => {
-          const path = window.location.pathname
-          const match = path.match(/^\/news\/([^/]+)$/)
-          return match ? match[1] : ''
-        })()
-
-        if (!slug) {
-          setError('Category not found')
-          setLoading(false)
-          return
-        }
-
-        setLoading(true)
+        if (firstLoad.current) setLoading(true)
+        else setListLoading(true)
         setError(null)
 
         const processData = (data: any) => {
@@ -111,6 +138,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           })
 
           setArticles(mapped)
+          setPageCount(Math.max(1, data?.meta?.pagination?.pageCount ?? 1))
 
           if (data?.data?.[0]?.news_categories) {
             const matchingCategory = data.data[0].news_categories.find(
@@ -122,7 +150,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           }
         }
 
-        const data = await cms.categoryNews(slug).fetch((fresh: any) => {
+        const data = await cms.categoryNews(slug, page, activeFilter).fetch((fresh: any) => {
           withDescriptionFallback(fresh).then(processData)
         })
 
@@ -130,13 +158,37 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
       } catch (e) {
         if (mounted) setError(e instanceof Error ? e.message : 'Error loading articles')
       } finally {
-        if (mounted) setLoading(false)
+        if (mounted) {
+          setLoading(false)
+          setListLoading(false)
+          firstLoad.current = false
+        }
+      }
+    }
+
+    // The tab totals: two small requests, cached and shared by every page of
+    // this category, so the counts stay right no matter which page is open.
+    const fetchTotals = async () => {
+      try {
+        const [all, pdf] = await Promise.all([
+          cms.categoryNewsCount(slug, 'all').fetch(),
+          cms.categoryNewsCount(slug, 'pdf').fetch(),
+        ])
+        if (mounted) {
+          setTotals({
+            all: all?.meta?.pagination?.total ?? 0,
+            pdf: pdf?.meta?.pagination?.total ?? 0,
+          })
+        }
+      } catch {
+        // Counts are a nicety; the page itself still renders.
       }
     }
 
     fetchArticles()
+    fetchTotals()
     return () => { mounted = false }
-  }, [categorySlug])
+  }, [categorySlug, activeFilter, page, retryCount])
 
   // PDF stories (the Research Reports category) open in the flipbook reader,
   // like magazines and newsletters; the reader links to the PDF itself too.
@@ -153,11 +205,22 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
     if (article.pdfUrl?.trim()) warmFlipbookRuntime()
   }
 
-  const filtered = articles.filter(a => {
-    if (activeFilter === 'pdf') return !!a.pdfUrl
-    if (activeFilter === 'article') return !a.pdfUrl
-    return true
-  })
+  // Moving between pages: load the page and bring the reader back to the top
+  // of the list rather than leaving them halfway down the previous one.
+  const goToPage = (next: number) => {
+    setPage(next)
+    listTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const showTab = (filter: NewsFilter) => {
+    setActiveFilter(filter)
+    setPage(1)
+  }
+
+  // Totals come from the CMS; until they arrive, this page's own counts stand in.
+  const totalAll = totals?.all ?? articles.length
+  const totalPdf = totals?.pdf ?? articles.filter(a => a.pdfUrl).length
+  const totalArticles = Math.max(0, totalAll - totalPdf)
 
   // ── Loading ───────────────────────────────────────────────
   if (loading) return <CategoryNewsSkeleton />
@@ -172,20 +235,30 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
           </div>
           <h2 className="text-white font-bold text-lg mb-2">Something went wrong</h2>
           <p className="text-slate-400 text-sm mb-6">{error}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="inline-flex items-center gap-2 bg-[#3B82F6] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#d4a83a] transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" /> Back to Home
-          </button>
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={() => setRetryCount((n) => n + 1)}
+              className="inline-flex items-center gap-2 bg-[#3B82F6] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#2563EB] transition-colors"
+            >
+              Try again
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center gap-2 bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-slate-700 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" /> Back to Home
+            </button>
+          </div>
         </div>
       </div>
     )
   }
 
-  const featured = filtered[0]
-  const secondary = filtered.slice(1, 4)
-  const rest = filtered.slice(4)
+  // This page's stories: the first leads, the next three sit beside it, the
+  // remainder fill the grid — the same layout on every page.
+  const featured = articles[0]
+  const secondary = articles.slice(1, 4)
+  const rest = articles.slice(4)
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-slate-950">
@@ -224,12 +297,12 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
 
             <div className="flex items-center gap-6 text-slate-400 shrink-0">
               <div className="text-center">
-                <div className="text-3xl font-black text-white">{articles.length}</div>
+                <div className="text-3xl font-black text-white">{totalAll}</div>
                 <div className="text-xs uppercase tracking-widest mt-0.5">Articles</div>
               </div>
               <div className="w-px h-10 bg-slate-700" />
               <div className="text-center">
-                <div className="text-3xl font-black text-white">{articles.filter(a => a.pdfUrl).length}</div>
+                <div className="text-3xl font-black text-white">{totalPdf}</div>
                 <div className="text-xs uppercase tracking-widest mt-0.5">PDFs</div>
               </div>
             </div>
@@ -242,13 +315,13 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center gap-1 py-3 overflow-x-auto scrollbar-none">
             {([
-              { key: 'all', label: `All (${articles.length})` },
-              { key: 'article', label: `Articles (${articles.filter(a => !a.pdfUrl).length})` },
-              { key: 'pdf', label: `PDFs (${articles.filter(a => a.pdfUrl).length})` },
+              { key: 'all', label: `All (${totalAll})` },
+              { key: 'article', label: `Articles (${totalArticles})` },
+              { key: 'pdf', label: `PDFs (${totalPdf})` },
             ] as const).map(f => (
               <button
                 key={f.key}
-                onClick={() => setActiveFilter(f.key)}
+                onClick={() => showTab(f.key)}
                 className={`shrink-0 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeFilter === f.key
                     ? 'bg-[#3B82F6] text-white shadow'
                     : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -261,16 +334,20 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+      <div ref={listTop} className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 scroll-mt-28">
 
-        {filtered.length === 0 ? (
+        {listLoading ? (
+          <SkeletonRegion label="Loading articles">
+            <CategoryListSkeleton />
+          </SkeletonRegion>
+        ) : articles.length === 0 ? (
           <div className="text-center py-20">
             <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500 dark:text-slate-400 font-medium">No articles match this filter.</p>
           </div>
         ) : (
           <>
-            {/* ── Featured + Sidebar ──────────────────────────── */}
+            {/* The first story of the page leads; the rest follow below it. */}
             {featured && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
 
@@ -281,10 +358,12 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                   className="lg:col-span-7 group cursor-pointer"
                 >
                   <div className="relative overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 aspect-video shadow-lg">
-                    {getImageUrl(featured, IMAGE_WIDTH.featured) ? (
+                    {getImage(featured, IMAGE_WIDTH.featured) ? (
                       <LazyImage
                         priority
-                        src={getImageUrl(featured, IMAGE_WIDTH.featured)!}
+                        src={getImage(featured, IMAGE_WIDTH.featured)!.url}
+                        srcSet={getImage(featured, IMAGE_WIDTH.featured)!.srcSet}
+                        sizes={SIZES.featured}
                         alt={featured.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
@@ -340,7 +419,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                 {/* Sidebar articles */}
                 <div className="lg:col-span-5 flex flex-col gap-4">
                   {secondary.map((article) => {
-                    const imgUrl = getImageUrl(article, IMAGE_WIDTH.thumbnail)
+                    const img = getImage(article, IMAGE_WIDTH.thumbnail)
                     return (
                       <article
                         key={article.id}
@@ -349,8 +428,8 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                         className="group cursor-pointer flex gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 hover:border-[#3B82F6]/50 hover:shadow-md transition-all duration-200"
                       >
                         <div className="relative w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700">
-                          {imgUrl ? (
-                            <LazyImage src={imgUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                          {img ? (
+                            <LazyImage src={img.url} srcSet={img.srcSet} sizes={SIZES.thumbnail} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">
                               <FileText className="w-6 h-6 text-slate-500" />
@@ -384,7 +463,7 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {rest.map((article) => {
-                    const imgUrl = getImageUrl(article, IMAGE_WIDTH.card)
+                    const img = getImage(article, IMAGE_WIDTH.card)
                     const readTime = calcReadTime(article.short_description || article.description)
                     return (
                       <article
@@ -395,8 +474,8 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
                       >
                         {/* Image */}
                         <div className="relative h-48 bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                          {imgUrl ? (
-                            <LazyImage src={imgUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                          {img ? (
+                            <LazyImage src={img.url} srcSet={img.srcSet} sizes={SIZES.card} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
                               <FileText className="w-10 h-10 text-slate-600" />
@@ -447,6 +526,8 @@ export default function CategoryNews({ categorySlug }: CategoryNewsProps): JSX.E
             )}
           </>
         )}
+
+        <NewsPagination page={page} pageCount={pageCount} onChange={goToPage} />
       </div>
     </div>
   )

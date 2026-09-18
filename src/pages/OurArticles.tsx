@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileText } from 'lucide-react'
-import { cms } from '../api/cms'
+import { cms, imageSources } from '../api/cms'
 import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
 
@@ -81,14 +81,8 @@ export default function OurArticles(): JSX.Element {
   }
 
   // Helper to get image URL
-  const getImageUrl = (item: OurArticle): string | null => {
-    const imgObj = item.image || item.coverImage || item.media
-    if (!imgObj) return null
-    // Tiles are ~150px wide, so the small variant is plenty.
-    const url = imgObj?.formats?.small?.url || imgObj?.formats?.medium?.url || imgObj?.url
-    if (!url) return null
-    return url.startsWith('http') ? url : `${BASE_URL}${url}`
-  }
+  // Tiles are ~150px wide on desktop and about half the screen on phones.
+  const getImage = (item: OurArticle) => imageSources(item.image || item.coverImage || item.media, 180, BASE_URL)
 
   // Helper to get PDF URL
   const getPdfUrl = (item: OurArticle): string | null => {
@@ -234,7 +228,7 @@ export default function OurArticles(): JSX.Element {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 sm:gap-6 justify-items-center">
                       {group.articles.map((art) => {
                         const title = art.Title || art.title || 'Untitled Article'
-                        const coverUrl = getImageUrl(art)
+                        const cover = getImage(art)
                         const pdfUrl = getPdfUrl(art)
 
                         return (
@@ -246,9 +240,11 @@ export default function OurArticles(): JSX.Element {
                           >
                             {/* Card Cover Preview */}
                             <div className="w-full aspect-[3/4] bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md group-hover:shadow-xl group-hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative flex flex-col justify-between p-3">
-                              {coverUrl ? (
+                              {cover ? (
                                 <LazyImage
-                                  src={coverUrl}
+                                  src={cover.url}
+                                  srcSet={cover.srcSet}
+                                  sizes="(min-width: 1024px) 150px, (min-width: 640px) 25vw, 45vw"
                                   alt={title}
                                   className="w-full h-full object-cover rounded-md transition-transform duration-500 group-hover:scale-105"
                                   skeletonClassName="inset-3 rounded-md"

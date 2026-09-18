@@ -21,6 +21,43 @@ const IMAGE = ['url', 'formats', 'width', 'height', 'size'] as const
 const FILE = ['url', 'name'] as const
 
 const newsIn = (slug: string) => `${API}/news-sections?filters[news_categories][slug][$eq]=${encodeURIComponent(slug)}`
+
+/** Stories per page on a category listing. */
+export const NEWS_PAGE_SIZE = 25
+
+/** The category page's tabs: everything, stories without a PDF, or PDF stories. */
+export type NewsFilter = 'all' | 'article' | 'pdf'
+
+const pdfFilter = (filter: NewsFilter) =>
+  filter === 'pdf' ? '&filters[pdf][$notNull]=true' : filter === 'article' ? '&filters[pdf][$null]=true' : ''
+
+/**
+ * Categories the site doesn't publish. They are left out of the News menu, of
+ * the feeds that aren't tied to one category (headlines ticker, related
+ * articles, search) and of their own listing page. Nothing is removed from the
+ * CMS — the stories are simply no longer surfaced.
+ */
+export const HIDDEN_NEWS_CATEGORIES = ['daily-newsletter']
+
+export const isHiddenCategory = (slug?: string | null): boolean =>
+  !!slug && HIDDEN_NEWS_CATEGORIES.includes(slug)
+
+/**
+ * Leaves hidden categories out of a feed that isn't already filtered to one
+ * category. The `$or` matters: on a to-many relation `$notIn` on its own also
+ * drops the handful of stories filed under no category at all, because there is
+ * no related row for the condition to match.
+ *
+ * `prefix` places the clause inside a `filters[$and][n]` group for queries that
+ * already carry conditions of their own.
+ */
+const notHidden = (prefix = 'filters') =>
+  [
+    ...HIDDEN_NEWS_CATEGORIES.map(
+      (slug, i) => `${prefix}[$or][0][news_categories][slug][$notIn][${i}]=${encodeURIComponent(slug)}`
+    ),
+    `${prefix}[$or][1][news_categories][id][$null]=true`,
+  ].join('&')
 const idFilter = (value: string) => `filters[${/^\d+$/.test(value) ? 'id' : 'documentId'}][$eq]=${encodeURIComponent(value)}`
 
 export interface Endpoint<T = any> {
@@ -43,12 +80,25 @@ const MAGAZINE_FIELDS = fields(['Title', 'Description', 'publishDate', 'features
 const MAGAZINE_MEDIA = `${populate('coverImage', IMAGE)}&${populate('pdf', FILE)}`
 const NEWSLETTER_QUERY = `${fields(['title', 'publishedAt'])}&${populate('coverImage', IMAGE)}&${populate('pdfFile', FILE)}&${populate('newsletter_category', ['name'])}`
 
+// Only the fields these pages render: the cards, their covers, and the files
+// their buttons open. Every other column and relation stays on the server.
+const OUR_ARTICLE_QUERY = `${fields(['Title', 'Description', 'publishDate', 'publishedAt', 'createdAt', 'buttonLink'])}&${populate('coverImage', IMAGE)}&${populate('pdf', FILE)}`
+const COMPANY_QUERY = `${fields(['title', 'shortDescription', 'publishedAt', 'createdAt'])}&${populate('cover_image', IMAGE)}&${populate('companyPdf', FILE)}`
+
 export const cms = {
   /** AnnouncementBar and BreakingNews: the eight newest headlines. Both only show titles. */
-  latestHeadlines: endpoint(`${API}/news-sections?sort=publishedAt:desc&pagination[limit]=8&${fields(['title'])}`, TTL.news),
+  latestHeadlines: endpoint(
+    `${API}/news-sections?sort=publishedAt:desc&pagination[limit]=8&${fields(['title'])}&${notHidden()}`,
+    TTL.news
+  ),
 
   /** Header's News menu. */
-  newsCategories: endpoint(`${API}/news-categories?pagination[limit]=100&${fields(['category', 'slug'])}`, TTL.static),
+  newsCategories: endpoint(
+    `${API}/news-categories?pagination[limit]=100&${fields(['category', 'slug'])}&${HIDDEN_NEWS_CATEGORIES.map(
+      (slug, i) => `filters[slug][$notIn][${i}]=${encodeURIComponent(slug)}`
+    ).join('&')}`,
+    TTL.static
+  ),
 
   /**
    * HeroSection. Ordered by the editorial news date (`publish_on`) — the date
@@ -86,12 +136,23 @@ export const cms = {
     TTL.news
   ),
 
-  /** CategoryNews: the 25 newest stories — the page size Strapi applied before — plus the category name. */
-  categoryNews: (slug: string) =>
+  /**
+   * CategoryNews: one page of a category, newest first. Categories run to
+   * thousands of stories, so only the requested page is fetched; `id` breaks
+   * ties on the timestamp so paging can't repeat or skip a story.
+   */
+  categoryNews: (slug: string, page = 1, filter: NewsFilter = 'all') =>
     endpoint(
-      `${newsIn(slug)}&sort=publishedAt:desc&pagination[pageSize]=25&${fields(['title', 'short_description', 'author', 'publishedAt'])}&${populate('image', IMAGE)}&${populate('pdf', ['url'])}&${populate('news_categories', ['category', 'slug'])}`,
+      `${newsIn(slug)}${pdfFilter(filter)}&sort[0]=publishedAt:desc&sort[1]=id:desc&pagination[page]=${page}&pagination[pageSize]=${NEWS_PAGE_SIZE}&${fields(['title', 'short_description', 'author', 'publishedAt'])}&${populate('image', IMAGE)}&${populate('pdf', ['url'])}&${populate('news_categories', ['category', 'slug'])}`,
       TTL.news
     ),
+
+  /**
+   * The totals behind the "All / Articles / PDFs" tabs. One row is enough —
+   * the count comes from the pagination metadata.
+   */
+  categoryNewsCount: (slug: string, filter: NewsFilter) =>
+    endpoint(`${newsIn(slug)}${pdfFilter(filter)}&pagination[pageSize]=1&${fields(['title'])}`, TTL.news),
 
   /** ArticleDetail: one story. */
   article: (documentId: string) =>
@@ -108,13 +169,18 @@ export const cms = {
     ),
 
   /** ArticleDetail's "Continue Reading" sidebar — the same list for every article. */
-  relatedArticles: endpoint(`${API}/news-sections?sort=publishedAt:desc&pagination[limit]=15&${fields(['title'])}&${populate('image', IMAGE)}`, TTL.related),
+  relatedArticles: endpoint(
+    `${API}/news-sections?sort=publishedAt:desc&pagination[limit]=15&${fields(['title'])}&${populate('image', IMAGE)}&${notHidden()}`,
+    TTL.related
+  ),
 
   /** SearchResults. Kept in memory only, so queries don't pile up in localStorage. */
   search: (query: string) => {
     const q = encodeURIComponent(query)
     return endpoint(
-      `${API}/news-sections?sort=publishedAt:desc&pagination[limit]=24&${fields(['title', 'short_description', 'publish_on', 'publishedAt'])}&filters[$or][0][title][$containsi]=${q}&filters[$or][1][short_description][$containsi]=${q}&filters[$or][2][description][$containsi]=${q}`,
+      // The term match and the hidden-category exclusion are two separate `$or`
+      // groups, so both are nested under `$and` rather than sharing one.
+      `${API}/news-sections?sort=publishedAt:desc&pagination[limit]=24&${fields(['title', 'short_description', 'publish_on', 'publishedAt'])}&filters[$and][0][$or][0][title][$containsi]=${q}&filters[$and][0][$or][1][short_description][$containsi]=${q}&filters[$and][0][$or][2][description][$containsi]=${q}&${notHidden('filters[$and][1]')}`,
       TTL.search,
       false
     )
@@ -147,23 +213,19 @@ export const cms = {
   /** NewsletterFlipbook on a direct visit. */
   newsletter: (id: string) => endpoint(`${API}/post-newsletters?filters[id][$eq]=${encodeURIComponent(id)}&${NEWSLETTER_QUERY}`, TTL.semiStatic),
 
-  /**
-   * Our Articles. Kept as `populate=*`: the whole collection is ~4 KB compressed
-   * and the components read several optional media/link fields from it.
-   */
-  ourArticles: endpoint(`${API}/our-artciles?populate=*`, TTL.semiStatic),
+  /** Our Articles: the listing, the homepage row and the flipbook all read this. */
+  ourArticles: endpoint(`${API}/our-artciles?pagination[pageSize]=100&${OUR_ARTICLE_QUERY}`, TTL.semiStatic),
 
   /** OurArticlesFlipbook on a direct visit. */
   ourArticle: (documentId: string) =>
-    endpoint(`${API}/our-artciles?filters[documentId][$eq]=${encodeURIComponent(documentId)}&populate=*`, TTL.semiStatic),
+    endpoint(`${API}/our-artciles?filters[documentId][$eq]=${encodeURIComponent(documentId)}&${OUR_ARTICLE_QUERY}`, TTL.semiStatic),
 
-  /** Company Profiles (small collection, full records). */
-  companyProfiles: endpoint(`${API}/company-profiles?populate=*`, TTL.static),
+  /** Company Profiles: cards plus the cover and PDF their buttons open. */
+  companyProfiles: endpoint(`${API}/company-profiles?pagination[pageSize]=100&${COMPANY_QUERY}`, TTL.static),
 
   /** CompanyProfileFlipbook on a direct visit — links use the documentId, older ones the numeric id. */
-  companyProfile: (idOrDocumentId: string) => endpoint(`${API}/company-profiles?${idFilter(idOrDocumentId)}&populate=*`, TTL.static),
+  companyProfile: (idOrDocumentId: string) => endpoint(`${API}/company-profiles?${idFilter(idOrDocumentId)}&${COMPANY_QUERY}`, TTL.static),
 
-  ceoProfiles: endpoint(`${API}/ceo-profiles?populate=*&pagination[limit]=100&sort=publishedAt:desc`, TTL.static),
 }
 
 /**
@@ -196,6 +258,62 @@ export interface PickedImage {
   url: string
   width?: number
   height?: number
+}
+
+export interface ImageSources extends PickedImage {
+  /** `srcSet` listing the useful variants, or undefined when there is only one. */
+  srcSet?: string
+}
+
+/**
+ * `src` + `srcSet` for a CMS image, so the browser can pick a file that suits
+ * the viewport and screen density rather than always taking the desktop one.
+ *
+ * `displayWidth` is roughly how wide the image is drawn at its largest; much
+ * wider variants are left out. So are variants that weigh more than a wider
+ * one — Strapi's PNG re-encodes often do — so choosing a wider file is never a
+ * heavier download. `src` stays the byte-aware pick, for anything that ignores
+ * srcSet.
+ */
+export function imageSources(image: any, displayWidth: number, baseUrl?: string): ImageSources | null {
+  const absolute = (url: string) => (!baseUrl || url.startsWith('http') ? url : `${baseUrl}${url}`)
+  const fallback = pickImage(image, displayWidth)
+  if (!fallback) return null
+
+  const variants: any[] = [...Object.values(image?.formats || {}), image]
+    .filter((v: any) => v?.url && v.width)
+    .sort((a: any, b: any) => a.width - b.width)
+
+  // Offer nothing heavier than the variant that would have been used anyway.
+  // Many covers are PNG uploads whose wider variants cost several times the
+  // bytes, so a dense screen must never turn into a bigger download than a
+  // plain one — it just keeps this variant. Narrower, lighter files stay on
+  // offer for smaller slots and 1x screens.
+  const base = variants.find((v) => v.url === fallback.url)
+  const maxWidth = displayWidth * 2
+  const maxSize = base?.size ?? Infinity
+  const candidates = variants.filter(
+    (v) => v === base || (v.width <= maxWidth && (v.size ?? 0) <= maxSize)
+  )
+
+  // Widest first: keep a variant only if it is lighter than every wider one kept.
+  const useful: any[] = []
+  let lightestWider = Infinity
+  for (let i = candidates.length - 1; i >= 0; i--) {
+    const variant = candidates[i]
+    const size = variant.size ?? 0
+    if (size < lightestWider) {
+      useful.unshift(variant)
+      lightestWider = size
+    }
+  }
+
+  const unique = useful.filter((v, i, all) => all.findIndex((o) => o.width === v.width) === i)
+  return {
+    ...fallback,
+    url: absolute(fallback.url),
+    srcSet: unique.length > 1 ? unique.map((v) => `${absolute(v.url)} ${v.width}w`).join(', ') : undefined,
+  }
 }
 
 /**
