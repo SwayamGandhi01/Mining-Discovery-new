@@ -9,13 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- The same, for the CMS and its media host. Every story, image and
-         section on the page comes from these two origins, and the first
-         request to each would otherwise pay for DNS, TCP and TLS before it
+         section on the page comes from the CMS, and the first
+         request would otherwise pay for DNS, TCP and TLS before it
          could even start — on a mobile connection that is most of a second
          ahead of the cover image. The API is read with fetch (CORS), the
-         images are plain <img> requests, hence the one crossorigin. -->
-    <link rel="preconnect" href="https://admins.miningdiscovery.com" crossorigin />
-    <link rel="preconnect" href="https://acceptable-desire-0cca5bb827.media.strapiapp.com" />
+         images are plain <img> requests, hence the crossorigin. -->
+    <link rel="preconnect" href="https://cms.miningdiscovery.com" crossorigin />
 
     <!-- Inter and Playfair are fetched without blocking the first paint: both
          are declared `display=swap`, so text has always drawn in the fallback

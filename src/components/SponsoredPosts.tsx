@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { cachedFetch } from '../utils/cachedFetch'
+import { CMS_URL, resolveMediaUrl } from '../api/cms'
 
 interface NewsArticle {
   id?: number
@@ -60,7 +61,7 @@ export default function SponsoredPosts({ onArticleClick }: SponsoredPostsProps):
       try {
         setLoading(true)
         const url =
-          'https://admins.miningdiscovery.com/api/news-sections' +
+          `${CMS_URL}/api/news-sections` +
           '?filters[news_categories][slug][$eq]=sponsored-post&sort=publishedAt:desc&pagination[limit]=6&populate=*'
 
         const mapPosts = (data: any): NewsArticle[] => {
@@ -126,7 +127,8 @@ export default function SponsoredPosts({ onArticleClick }: SponsoredPostsProps):
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {posts.slice(0, 2).map((post) => {
-            const imageUrl = post.image?.url || post.image?.formats?.medium?.url || post.image?.formats?.small?.url
+            const rawImageUrl = post.image?.url || post.image?.formats?.medium?.url || post.image?.formats?.small?.url
+            const imageUrl = resolveMediaUrl(rawImageUrl)
             const readTime = calculateReadTime(post.description || post.short_description || '')
 
             return (

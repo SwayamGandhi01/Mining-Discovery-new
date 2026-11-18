@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { cms } from '../api/cms'
+import { cms, CMS_URL, resolveMediaUrl } from '../api/cms'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-const BASE_URL = 'https://admins.miningdiscovery.com'
+const BASE_URL = CMS_URL
 
 type OurArticle = {
   id: number
@@ -41,7 +41,7 @@ const getImageUrl = (item: OurArticle): string | null => {
     imgObj?.formats?.large?.url ||
     imgObj?.url
   if (!url) return null
-  return url.startsWith('http') ? url : `${BASE_URL}${url}`
+  return resolveMediaUrl(url)
 }
 
 const getPdfUrl = (item: OurArticle): string | null => {
@@ -53,7 +53,7 @@ const getPdfUrl = (item: OurArticle): string | null => {
     item.buttonLink
 
   if (!candidate) return null
-  return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
+  return resolveMediaUrl(candidate)
 }
 
 const findArticle = (json: any, documentId: string): OurArticle | null =>

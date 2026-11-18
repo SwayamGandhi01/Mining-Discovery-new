@@ -9,8 +9,28 @@ import { cachedFetch, peekCache, TTL } from '../utils/cachedFetch'
  * same data use the same endpoint, so they share one request and cache entry.
  */
 
-export const CMS_URL = 'https://admins.miningdiscovery.com'
+const getEnvUrl = (): string | undefined => {
+  try {
+    return (import.meta as any)?.env?.VITE_CMS_URL || (globalThis as any)?.process?.env?.VITE_CMS_URL
+  } catch {
+    return undefined
+  }
+}
+
+export const CMS_URL = (getEnvUrl() || 'https://cms.miningdiscovery.com').replace(/\/+$/, '')
 const API = `${CMS_URL}/api`
+
+/**
+ * Resolves relative Strapi media URLs (uploads, PDFs, images) against CMS_URL.
+ * Preserves absolute URLs, avoids duplicate slashes, and safely handles null/undefined.
+ */
+export const resolveMediaUrl = (url?: string | null, baseUrl: string = CMS_URL): string => {
+  if (!url) return ''
+  if (/^https?:\/\//i.test(url)) return url
+  const cleanBase = baseUrl.replace(/\/+$/, '')
+  const cleanPath = url.replace(/^\/+/, '')
+  return `${cleanBase}/${cleanPath}`
+}
 
 const indexed = (param: string, names: readonly string[]) => names.map((name, i) => `${param}[${i}]=${name}`).join('&')
 const fields = (names: readonly string[]) => indexed('fields', names)
@@ -275,8 +295,8 @@ export interface ImageSources extends PickedImage {
  * heavier download. `src` stays the byte-aware pick, for anything that ignores
  * srcSet.
  */
-export function imageSources(image: any, displayWidth: number, baseUrl?: string): ImageSources | null {
-  const absolute = (url: string) => (!baseUrl || url.startsWith('http') ? url : `${baseUrl}${url}`)
+export function imageSources(image: any, displayWidth: number, baseUrl: string = CMS_URL): ImageSources | null {
+  const absolute = (url: string) => resolveMediaUrl(url, baseUrl)
   const fallback = pickImage(image, displayWidth)
   if (!fallback) return null
 

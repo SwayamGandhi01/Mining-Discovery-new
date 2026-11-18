@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { BookOpen, Download } from 'lucide-react'
-import { cms, imageSources } from '../api/cms'
+import { cms, imageSources, resolveMediaUrl } from '../api/cms'
 import { prefetchPdf, warmFlipbookRuntime } from '../utils/flipbookPrefetch'
 import { SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
@@ -119,7 +119,8 @@ export default function CompanyProfiles(): JSX.Element {
 
   const downloadPdf = async (url: string, filename: string) => {
     try {
-      const res = await fetch(url)
+      const resolvedUrl = resolveMediaUrl(url)
+      const res = await fetch(resolvedUrl)
       const blob = await res.blob()
       const blobUrl = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -198,7 +199,7 @@ export default function CompanyProfiles(): JSX.Element {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {visibleProfiles.map((profile) => {
-          const pdfUrl = profile.companyPdf?.[0]?.url
+          const pdfUrl = resolveMediaUrl(profile.companyPdf?.[0]?.url)
           const pdfName = profile.companyPdf?.[0]?.name
           // Covers show ~160px wide; their PNG "medium" variants outweigh the
           // originals, so take the lightest variant that is still sharp.

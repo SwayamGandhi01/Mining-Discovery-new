@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowRight, Clock3, Download, ExternalLink, Sparkles } from 'lucide-react'
-import { cms, imageSources } from '../api/cms'
+import { cms, imageSources, CMS_URL, resolveMediaUrl } from '../api/cms'
 import { SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import CardSkeleton from './skeletons/CardSkeleton'
@@ -24,7 +24,7 @@ type OurArticle = {
   buttonLink?: string
 }
 
-const BASE_URL = 'https://admins.miningdiscovery.com'
+const BASE_URL = CMS_URL
 
 const navigate = (path: string) => {
   window.history.pushState(null, '', path)
@@ -52,7 +52,7 @@ const getPdfUrl = (item: OurArticle): string | null => {
     item.buttonLink
 
   if (!candidate) return null
-  return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
+  return resolveMediaUrl(candidate)
 }
 
 export default function OurArticlesSection({ onArticleClick }: OurArticlesSectionProps): JSX.Element {

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { cms, pickImage } from '../api/cms'
+import { cms, pickImage, CMS_URL, resolveMediaUrl } from '../api/cms'
 import { CmsRequestError } from '../utils/cachedFetch'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-const BASE_URL = 'https://admins.miningdiscovery.com'
+const BASE_URL = CMS_URL
 
 type NewsPdf = {
   title?: string
@@ -20,7 +20,7 @@ type NewsPdfFlipbookProps = {
 
 const absoluteUrl = (url?: string | null): string | null => {
   if (!url) return null
-  return url.startsWith('http') ? url : `${BASE_URL}${url}`
+  return resolveMediaUrl(url)
 }
 
 // Same shapes CategoryNews accepts: one file, a list of files, or a plain URL.

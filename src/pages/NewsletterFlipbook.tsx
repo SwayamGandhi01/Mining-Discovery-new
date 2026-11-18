@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { cms, pickImage } from '../api/cms'
+import { cms, pickImage, CMS_URL, resolveMediaUrl } from '../api/cms'
 import FlipbookViewer from '../components/FlipbookViewer'
 import FlipbookSkeleton from '../components/skeletons/FlipbookSkeleton'
 
-const BASE_URL = 'https://admins.miningdiscovery.com'
+const BASE_URL = CMS_URL
 
 type NewsletterItem = {
   id: number
@@ -24,13 +24,13 @@ const getCoverImageUrl = (item: NewsletterItem): string | null => {
   // The download card shows the cover ~170px wide.
   const url = pickImage(item.coverImage, 300)?.url
   if (!url) return null
-  return url.startsWith('http') ? url : `${BASE_URL}${url}`
+  return resolveMediaUrl(url)
 }
 
 const getPdfUrl = (item: NewsletterItem): string | null => {
   const candidate = item.pdfFile?.url
   if (!candidate) return null
-  return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
+  return resolveMediaUrl(candidate)
 }
 
 const findNewsletter = (json: any, newsletterId: string): NewsletterItem | null => {

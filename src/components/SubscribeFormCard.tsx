@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Mail, Check, Loader2 } from 'lucide-react'
+import { CMS_URL } from '../api/cms'
 
 interface SubscribeFormCardProps {
   isCard?: boolean
@@ -41,7 +42,7 @@ export const SubscribeFormCard: React.FC<SubscribeFormCardProps> = ({ isCard = t
         })
         .join(', ')
 
-      await fetch('https://admins.miningdiscovery.com/api/contact-uses', {
+      await fetch(`${CMS_URL}/api/contact-uses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

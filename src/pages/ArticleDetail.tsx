@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Clock, Calendar, User, Share2, Facebook, Twitter, Linkedin } from "lucide-react";
-import { cms, imageSources } from "../api/cms";
+import { cms, imageSources, resolveMediaUrl } from "../api/cms";
 import LazyImage from "../components/ui/LazyImage";
 import ArticleDetailSkeleton, { RelatedArticlesSkeleton } from "../components/skeletons/ArticleDetailSkeleton";
 
@@ -43,8 +43,27 @@ const navigate = (path: string) => {
 // Article HTML comes straight from the CMS. Its images load lazily so a long
 // article doesn't download every picture up front; images that already set
 // `loading` keep it, and their width/height attributes are left untouched.
-const withLazyImages = (html: string): string =>
-  html.replace(/<img\b(?![^>]*\sloading=)/gi, '<img loading="lazy" decoding="async"');
+// Relative image paths in rich text are resolved against CMS_URL.
+const withLazyImages = (html: string): string => {
+  let processed = html.replace(/<img\b(?![^>]*\sloading=)/gi, '<img loading="lazy" decoding="async"');
+  processed = processed.replace(/(<img\b[^>]*?\bsrc=["'])(\/uploads\/[^"']+)(["'])/gi, (_m, prefix, path, suffix) => {
+    return `${prefix}${resolveMediaUrl(path)}${suffix}`;
+  });
+  processed = processed.replace(/(<img\b[^>]*?\bsrcset=["'])([^"']+)(["'])/gi, (_m, prefix, srcset, suffix) => {
+    const fixed = srcset.split(',').map((part: string) => {
+      const trimmed = part.trim();
+      const firstSpace = trimmed.indexOf(' ');
+      const url = firstSpace === -1 ? trimmed : trimmed.slice(0, firstSpace);
+      const desc = firstSpace === -1 ? '' : trimmed.slice(firstSpace);
+      if (url.startsWith('/uploads/')) {
+        return `${resolveMediaUrl(url)}${desc}`;
+      }
+      return part;
+    }).join(', ');
+    return `${prefix}${fixed}${suffix}`;
+  });
+  return processed;
+};
 
 export default function ArticleDetail({
   documentId,

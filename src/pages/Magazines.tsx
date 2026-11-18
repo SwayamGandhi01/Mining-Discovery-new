@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { BookOpen, Download, Calendar, AlertCircle } from 'lucide-react'
-import { cms, imageSources } from '../api/cms'
+import { cms, imageSources, resolveMediaUrl } from '../api/cms'
 import { SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
 import CardSkeleton from '../components/skeletons/CardSkeleton'
@@ -82,7 +82,8 @@ export default function Magazines(): JSX.Element {
   async function handleDownloadPdf(url: string | undefined, filename?: string) {
     if (!url) return
     try {
-      const res = await fetch(url)
+      const resolvedUrl = resolveMediaUrl(url)
+      const res = await fetch(resolvedUrl)
       const blob = await res.blob()
       const blobUrl = URL.createObjectURL(blob)
       const a = document.createElement('a')

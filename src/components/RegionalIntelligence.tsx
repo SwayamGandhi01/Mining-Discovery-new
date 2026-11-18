@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cms } from '../api/cms'
+import { cms, CMS_URL, resolveMediaUrl } from '../api/cms'
 import { Skeleton, SkeletonRegion } from './ui/Skeleton'
 import LazyImage from './ui/LazyImage'
 import { whenIdle } from '../utils/whenIdle'
@@ -33,7 +33,7 @@ interface AdvertisementItem {
 
 type ImageSource = { url: string; width?: number; height?: number }
 
-const BASE_URL = 'https://admins.miningdiscovery.com'
+const BASE_URL = CMS_URL
 
 const asImage = (candidate: any): ImageSource | null =>
   candidate?.url ? { url: candidate.url, width: candidate.width, height: candidate.height } : null
@@ -96,7 +96,7 @@ export default function RegionalIntelligence(): JSX.Element {
     }
 
     if (!image) return null
-    return image.url.startsWith('http') ? image : { ...image, url: `${BASE_URL}${image.url}` }
+    return { ...image, url: resolveMediaUrl(image.url) }
   }
 
   // Filter strictly for horizontal banners (vertical_banner !== true) with valid image URLs

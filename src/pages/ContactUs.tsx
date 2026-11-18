@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { CMS_URL } from '../api/cms'
 import {
   Mail,
   Phone,
@@ -182,7 +183,7 @@ const ContactUs: React.FC = () => {
     setSubmitError(null)
 
     try {
-      const res = await fetch('https://admins.miningdiscovery.com/api/contact-uses', {
+      const res = await fetch(`${CMS_URL}/api/contact-uses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -4,12 +4,68 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laura's Liaisons - Your Source for Global Mining News</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <!-- Open the connections to Google Fonts while the HTML is still parsing,
+         so the stylesheets and font files don't wait on DNS/TLS first. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- The same, for the CMS and its media host. Every story, image and
+         section on the page comes from the CMS, and the first
+         request would otherwise pay for DNS, TCP and TLS before it
+         could even start — on a mobile connection that is most of a second
+         ahead of the cover image. The API is read with fetch (CORS), the
+         images are plain <img> requests, hence the crossorigin. -->
+    <link rel="preconnect" href="https://cms.miningdiscovery.com" crossorigin />
+
+    <!-- Inter and Playfair are fetched without blocking the first paint: both
+         are declared `display=swap`, so text has always drawn in the fallback
+         face first and swapped when they arrive. Loading the stylesheet this
+         way simply lets that first paint happen sooner. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap"
+      media="print"
+      onload="this.media='all';this.onload=null"
+    />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet" />
+    </noscript>
+
+    <!-- Material Icons, inlined exactly as fonts.googleapis.com serves it, to
+         save a render-blocking round trip for 800 bytes of CSS. It keeps the
+         same font file and `display: block`, which is what stops the ligature
+         names ("search", "menu") showing as words before the icons arrive —
+         so this cannot be deferred the way the text fonts are. -->
+    <style>
+      @font-face {
+        font-family: 'Material Icons';
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url(https://fonts.gstatic.com/s/materialicons/v145/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');
+      }
+      .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
-    <script type="module" crossorigin src="/assets/index-CY2cWXyT.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BFMb1zrc.css">
+    <script type="module" crossorigin src="/assets/index-D4C8Wfos.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-Ch2elnhB.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-CM_wXA4U.css">
+    <link rel="preload" as="fetch" crossorigin="anonymous" href="https://cms.miningdiscovery.com/api/news-sections?filters[news_categories][slug][$eq]=latest-news&filters[publish_on][$notNull]=true&sort[0]=publish_on:desc&sort[1]=publishedAt:desc&pagination[limit]=1&fields[0]=title&fields[1]=short_description&fields[2]=publish_on&fields[3]=publishedAt&populate[image][fields][0]=url&populate[image][fields][1]=formats&populate[image][fields][2]=width&populate[image][fields][3]=height&populate[image][fields][4]=size">
   </head>
   <body>
     <div id="root"></div>

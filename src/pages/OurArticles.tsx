@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileText } from 'lucide-react'
-import { cms, imageSources } from '../api/cms'
+import { cms, imageSources, CMS_URL, resolveMediaUrl } from '../api/cms'
 import { Skeleton, SkeletonRegion } from '../components/ui/Skeleton'
 import LazyImage from '../components/ui/LazyImage'
 
@@ -37,7 +37,7 @@ type GroupedArticles = {
   articles: OurArticle[]
 }
 
-const BASE_URL = 'https://admins.miningdiscovery.com'
+const BASE_URL = CMS_URL
 
 export default function OurArticles(): JSX.Element {
   const [articles, setArticles] = useState<OurArticle[]>([])
@@ -95,7 +95,7 @@ export default function OurArticles(): JSX.Element {
       item.buttonLink
 
     if (!candidate) return null
-    return candidate.startsWith('http') ? candidate : `${BASE_URL}${candidate}`
+    return resolveMediaUrl(candidate)
   }
 
   // Click handler to open the flipbook viewer
